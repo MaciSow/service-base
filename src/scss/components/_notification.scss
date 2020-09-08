@@ -1,0 +1,26 @@
+.notification {
+    top: 8px;
+    position: fixed;
+    text-align: center;
+    margin-left: -124px;
+    left: 50%;
+    width: 248px;
+    color: #fff;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.705);
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    transition: 200ms opacity ease-in-out;
+
+    &.show {
+        opacity: 1;
+    }
+    &.hide {
+        opacity: 0;
+    }
+
+    &__check {
+        color: rgb(100, 192, 47);
+    }
+}

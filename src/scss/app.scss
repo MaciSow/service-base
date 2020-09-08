@@ -1,0 +1,27 @@
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+
+// core
+@import 'core/variables';
+@import 'core/fonts';
+
+// helpers
+@import "utilities";
+
+// objects
+@import "objects/buttons";
+@import "objects/icons";
+@import "objects/title";
+@import "objects/input";
+@import "objects/btnMenu";
+
+
+// components
+@import "components/notification";
+@import "components/search";
+@import "components/topBar";
+
+
+// layouts
+@import "layout/reset";
+@import "layout/base";
+@import "layout/menu";

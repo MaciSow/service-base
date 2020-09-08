@@ -1,0 +1,100 @@
+.o-btn-ico {
+
+  &--search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: none;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    line-height: 0;
+    transition: background-color 200ms ease-in-out;
+
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .o-ico {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+}
+
+.o-btn-more {
+  display: flex;
+  margin-top: 84px;
+  background: none;
+  border: none;
+  transition: all 200ms;
+  border-radius: 4px;
+  z-index: 2;
+
+  &__dot {
+    display: flex;
+    margin: 16px 8px;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    transition: background-color 200ms ease-in-out;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+
+    .o-btn-more__dot {
+      background: white;
+    }
+  }
+
+  &:focus {
+    outline: none;
+
+    .o-btn-more__dot {
+      background-color: white;
+
+    }
+  }
+}
+
+.o-btn-action {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 2px solid white;
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: all 200ms;
+  height: 64px;
+  width: 64px;
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+
+  .o-ico {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover, &:focus {
+    outline: none;
+    opacity: 1;
+    background: white;
+
+    .o-ico {
+      fill: black;
+    }
+  }
+}
+
+
+
+
+
+

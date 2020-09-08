@@ -1,0 +1,32 @@
+body{
+  background-color: $bgrColor;
+  font-size: $fontSize;
+  //background-image: url("images/bgr.jpg");
+  //background-size: contain;
+  //background-repeat: no-repeat;
+  //background-size: auto 100%;
+  //background-position: center center;
+  font-family: Saira, sans-serif;
+  width: 100vw;
+  height: 100vh;
+}
+
+.o-ico {
+  fill: $txtColor;
+  width: 16px;
+  height: 16px;
+}
+
+.bgr {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  //width: 100vw;
+  //height: 100vh;
+  background-image: url("images/bgr.jpg");
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: center center;
+}

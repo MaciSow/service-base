@@ -1,0 +1,18 @@
+@mixin font-face($name, $fileName, $weight: normal, $style: normal) {
+  $fontPath: '../../fonts/';
+
+  @font-face {
+    font-family: $name;
+    font-display: swap;
+    src: 
+    url(#{$fontPath}#{$fileName}.ttf) format('truetype');
+    font-weight: $weight;
+    font-style: $style;
+  }
+}
+
+// usage fonts
+@include font-face('Saira', 'Saira-Light', 300);
+@include font-face('Saira', 'Saira-Regular', 400);
+@include font-face('Saira', 'Saira-Medium', 500);
+

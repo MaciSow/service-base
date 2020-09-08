@@ -1,0 +1,25 @@
+.o-btn-menu {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+    transition: transform 200ms;
+
+  &__title {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    transition: 200ms ease-in-out background-color;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    box-sizing: border-box;
+    padding: 8px 24px;
+  }
+  &:hover{
+    transform: scale(1.03);
+
+    .o-btn-menu__title {
+      background-color: rgba(black, 0.8);
+    }
+  }
+}
