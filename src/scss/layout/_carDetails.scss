@@ -1,0 +1,45 @@
+.l-car-details-wrap {
+  display: flex;
+  align-items: center;
+  padding: 236px 128px 0 128px;
+
+}
+
+.l-car-details {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: $bgrCard;
+  padding: 16px 64px 64px 64px;
+  font-size: 1.5rem;
+
+  &__header {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 48px;
+
+    .header__image {
+      margin-top: -80px;
+      border-radius: 16px;
+      box-shadow: 4px 4px 10px $shadowColor;
+    }
+
+    .header__info {
+      width: 100%;
+      
+      &-data{
+        display: grid;
+        margin-top: 12px;
+        grid-template-columns: 320px 320px 1fr ;
+        column-gap: 4px;
+        row-gap: 12px;
+      }
+    }
+  }
+
+  &__content {
+    margin-top: 32px;
+  }
+}

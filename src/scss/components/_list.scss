@@ -1,0 +1,50 @@
+.c-list-header {
+  display: grid;
+  grid-template-columns: 32px 1fr 256px 256px;
+  column-gap: 8px;
+  padding: 16px 8px;
+  border-bottom: 1px solid $white05;
+  font-weight: 500;
+  text-align: center;
+
+}
+
+.c-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    column-gap: 8px;
+
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid $white025;
+    font-weight: 400;
+    text-align: center;
+
+    .o-checkbox {
+      margin: 20px 8px;
+    }
+
+    .item__link {
+      padding: 16px 8px;
+      display: grid;
+      grid-template-columns: 1fr 256px 256px;
+      column-gap: 8px;
+      color: #cccccc;
+    }
+
+    &:hover {
+      background-color: black;
+      color: white;
+      border-bottom-color: $white05;
+      border-top-color: $white05;
+
+      .item__link {
+        color: white;
+      }
+    }
+  }
+}

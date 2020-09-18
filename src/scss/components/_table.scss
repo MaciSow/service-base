@@ -1,0 +1,41 @@
+.c-table {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  border-spacing: 0;
+
+  .col-32 {
+    width: 32px;
+  }
+
+  .col-256{
+    width: 256px;
+  }
+
+  &__header {
+    th {
+      font-weight: 500;
+      padding: 16px 8px;
+      border-bottom: 1px solid $white05;
+    }
+  }
+
+  &__row {
+    td {
+      padding: 16px 8px;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid $white025;
+    }
+
+    &:hover{
+      td {
+          background-color: black;
+          color: white;
+          border-bottom-color: $white05;
+          border-top-color:$white05;
+        }
+      }
+    }
+  }
+
+

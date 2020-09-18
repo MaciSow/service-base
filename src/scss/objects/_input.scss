@@ -4,8 +4,22 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   padding: 8px;
 
-  &:hover{
+  &:hover {
     border-bottom-color: white;
     transition: border-bottom-color 250ms ease-in-out;
   }
 }
+
+.o-checkbox {
+  display: flex;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid $txtColor;
+  border-radius: 4px;
+
+  &:hover {
+    border-color: white;
+  }
+}
+

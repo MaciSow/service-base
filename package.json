@@ -5,6 +5,7 @@
   "author": "Maciej",
   "license": "MIT",
   "scripts": {
+    "server": "json-server --watch db.json",
     "start": "webpack -w --config webpack.config.js",
     "prebuild": "npm run clean",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.js",
@@ -45,6 +46,7 @@
     "> .05%"
   ],
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.12.1"
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "json-server": "^0.16.1"
   }
 }

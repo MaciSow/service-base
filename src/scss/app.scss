@@ -19,9 +19,12 @@
 @import "components/notification";
 @import "components/search";
 @import "components/topBar";
+@import "components/table";
+@import "components/list";
 
 
 // layouts
 @import "layout/reset";
 @import "layout/base";
 @import "layout/menu";
+@import "layout/carDetails";

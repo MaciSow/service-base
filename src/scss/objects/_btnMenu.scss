@@ -1,8 +1,13 @@
 .o-btn-menu {
   position: relative;
   overflow: hidden;
+  background: none;
+  border-width: 0;
+  box-shadow: 4px 4px 10px $shadowColor ;
+  padding: 0;
+  text-align: left;
   border-radius: 16px;
-    transition: transform 200ms;
+  transition: transform 200ms;
 
   &__title {
     background: rgba(0, 0, 0, 0.5);
@@ -14,12 +19,19 @@
     height: 100px;
     box-sizing: border-box;
     padding: 8px 24px;
+    margin-bottom: -1px;
   }
-  &:hover{
+
+  &:hover {
     transform: scale(1.03);
 
     .o-btn-menu__title {
       background-color: rgba(black, 0.8);
+    border: none;
     }
+  }
+
+  &:focus {
+    outline: none;
   }
 }

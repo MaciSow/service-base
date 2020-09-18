@@ -1,0 +1,15 @@
+{
+  "cars": [
+    { "id": 1, "image":"car1.jpg" , "brand": "Audi", "model": "S5", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 },
+    { "id": 2, "image":"car2.jpg" , "brand": "Subaru", "model": "STI", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 },
+    { "id": 3, "image":"car3.jpg" , "brand": "BMW", "model": "E30", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 },
+    { "id": 4, "image":"car4.jpg" , "brand": "Mazda", "model": "MX-5", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 },
+    { "id": 5, "image":"car5.jpg" , "brand": "Ripsaw", "model": "EV3-F4", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 },
+    { "id": 6, "image":"car6.jpg" , "brand": "Fiat", "model": "500", "bodyStyle": "coupe", "version": "premium","year": 2008, "engineId": 1 }
+  ],
+
+  "engines": [
+    { "id": 1, "capacity": 4.2, "name": "FSI", "layout": "V", "pistons": 8, "power": 450, "torque": 430 }
+  ],
+  "profile": { "name": "typicode" }
+}

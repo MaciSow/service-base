@@ -7,6 +7,7 @@ body{
   //background-size: auto 100%;
   //background-position: center center;
   font-family: Saira, sans-serif;
+  font-weight: 400;
   width: 100vw;
   height: 100vh;
 }
@@ -29,4 +30,9 @@ body{
   background-repeat: no-repeat;
   background-size: auto 100%;
   background-position: center center;
+}
+
+.l-content {
+  position: relative;
+  z-index: 2;
 }

@@ -1,4 +1,3 @@
-
 export function shortFormatDate(date) {
     return `${date.getFullYear()}-${addZero(date.getMonth() + 1)}-${addZero(date.getDate())}
     ${addZero(date.getHours())}:${addZero(date.getMinutes())}`
@@ -149,4 +148,68 @@ export function generateFile(accounts) {
         content += '########################################\n'
     })
     return content;
+}
+
+export function getStringDate(date: Date): string {
+    return `${addZeroInDate(date.getDate())}.${addZeroInDate(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
+export function addZeroInDate(number: number): string {
+    return number < 10 ? `0${number}` : number.toString();
+}
+
+export function addIcons() {
+    document.querySelectorAll('.ico').forEach((ico: HTMLSpanElement) => {
+        const icoName = (ico.classList.value.split(' ')[1]);
+        const svg = require(`!svg-inline-loader!../images/svg/${icoName}.svg`);
+
+        let html = new DOMParser().parseFromString(svg, 'text/html').body.firstChild as HTMLElement;
+        html.classList.add('o-ico')
+        ico.replaceWith(html);
+
+    })
+}
+
+export function hideWindow(): Promise<null> {
+    return new Promise(resolve => {
+        const pages = document.querySelectorAll('.js-pages > div') as NodeListOf<HTMLDivElement>;
+
+        pages.forEach(page => {
+            
+            if (!page.classList.contains('u-hide')) {
+
+                page.classList.add('u-is-hidden');
+                setTimeout(args => {
+                    page.classList.add('u-hide')
+                    page.innerHTML = '';
+                    page.classList.remove('u-is-hidden');
+                    resolve();
+                }, 250);
+            }
+        })
+    })
+}
+
+export function showWindow(window): Promise<null> {
+    return new Promise(resolve => {
+
+        window.classList.remove('u-hide')
+        window.classList.add('u-is-showing');
+        setTimeout(args => {
+            window.classList.remove('u-is-showing');
+
+            resolve();
+        }, 250);
+    })
+}
+
+export function addHistory(href: string) {
+    if (!(window.history && history.pushState)) {
+        return;
+    }
+
+    // history.pushState({page: 1}, "title 1", "?car=1")
+
+
+    // window.history.pushState({car: 0, title: "first"}, "Home", `${href}`)
 }

@@ -4,13 +4,14 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  transition: opacity 200ms ease-in-out;
 }
 
-.l-menu{
+.l-menu {
   margin-top: 108px;
   display: grid;
   grid-template-columns: repeat(3, 400px);
-  grid-template-rows: repeat(2,256px);
+  grid-template-rows: repeat(2, 256px);
   gap: 116px;
 
 }

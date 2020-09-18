@@ -62,7 +62,6 @@
 }
 
 .o-btn-action {
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,10 +75,12 @@
   position: absolute;
   bottom: 32px;
   right: 32px;
+  z-index: 5;
 
   .o-ico {
     width: 24px;
     height: 24px;
+    fill: white;
   }
 
   &:hover, &:focus {
@@ -91,8 +92,40 @@
       fill: black;
     }
   }
-}
 
+  &--left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 2px solid white;
+    border-radius: 50%;
+    opacity: 0.8;
+    transition: all 200ms;
+    height: 64px;
+    width: 64px;
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+    z-index: 5;
+
+    .o-ico{
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    &:hover, &:focus {
+      outline: none;
+      opacity: 1;
+      background: white;
+
+      .o-ico {
+        fill: black;
+      }
+    }
+  }
+}
 
 
 
