@@ -1,27 +1,29 @@
 import {Car} from "../model/Car";
 import {CarDetails} from "./CarDetails";
 import {hideWindow, showWindow} from "../utilities";
-import {setBack} from "../app";
 import {CarService} from "../services/CarService";
+import {Routing} from "../services/Routing";
 
 export class Menu {
     private menuPage: HTMLDivElement;
     private carService: CarService;
+    private readonly routing: Routing;
 
 
-    constructor(carService: CarService) {
+    constructor(carService: CarService, routing: Routing) {
+        this.routing = routing;
         this.carService = carService;
         this.init();
     }
 
     private init() {
         this.menuPage = document.querySelector('.js-menu-page');
-        setBack();
+        this.routing.setBack();
 
         if (!this.menuPage) {
             return;
         }
-
+        document.title = `Service Base`;
         this.createMenu();
         this.clickListener();
     }
@@ -72,7 +74,7 @@ export class Menu {
         history.pushState({car: carId}, "Car Details", `?car=${carId}`)
 
         hideWindow().then(() => {
-            new CarDetails(car)
+            new CarDetails(car,this.routing)
             const carDetailsPage = document.querySelector('.js-car-details');
             showWindow(carDetailsPage);
         });

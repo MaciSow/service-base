@@ -1,25 +1,28 @@
 import {Car} from "../model/Car";
 import {addIcons, getStringDate} from "../utilities";
-import {setBack} from "../app";
+import {Routing} from "../services/Routing";
 
 export class CarDetails {
     car: Car;
+    private routing: Routing;
     private carDetailsPage: HTMLDivElement;
 
-    constructor(car: Car) {
+    constructor(car: Car,routing: Routing) {
+        this.routing = routing;
         this.car = car;
         this.init();
     }
 
     private init() {
         this.carDetailsPage = document.querySelector('.js-car-details');
-        setBack('/', 'js-car-details', 'js-menu-page');
+        this.routing.setBack('/', 'js-car-details', 'js-menu-page');
 
 
         if (!this.carDetailsPage) {
             return;
         }
 
+        document.title = `Details - ${this.car.fullName()}`;
         this.fillWindow();
         addIcons();
     }
