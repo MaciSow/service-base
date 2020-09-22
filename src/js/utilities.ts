@@ -135,23 +135,17 @@ export function slideReset(current) {
     }, anyOpen ? 250 : 0)
 }
 
-export function clearAccountList(inputSelect, direction) {
-    inputSelect.selectedIndex = 0;
-    inputSelect.innerHTML = null;
-    inputSelect.innerHTML = `<option value="0" selected>Select ${direction} Account Number...</option>`;
-}
-
-export function generateFile(accounts) {
-    let content = '';
-    accounts.forEach(account => {
-        content += account.toString();
-        content += '########################################\n'
-    })
-    return content;
-}
-
 export function getStringDate(date: Date): string {
     return `${addZeroInDate(date.getDate())}.${addZeroInDate(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
+export function getDateFromString(stringDate: string): Date {
+    let date = new Date();
+    date.setDate(+(stringDate.split('.')[0]));
+    date.setMonth(+(stringDate.split('.')[1]) - 1);
+    date.setFullYear(+(stringDate.split('.')[2]));
+
+    return date;
 }
 
 export function addZeroInDate(number: number): string {
@@ -172,20 +166,20 @@ export function addIcons() {
 
 export function hideWindow(): Promise<null> {
     return new Promise(resolve => {
-        const pages = document.querySelectorAll('.js-pages > div') as NodeListOf<HTMLDivElement>;
+        const pages = document.querySelectorAll('.js-pages > div:not(.u-hide)') as NodeListOf<HTMLDivElement>;
+
+        if (!pages.length) {
+            resolve();
+        }
 
         pages.forEach(page => {
-            
-            if (!page.classList.contains('u-hide')) {
-
-                page.classList.add('u-is-hidden');
-                setTimeout(args => {
-                    page.classList.add('u-hide')
-                    page.innerHTML = '';
-                    page.classList.remove('u-is-hidden');
-                    resolve();
-                }, 250);
-            }
+            page.classList.add('u-is-hidden');
+            setTimeout(args => {
+                page.classList.add('u-hide')
+                page.innerHTML = '';
+                page.classList.remove('u-is-hidden');
+                resolve();
+            }, 250);
         })
     })
 }
@@ -207,9 +201,4 @@ export function addHistory(href: string) {
     if (!(window.history && history.pushState)) {
         return;
     }
-
-    // history.pushState({page: 1}, "title 1", "?car=1")
-
-
-    // window.history.pushState({car: 0, title: "first"}, "Home", `${href}`)
 }

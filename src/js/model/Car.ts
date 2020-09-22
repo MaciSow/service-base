@@ -18,14 +18,14 @@ export class Car {
     overview: Date = new Date();
 
     repairs: Repair[] = [];
-
+    repairsId: number[] = [];
 
     fullName(): string {
         return `${this.brand} ${this.model}`
     }
 
     static createFromJSON(json) {
-        return new Promise( resolve => {
+        return new Promise(resolve => {
             const car = new Car();
             car.id = json.id;
             car.image = json.image;
@@ -35,6 +35,7 @@ export class Car {
             car.version = json.version;
             car.year = json.year;
             car.overview = new Date();
+            car.repairsId = json.repairsId;
 
             getEngine(json.engineId).then(data => {
 
@@ -51,5 +52,9 @@ export class Car {
                 resolve(car);
             });
         })
+    }
+
+    getRepair(repairId: number): Repair {
+        return this.repairs.find(repair => repair.id === repairId)
     }
 }

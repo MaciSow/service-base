@@ -49,3 +49,8 @@ export function getEngine(id: number) {
     const url = `http://localhost:3000/engines/${id}`;
     return fetchJson(url);
 }
+
+export function getRepair(id: number) {
+    const url = `http://localhost:3000/repairs/${id}`;
+    return fetchJson(url);
+}

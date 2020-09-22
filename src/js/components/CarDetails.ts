@@ -1,13 +1,16 @@
 import {Car} from "../model/Car";
 import {addIcons, getStringDate} from "../utilities";
 import {Routing} from "../services/Routing";
+import {CarService} from "../services/CarService";
 
 export class CarDetails {
     car: Car;
+    private carService: CarService;
     private routing: Routing;
     private carDetailsPage: HTMLDivElement;
 
-    constructor(car: Car,routing: Routing) {
+    constructor(car: Car, routing: Routing, carService: CarService) {
+        this.carService = carService;
         this.routing = routing;
         this.car = car;
         this.init();
@@ -17,14 +20,17 @@ export class CarDetails {
         this.carDetailsPage = document.querySelector('.js-car-details');
         this.routing.setBack('/', 'js-car-details', 'js-menu-page');
 
-
         if (!this.carDetailsPage) {
             return;
         }
 
         document.title = `Details - ${this.car.fullName()}`;
-        this.fillWindow();
-        addIcons();
+        this.carService.getRepairs(this.car).then(repairs => {
+            this.car.repairs = repairs;
+            this.fillWindow();
+            this.clickListener();
+            addIcons();
+        });
     }
 
     private fillWindow() {
@@ -109,14 +115,27 @@ export class CarDetails {
         this.car.repairs.forEach(repair =>
             repairListHtml += `<li class="c-list__item">
                                 <span class="o-checkbox"></span>
-                                    <a class=item__link href="#">
+                                    <button data-id="${repair.id}"  class="item__link js-repair-item">
                                         <span>${repair.title}</span>
                                         <span>${getStringDate(repair.date)}</span>
                                         <span>${repair.mileage} km</span>
-                                    </a>
+                                    </button>
                                 </li>`)
 
         return repairListHtml;
     }
 
+    private clickListener() {
+        const repairItems = this.carDetailsPage.querySelectorAll('.js-repair-item') as NodeListOf<HTMLButtonElement>
+
+        repairItems.forEach(button =>
+            button.addEventListener('click', (ev) => this.select(ev)))
+    }
+
+    private select(ev: MouseEvent) {
+        ev.preventDefault();
+        const btn = ev.currentTarget as HTMLButtonElement;
+
+        this.routing.goRepairInfo(this.car.id, +(btn.dataset.id));
+    }
 }
