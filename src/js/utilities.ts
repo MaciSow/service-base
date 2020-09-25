@@ -202,3 +202,21 @@ export function addHistory(href: string) {
         return;
     }
 }
+
+export function getParValueFromUrl(name: string): string {
+
+    const parameters = window.location.search
+        .substring(1)
+        .split('&');
+
+    let value = null;
+
+    parameters.forEach(parameter => {
+        const tmp = parameter.split('=');
+        
+        if(tmp[0]===name){
+            value= tmp[1];
+        }
+    })
+    return value;
+}

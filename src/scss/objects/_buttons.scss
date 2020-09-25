@@ -1,4 +1,23 @@
 .o-btn-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  line-height: 0;
+
+  .o-ico {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+
+    .o-ico {
+      fill: white;
+    }
+  }
 
   &--search {
     display: flex;
@@ -21,7 +40,6 @@
       height: 24px;
     }
   }
-
 }
 
 .o-btn-more {
@@ -109,7 +127,7 @@
     left: 32px;
     z-index: 5;
 
-    .o-ico{
+    .o-ico {
       width: 24px;
       height: 24px;
       fill: white;

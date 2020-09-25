@@ -1,6 +1,7 @@
 import {Car} from "../model/Car";
-import {getCars, getRepair} from "../api";
+import {getCars, getPart, getRepair} from "../api";
 import {Repair} from "../model/Repair";
+import {Part} from "../model/Part";
 
 export class CarService {
     private carList: Car[] = [];
@@ -65,5 +66,37 @@ export class CarService {
                 });
             });
         });
+    }
+
+    getRepair(id: number): Promise<Repair> {
+        return new Promise((resolve) => {
+
+            getRepair(id).then((repairJSON) => {
+                const repair = Repair.createFromJSON(repairJSON);
+
+                resolve(repair);
+            })
+        })
+    }
+
+    getParts(repair: Repair): Promise<Part[]> {
+        return new Promise((resolve) => {
+            const parts: Part[] = [];
+            let counter = 0;
+
+            repair.partsId.forEach(partId => {
+                getPart(partId).then((partJSON) => {
+                    const part = Part.createFromJSON(partJSON)
+
+                    parts.push(part);
+                    counter++;
+
+                    if (counter === repair.partsId.length) {
+                        resolve(parts);
+                    }
+                })
+            })
+
+        })
     }
 }

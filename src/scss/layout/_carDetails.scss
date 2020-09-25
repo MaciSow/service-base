@@ -30,12 +30,20 @@
       width: 100%;
       
       &-data{
+        position: relative;
         display: grid;
         margin-top: 12px;
         grid-template-columns: 320px 320px 1fr ;
         column-gap: 4px;
         row-gap: 12px;
+
+        &-edit{
+          position: absolute;
+          right: 4px;
+          top: 12px;
+        }
       }
+
     }
   }
 

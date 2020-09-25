@@ -46,6 +46,7 @@ export class CarDetails {
                     <h2 class="o-car-name--lg">${this.car.fullName()}</h2>
                     <div class="u-separator-m"></div>
                     <div class="header__info-data">
+                        <button class="o-btn-ico header__info-data-edit"><i class="ico edit"></i></button>
                         <div>
                             <span class="">Body Style:</span>
                             <span class="u-txt-b">${this.car.bodyStyle}</span>
@@ -97,7 +98,7 @@ export class CarDetails {
                     </form>
                 </div>
 
-                <div class="c-list-header">
+                <div class="c-list-header u-col-repairs">
                     <span class="o-checkbox"></span>
                     <span>Title</span>
                     <span>Date</span>

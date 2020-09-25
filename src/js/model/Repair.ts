@@ -1,5 +1,5 @@
-import {RepairItem} from "./RepairItem";
 import {getDateFromString} from "../utilities";
+import {Part} from "./Part";
 
 export class Repair {
     id: number;
@@ -7,7 +7,7 @@ export class Repair {
     date: Date;
     mileage: number;
     notice: string;
-    parts: RepairItem[] = [];
+    parts: Part[] = [];
     partsId: number[] = [];
 
     static createFromJSON(json) {
@@ -21,5 +21,9 @@ export class Repair {
         repair.partsId = json.partsId;
 
         return repair
+    }
+
+    costsSum() {
+        return this.parts.reduce( (sum,part) => sum + part.price, 0);
     }
 }

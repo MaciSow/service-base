@@ -6,8 +6,15 @@
   margin-left: 16px;
 }
 
+.u-ml--sx {
+  margin-left: 8px;
+}
+
 .u-mr--sm {
   margin-right: 16px;
+}
+.u-mr--sx {
+  margin-right: 8px;
 }
 
 .u-mt--sm {
@@ -16,10 +23,6 @@
 
 .u-mt--xs {
   margin-top: 8px;
-}
-
-.u-tiext--rght {
-  text-align: right;
 }
 
 .u-hide {
@@ -32,6 +35,9 @@
 
 .u-text--center {
   text-align: center;
+}
+.u-text--right {
+  text-align: right;
 }
 
 .u-round-r {
@@ -95,6 +101,13 @@
 @keyframes showing {
   from {opacity: 0;}
   to {opacity: 1;}
+}
+
+.u-col-parts{
+  grid-template-columns: 32px 1fr  1fr 184px 128px 128px !important;
+}
+.u-col-repairs{
+  grid-template-columns: 32px 1fr 256px 256px !important;
 }
 
 
