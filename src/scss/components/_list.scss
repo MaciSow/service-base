@@ -27,8 +27,20 @@
     font-weight: 400;
     text-align: center;
     align-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
 
-    &:last-child{
+    &.is-deleting{
+      transition: all 200ms ease-in-out;
+      opacity: 0.5;
+    }
+
+    &.is-deleted{
+      transition: all 400ms ease-in-out !important;
+      margin-top: -2px;
+    }
+
+    &:last-child {
       border-bottom-color: transparent;
     }
 
@@ -57,7 +69,7 @@
   }
 }
 
-.c-list-footer{
+.c-list-footer {
   display: grid;
   grid-template-columns: 1fr 184px 264px;
   column-gap: 8px;
@@ -78,13 +90,7 @@
     right: 0;
   }
 
-
-
-
-
-
-
-  &__left{
+  &__left {
     text-align: right;
   }
 }

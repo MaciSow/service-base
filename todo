@@ -1,4 +1,9 @@
-
+delete repair, car
+edit part, repair, car
+    - new window
+    - notification
+add part, repair, car
+btn action add - options, listeners
 
 
 

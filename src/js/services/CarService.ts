@@ -1,5 +1,5 @@
 import {Car} from "../model/Car";
-import {getCars, getPart, getRepair} from "../api";
+import {deletePart, getCars, getPart, getRepair, updateRepair} from "../api";
 import {Repair} from "../model/Repair";
 import {Part} from "../model/Part";
 
@@ -98,5 +98,20 @@ export class CarService {
             })
 
         })
+    }
+
+    deletePart(repair: Repair, partId: number): Promise<boolean> {
+        return new Promise((resolve) => {
+
+            repair.partsId = repair.partsId.filter(id => id !== partId);
+            repair.parts = repair.parts.filter(part => part.id !== partId);
+
+            updateRepair(repair).then(
+                () => deletePart(partId).then(
+                    () => resolve(true),
+                    () => resolve(false)
+                ),
+                () => resolve(false));
+        });
     }
 }

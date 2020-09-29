@@ -24,6 +24,7 @@ export class Repair {
     }
 
     costsSum() {
-        return this.parts.reduce( (sum,part) => sum + part.price, 0);
+        return this.parts.reduce((sum, part) => sum + part.price, 0);
     }
+
 }

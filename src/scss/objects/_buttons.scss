@@ -90,7 +90,7 @@
   transition: all 200ms;
   height: 64px;
   width: 64px;
-  position: absolute;
+  position: fixed;
   bottom: 32px;
   right: 32px;
   z-index: 5;
@@ -122,7 +122,7 @@
     transition: all 200ms;
     height: 64px;
     width: 64px;
-    position: absolute;
+    position: fixed;
     bottom: 32px;
     left: 32px;
     z-index: 5;

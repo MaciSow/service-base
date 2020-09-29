@@ -29,6 +29,13 @@
   display: none !important;
 }
 
+.u-half-hide{
+  opacity: 0.5;
+  transition: opacity 200ms ease-in-out;
+}
+
+
+
 .u-width--m {
   width: 80px;
 }

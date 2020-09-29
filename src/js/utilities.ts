@@ -30,11 +30,11 @@ function addZero(txt) {
 }
 
 export function slideUp(element) {
-    const maxHeight = element.firstElementChild.offsetHeight;
-    const time = 250;
+    const maxHeight = element.offsetHeight;
+    const time = 1550;
     let timer = null;
 
-    element.classList.remove('is-open');
+    // element.classList.remove('is-open');
     element.style.height = maxHeight + 'px';
 
     clearInterval(timer);
@@ -50,9 +50,6 @@ export function slideUp(element) {
         if (instance <= time) {
             let pos = instanceHeight + Math.floor(display * instance / time);
             element.style.height = pos + 'px';
-        } else {
-            element.removeAttribute('style')
-            clearInterval(timer);
         }
     }, 20);
 }

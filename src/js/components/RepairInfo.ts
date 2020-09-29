@@ -40,6 +40,7 @@ export class RepairInfo {
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
+            this.handleDelete();
             addIcons();
         })
     }
@@ -97,8 +98,8 @@ export class RepairInfo {
                 </ol>
                 <div class="c-list-footer">
                     <span class="c-list-footer__left">Sum:</span>
-                    <span class="u-text--right">${formatAmount(this.repair.costsSum())} $</span>
-                    <span>Amount: ${this.repair.parts.length}</span>
+                    <span class="u-text--right js-sum">${formatAmount(this.repair.costsSum())} $</span>
+                    <span class="js-amount">Amount: ${this.repair.parts.length}</span>
                 </div> 
             ${this.createNotice()}
             </div>
@@ -109,7 +110,7 @@ export class RepairInfo {
     private createPartList(): string {
         let repairListHtml = '';
         this.repair.parts.forEach(part =>
-            repairListHtml += `<li class="c-list__item u-col-parts">
+            repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}">
                                     <span class="o-checkbox"></span>
                                     <span>${part.name}</span>
                                     <span>${part.model}</span>
@@ -120,7 +121,7 @@ export class RepairInfo {
                                     </div>
                                     <div class="u-d-flex-center">
                                         <button class="o-btn-ico u-mr--sx"><i class="ico edit"></i></button>
-                                        <button class="o-btn-ico u-ml--sx"><i class="ico delete"></i></button>
+                                        <button class="o-btn-ico u-ml--sx js-delete-part"><i class="ico delete"></i></button>
                                     </div>
                                 </li>`)
 
@@ -135,5 +136,44 @@ export class RepairInfo {
                 <span class="u-txt-b">Notice:</span>
                 <p class="u-mt--xs">${this.repair.notice}</p>
              </div>`
+    }
+
+    private handleDelete() {
+        const parts = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
+        parts.forEach(part =>
+            part.addEventListener('click', (ev) => {
+                const target = ev.target as HTMLElement
+                const part = target.closest('li') as HTMLLIElement;
+                const partId = part.dataset.id;
+
+                if (partId) {
+                    part.classList.add('is-deleting');
+                    this.carService.deletePart(this.repair, +partId).then(isDeleted => {
+
+                        if (isDeleted) {
+                            part.style.height = part.offsetHeight + 'px';
+
+                            setTimeout(() => {
+                                part.style.height = '0';
+                                part.classList.add('is-deleted');
+                                setTimeout(() => {
+                                    part.parentElement.removeChild(part)
+                                    this.refreshFooter();
+                                }, 450)
+                            }, 250)
+                        }
+                    });
+                }
+            })
+        );
+
+    }
+
+    private refreshFooter() {
+        const sum = this.repairInfoPage.querySelector('.js-sum');
+        const amount = this.repairInfoPage.querySelector('.js-amount');
+
+        sum.innerHTML = `${formatAmount(this.repair.costsSum())} $`;
+        amount.innerHTML = `Amount: ${this.repair.parts.length}`;
     }
 }

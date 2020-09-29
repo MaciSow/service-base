@@ -1,3 +1,6 @@
+import {Repair} from "./model/Repair";
+import {getStringDate} from "./utilities";
+
 function fetchJson(url: string, options = null) {
     let headers = {'Content-Type': 'application/json'};
     if (options && options.headers) {
@@ -55,7 +58,25 @@ export function getRepair(id: number) {
     return fetchJson(url);
 }
 
-export function getPart(id:number) {
+export function getPart(id: number) {
     const url = `http://localhost:3000/parts/${id}`;
     return fetchJson(url);
+}
+
+export function deletePart(id: number) {
+    const url = `http://localhost:3000/parts/${id}`;
+    return fetchJson(url, {
+        method: 'DELETE'
+    });
+}
+
+export function updateRepair(repair: Repair) {
+    const repairCopy = {...repair, date: getStringDate(repair.date)};
+    delete repairCopy.parts;
+
+    const url = `http://localhost:3000/repairs/${repair.id}`;
+    return fetchJson(url, {
+        method: 'PUT',
+        body: JSON.stringify(repairCopy)
+    });
 }
