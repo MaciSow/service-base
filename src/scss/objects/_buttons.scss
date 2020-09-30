@@ -145,6 +145,47 @@
   }
 }
 
+@mixin btn {
+  display: flex;
+  align-items: center;
+  color: $txtColor;
+  line-height: 0;
+  border: 1px solid $txtColor;
+  border-radius: 8px;
+  padding: 10px 16px;
+  transition: all 200ms ease-in-out;
+
+  .o-ico {
+    margin-right: 8px;
+    margin-bottom: 4px;
+    width: 24px;
+    height: 24px;
+    transition: all 200ms ease-in-out;
+  }
+
+  &:hover {
+    color: black;
+    background-color: white;
+    border-color: white;
+
+    .o-ico {
+      fill: black;
+    }
+  }
+}
+
+.o-btn {
+  @include btn;
+
+  &--warning {
+    @include btn;
+    &:hover {
+      background-color: $warning;
+      border-color: $warning;
+    }
+  }
+}
+
 
 
 

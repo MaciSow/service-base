@@ -3,6 +3,8 @@ import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {addIcons, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
 import {Repair} from "../model/Repair";
+import {Part} from "../model/Part";
+
 
 export class RepairInfo {
     car: Car;
@@ -10,9 +12,14 @@ export class RepairInfo {
     private carService: CarService;
     private routing: Routing;
     private repairInfoPage: HTMLDivElement;
+    private partList: HTMLOListElement;
+    private btnDeleteAll: HTMLButtonElement;
+
 
     constructor(routing: Routing, carService: CarService, car: Car, repair: Repair) {
         this.repairInfoPage = document.querySelector('.js-repair-info');
+        this.partList = this.repairInfoPage.querySelector('.js-parts');
+
         this.carService = carService;
         this.routing = routing;
         this.car = car;
@@ -40,9 +47,15 @@ export class RepairInfo {
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
+            this.partList = this.repairInfoPage.querySelector('.js-parts');
+            this.btnDeleteAll = this.repairInfoPage.querySelector('.js-delete-all-btn');
+            this.handleCheck();
             this.handleDelete();
+            this.handleDeleteAll();
             addIcons();
+            this.getCheckedParts()
         })
+
     }
 
     private fillWindow() {
@@ -75,7 +88,12 @@ export class RepairInfo {
             </div>
 
             <div class="l-repair-info__content">
-                <div class="u-flex-r u-d-flex">
+                <div class="l-repair-info__action">
+                    <button class="o-btn--warning u-hide js-delete-all-btn">
+                        <i class="ico delete"></i>
+                        <span class="">delete selected</span>
+                    </button>
+                    <div class="u-spacer"></div>
                     <form class="c-search " method="get">
                         <label class="c-search__label" for="searchList">search</label>
                         <input class="c-search__input o-input" type="search" name="searchList" id="searchList">
@@ -86,14 +104,17 @@ export class RepairInfo {
                 </div>
 
                 <div class="c-list-header u-col-parts">
-                    <span class="o-checkbox"></span>
+                    <label class="o-checkbox">
+                      <input class="o-checkbox__input  js-checkbox-main" type="checkbox">
+                      <span class="o-checkbox__checkmark"></span>
+                    </label>
                     <span>Part/Service</span>
                     <span>Model/Firm</span>
                     <span>Price</span>
                     <span>Files</span>
                     <span>Actions</span>
                 </div> 
-                <ol class="c-list">
+                <ol class="c-list js-parts">
                     ${this.createPartList()}
                 </ol>
                 <div class="c-list-footer">
@@ -111,7 +132,10 @@ export class RepairInfo {
         let repairListHtml = '';
         this.repair.parts.forEach(part =>
             repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}">
-                                    <span class="o-checkbox"></span>
+                                    <label class="o-checkbox">
+                                        <input class="o-checkbox__input js-checkbox" type="checkbox">
+                                        <span class="o-checkbox__checkmark"></span>
+                                    </label>
                                     <span>${part.name}</span>
                                     <span>${part.model}</span>
                                     <span class="u-text--right">${formatAmount(part.price)} $</span>
@@ -144,36 +168,129 @@ export class RepairInfo {
             part.addEventListener('click', (ev) => {
                 const target = ev.target as HTMLElement
                 const part = target.closest('li') as HTMLLIElement;
-                const partId = part.dataset.id;
-
-                if (partId) {
-                    part.classList.add('is-deleting');
-                    this.carService.deletePart(this.repair, +partId).then(isDeleted => {
-
-                        if (isDeleted) {
-                            part.style.height = part.offsetHeight + 'px';
-
-                            setTimeout(() => {
-                                part.style.height = '0';
-                                part.classList.add('is-deleted');
-                                setTimeout(() => {
-                                    part.parentElement.removeChild(part)
-                                    this.refreshFooter();
-                                }, 450)
-                            }, 250)
-                        }
-                    });
-                }
+                this.deleteHtmlRow(part);
             })
         );
 
     }
 
-    private refreshFooter() {
-        const sum = this.repairInfoPage.querySelector('.js-sum');
-        const amount = this.repairInfoPage.querySelector('.js-amount');
+    private deleteHtmlRow(part: HTMLLIElement) {
+        const partId = part.dataset.id;
 
-        sum.innerHTML = `${formatAmount(this.repair.costsSum())} $`;
-        amount.innerHTML = `Amount: ${this.repair.parts.length}`;
+        if (partId) {
+            part.classList.add('is-deleting');
+            this.carService.deletePart(this.repair, +partId).then(isDeleted => {
+
+                if (isDeleted) {
+                    part.style.height = part.offsetHeight + 'px';
+
+                    setTimeout(() => {
+                        part.style.height = '0';
+                        part.classList.add('is-deleted');
+                        setTimeout(() => {
+                            part.parentElement.removeChild(part)
+                            this.refreshFooter();
+                            this.toggleDeleteAllBtn();
+                        }, 450)
+                    }, 250)
+                }
+            });
+        }
+
     }
+
+    private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
+        const sumHTML = this.repairInfoPage.querySelector('.js-sum');
+        const amountHTML = this.repairInfoPage.querySelector('.js-amount');
+
+        sumHTML.innerHTML = `${formatAmount(sum)} $`;
+        amountHTML.innerHTML = `Amount: ${amount}`;
+    }
+
+    private handleCheck() {
+        const checkboxes = this.repairInfoPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
+        const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
+
+        checkboxMain.addEventListener('change', (ev) => {
+            const target = ev.target as HTMLInputElement;
+            const checkboxes = this.repairInfoPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
+            checkboxes.forEach(checkbox => checkbox.checked = target.checked)
+
+            this.updateFooter();
+            this.toggleDeleteAllBtn()
+        });
+
+        checkboxes.forEach(checkbox =>
+            checkbox.addEventListener('change', () => {
+                this.setMainCheckbox(checkbox.checked, checkboxes)
+                this.updateFooter();
+                this.toggleDeleteAllBtn()
+            }))
+    }
+
+    private handleDeleteAll(){
+        this.btnDeleteAll.addEventListener('click',()=>{
+            const parts = Array.from(this.partList.children);
+
+            parts.forEach((part: HTMLLIElement) => {
+                const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
+                if (checkbox.checked) {
+                    this.deleteHtmlRow(part);
+                }
+            })
+        })
+    }
+
+    private updateFooter() {
+        let checkedParts = this.getCheckedParts();
+        if (!checkedParts.length) {
+            checkedParts = this.repair.parts;
+        }
+
+        this.refreshFooter(
+            checkedParts.reduce((sum, item) => sum += item.price, 0),
+            checkedParts.length
+        )
+    }
+
+    private setMainCheckbox(current: boolean, checkboxes: NodeListOf<HTMLInputElement>) {
+        const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
+        if (!current) {
+            checkboxMain.checked = false;
+            return;
+        }
+
+        let allIsChecked = true;
+        checkboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                allIsChecked = false;
+                return;
+            }
+        })
+        checkboxMain.checked = allIsChecked;
+    }
+
+    private getCheckedParts(): Part[] {
+        const parts = Array.from(this.partList.children);
+        const checkedParts = [];
+
+        parts.forEach((part: HTMLLIElement) => {
+            const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
+            if (checkbox.checked) {
+                checkedParts.push(this.repair.parts.find(item => item.id === +part.dataset.id));
+            }
+        })
+        return checkedParts;
+    }
+
+    private toggleDeleteAllBtn() {
+        const length = this.getCheckedParts().length;
+
+        if (length > 1) {
+            this.btnDeleteAll.classList.remove('u-hide');
+            return;
+        }
+        this.btnDeleteAll.classList.add('u-hide');
+    }
+
 }

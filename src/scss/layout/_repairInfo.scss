@@ -59,4 +59,10 @@
       margin-top: 48px;
     }
   }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+  }
 }
