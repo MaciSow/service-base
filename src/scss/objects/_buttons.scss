@@ -1,4 +1,4 @@
-.o-btn-ico {
+@mixin btnIco {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,10 +6,15 @@
   width: 32px;
   line-height: 0;
 
+
   .o-ico {
     width: 24px;
     height: 24px;
   }
+}
+
+.o-btn-ico {
+  @include btnIco;
 
   &:hover {
     transform: scale(1.05);
@@ -20,24 +25,44 @@
   }
 
   &--search {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include btnIco;
     padding: 10px;
     background: none;
     border: none;
+    height: unset;
+    width: unset;
     border-radius: 4px 4px 0 0;
-    line-height: 0;
-    transition: background-color 200ms ease-in-out;
-
+    transition: all 200ms ease-in-out;
 
     &:hover {
       background: rgba(255, 255, 255, 0.25);
     }
+  }
+
+  &--delete {
+    @include btnIco;
+    background-color: black;
+    border-radius: 50%;
+    //border: 2px solid rgba( $warning,0.5);
+    border: 2px solid $white05;
+    width: 48px;
+    height: 48px;
+
+    transition: all 200ms ease-in-out;
 
     .o-ico {
-      width: 24px;
-      height: 24px;
+      fill: $txtColor;
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      border-color: $warning;
+      background-color: $warning;
+
+      .o-ico {
+        fill: black;
+      }
     }
   }
 }
@@ -179,6 +204,7 @@
 
   &--warning {
     @include btn;
+
     &:hover {
       background-color: $warning;
       border-color: $warning;

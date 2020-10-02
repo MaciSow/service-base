@@ -1,5 +1,6 @@
 import {Repair} from "./model/Repair";
 import {getStringDate} from "./utilities";
+import {Car} from "./model/Car";
 
 function fetchJson(url: string, options = null) {
     let headers = {'Content-Type': 'application/json'};
@@ -78,5 +79,25 @@ export function updateRepair(repair: Repair) {
     return fetchJson(url, {
         method: 'PUT',
         body: JSON.stringify(repairCopy)
+    });
+}
+
+export function deleteRepair(id: number) {
+    const url = `http://localhost:3000/repairs/${id}`;
+    return fetchJson(url, {
+        method: 'DELETE'
+    });
+}
+
+export function updateCar(car: Car) {
+    const carCopy = {...car, engineId: car.engine.id, overview: getStringDate(car.overview)};
+    delete carCopy.engine;
+    delete carCopy.repairs;
+    delete carCopy.insurance;
+
+    const url = `http://localhost:3000/cars/${car.id}`;
+    return fetchJson(url, {
+        method: 'PUT',
+        body: JSON.stringify(carCopy)
     });
 }

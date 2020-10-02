@@ -1,5 +1,5 @@
 import {Car} from "../model/Car";
-import {deletePart, getCars, getPart, getRepair, updateRepair} from "../api";
+import {deletePart, deleteRepair, getCars, getPart, getRepair, updateCar, updateRepair} from "../api";
 import {Repair} from "../model/Repair";
 import {Part} from "../model/Part";
 
@@ -113,5 +113,33 @@ export class CarService {
                 ),
                 () => resolve(false));
         });
+    }
+
+    deleteRepair(repair: Repair) {
+        return new Promise((resolve) => {
+            const {id} = repair;
+            const car = this.carList.find(car => {
+                const repairId = car.repairsId.find(repairId => repairId === id)
+                return repairId !== undefined;
+            })
+            let counter = 0;
+            const parts = repair.parts;
+            car.deleteRepair(repair);
+
+            updateCar(car).then(() =>
+                deleteRepair(repair.id).then(() =>
+                    parts.forEach((part) =>
+                        deletePart(part.id).then(
+                            () => {
+                                if (counter === repair.parts.length - 1) {
+                                    resolve(true);
+                                }
+                                counter++;
+                            }
+                        )
+                    )
+                )
+            );
+        })
     }
 }

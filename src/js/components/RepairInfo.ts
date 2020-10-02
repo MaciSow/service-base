@@ -35,21 +35,29 @@ export class RepairInfo {
         }
 
         const id = +getParValueFromUrl('repair');
-        this.carService.getRepair(id).then(repair => {
-            this.repair = repair;
+
+        this.carService.getRepairs(this.car).then(repairs => {
+            this.car.repairs = repairs;
+            this.repair = repairs.find(repair => repair.id === id);
             this.init();
         });
+
+
     }
 
     private init() {
         this.routing.setBack('/', 'js-repair-info', 'js-car-details');
         document.title = `Repair Info - ${this.repair.title}`;
+
+
+
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
             this.partList = this.repairInfoPage.querySelector('.js-parts');
             this.btnDeleteAll = this.repairInfoPage.querySelector('.js-delete-all-btn');
             this.handleCheck();
+            this.handleDeleteRepair();
             this.handleDelete();
             this.handleDeleteAll();
             addIcons();
@@ -65,6 +73,7 @@ export class RepairInfo {
 
     private createWindow(): string {
         return ` <div class="l-repair-info">
+            <button class="o-btn-ico--delete l-repair-info__delete-all js-delete-repair"><i class="ico Xdelete"></i></button>
             <div class="l-repair-info__header">
                 <img class="header__image" src="./../../images/${this.car.image}" alt="no brum brum">
                 <div class="header__info">
@@ -196,7 +205,6 @@ export class RepairInfo {
                 }
             });
         }
-
     }
 
     private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
@@ -228,8 +236,8 @@ export class RepairInfo {
             }))
     }
 
-    private handleDeleteAll(){
-        this.btnDeleteAll.addEventListener('click',()=>{
+    private handleDeleteAll() {
+        this.btnDeleteAll.addEventListener('click', () => {
             const parts = Array.from(this.partList.children);
 
             parts.forEach((part: HTMLLIElement) => {
@@ -293,4 +301,13 @@ export class RepairInfo {
         this.btnDeleteAll.classList.add('u-hide');
     }
 
+    private handleDeleteRepair() {
+        const btnDelete = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
+
+        btnDelete.addEventListener('click', () => {
+            this.carService.deleteRepair(this.repair).then(()=>this.routing.goBack());
+
+
+        })
+    }
 }

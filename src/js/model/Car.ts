@@ -57,4 +57,9 @@ export class Car {
     getRepair(repairId: number): Repair {
         return this.repairs.find(repair => repair.id === repairId)
     }
+
+    deleteRepair(repair: Repair) {
+        this.repairs = this.repairs.filter(item => item !== repair);
+        this.repairsId = this.repairsId.filter(id => id !== repair.id);
+    }
 }
