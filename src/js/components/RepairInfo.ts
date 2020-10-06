@@ -49,8 +49,6 @@ export class RepairInfo {
         this.routing.setBack('/', 'js-repair-info', 'js-car-details');
         document.title = `Repair Info - ${this.repair.title}`;
 
-
-
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
@@ -63,7 +61,6 @@ export class RepairInfo {
             addIcons();
             this.getCheckedParts()
         })
-
     }
 
     private fillWindow() {

@@ -43,11 +43,16 @@
           top: 12px;
         }
       }
-
     }
   }
 
   &__content {
     margin-top: 32px;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
   }
 }
