@@ -4,6 +4,7 @@ import {CarService} from "../services/CarService";
 import {addIcons, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
 import {Repair} from "../model/Repair";
 import {Part} from "../model/Part";
+import {PageHelper} from "../services/PageHelper";
 
 
 export class RepairInfo {
@@ -12,13 +13,11 @@ export class RepairInfo {
     private carService: CarService;
     private routing: Routing;
     private repairInfoPage: HTMLDivElement;
-    private partList: HTMLOListElement;
-    private btnDeleteAll: HTMLButtonElement;
+    private pageHelper: PageHelper;
 
 
     constructor(routing: Routing, carService: CarService, car: Car, repair: Repair) {
         this.repairInfoPage = document.querySelector('.js-repair-info');
-        this.partList = this.repairInfoPage.querySelector('.js-parts');
 
         this.carService = carService;
         this.routing = routing;
@@ -41,8 +40,6 @@ export class RepairInfo {
             this.repair = repairs.find(repair => repair.id === id);
             this.init();
         });
-
-
     }
 
     private init() {
@@ -52,14 +49,13 @@ export class RepairInfo {
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
-            this.partList = this.repairInfoPage.querySelector('.js-parts');
-            this.btnDeleteAll = this.repairInfoPage.querySelector('.js-delete-all-btn');
-            this.handleCheck();
             this.handleDeleteRepair();
             this.handleDelete();
-            this.handleDeleteAll();
+            // this.handleDeleteAll();
+            this.pageHelper = new PageHelper('js-parts');
+            this.pageHelper.handleDeleteAll(this.deletePart.bind(this));
+            this.pageHelper.handleCheck(this.updateFooter.bind(this));
             addIcons();
-            this.getCheckedParts()
         })
     }
 
@@ -174,34 +170,26 @@ export class RepairInfo {
             part.addEventListener('click', (ev) => {
                 const target = ev.target as HTMLElement
                 const part = target.closest('li') as HTMLLIElement;
-                this.deleteHtmlRow(part);
+                this.deletePart(part);
             })
         );
-
     }
 
-    private deleteHtmlRow(part: HTMLLIElement) {
+    private deletePart(part: HTMLLIElement) {
         const partId = part.dataset.id;
+        this.carService.deletePart(this.repair, +partId).then(isDeleted => {
+            this.pageHelper.preDeletingItem(part);
 
-        if (partId) {
-            part.classList.add('is-deleting');
-            this.carService.deletePart(this.repair, +partId).then(isDeleted => {
-
-                if (isDeleted) {
-                    part.style.height = part.offsetHeight + 'px';
-
+            if (isDeleted) {
+                setTimeout(() => {
+                    this.pageHelper.deletingItem(part);
                     setTimeout(() => {
-                        part.style.height = '0';
-                        part.classList.add('is-deleted');
-                        setTimeout(() => {
-                            part.parentElement.removeChild(part)
-                            this.refreshFooter();
-                            this.toggleDeleteAllBtn();
-                        }, 450)
-                    }, 250)
-                }
-            });
-        }
+                        this.pageHelper.postDeletingItem(part);
+                        this.refreshFooter();
+                    }, 450)
+                }, 250)
+            }
+        });
     }
 
     private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
@@ -212,44 +200,16 @@ export class RepairInfo {
         amountHTML.innerHTML = `Amount: ${amount}`;
     }
 
-    private handleCheck() {
-        const checkboxes = this.repairInfoPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
-        const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
-
-        checkboxMain.addEventListener('change', (ev) => {
-            const target = ev.target as HTMLInputElement;
-            const checkboxes = this.repairInfoPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
-            checkboxes.forEach(checkbox => checkbox.checked = target.checked)
-
-            this.updateFooter();
-            this.toggleDeleteAllBtn()
-        });
-
-        checkboxes.forEach(checkbox =>
-            checkbox.addEventListener('change', () => {
-                this.setMainCheckbox(checkbox.checked, checkboxes)
-                this.updateFooter();
-                this.toggleDeleteAllBtn()
-            }))
-    }
-
-    private handleDeleteAll() {
-        this.btnDeleteAll.addEventListener('click', () => {
-            const parts = Array.from(this.partList.children);
-
-            parts.forEach((part: HTMLLIElement) => {
-                const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
-                if (checkbox.checked) {
-                    this.deleteHtmlRow(part);
-                }
-            })
-        })
-    }
 
     private updateFooter() {
-        let checkedParts = this.getCheckedParts();
-        if (!checkedParts.length) {
+        let checkedPartsId = this.pageHelper.getCheckedParts();
+        let checkedParts = [];
+        if (!checkedPartsId.length) {
             checkedParts = this.repair.parts;
+        } else {
+            checkedPartsId.forEach((id: number) => {
+                checkedParts.push(this.repair.parts.find(item => item.id === id));
+            })
         }
 
         this.refreshFooter(
@@ -258,51 +218,11 @@ export class RepairInfo {
         )
     }
 
-    private setMainCheckbox(current: boolean, checkboxes: NodeListOf<HTMLInputElement>) {
-        const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
-        if (!current) {
-            checkboxMain.checked = false;
-            return;
-        }
-
-        let allIsChecked = true;
-        checkboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                allIsChecked = false;
-                return;
-            }
-        })
-        checkboxMain.checked = allIsChecked;
-    }
-
-    private getCheckedParts(): Part[] {
-        const parts = Array.from(this.partList.children);
-        const checkedParts = [];
-
-        parts.forEach((part: HTMLLIElement) => {
-            const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
-            if (checkbox.checked) {
-                checkedParts.push(this.repair.parts.find(item => item.id === +part.dataset.id));
-            }
-        })
-        return checkedParts;
-    }
-
-    private toggleDeleteAllBtn() {
-        const length = this.getCheckedParts().length;
-
-        if (length > 1) {
-            this.btnDeleteAll.classList.remove('u-hide');
-            return;
-        }
-        this.btnDeleteAll.classList.add('u-hide');
-    }
-
     private handleDeleteRepair() {
         const btnDelete = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
 
         btnDelete.addEventListener('click', () => {
-            this.carService.deleteRepair(this.repair).then(()=>this.routing.goBack());
+            this.carService.deleteRepair(this.repair).then(() => this.routing.goBack());
 
 
         })

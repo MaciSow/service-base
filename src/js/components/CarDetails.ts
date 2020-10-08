@@ -3,6 +3,8 @@ import {addIcons, getStringDate} from "../utilities";
 import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {Part} from "../model/Part";
+import {Repair} from "../model/Repair";
+import {PageHelper} from "../services/PageHelper";
 
 export class CarDetails {
     car: Car;
@@ -11,6 +13,7 @@ export class CarDetails {
     private carDetailsPage: HTMLDivElement;
     private repairList: HTMLOListElement;
     private btnDeleteAll: HTMLButtonElement;
+    private pageHelper: PageHelper;
 
     constructor(car: Car, routing: Routing, carService: CarService) {
         this.carService = carService;
@@ -31,10 +34,12 @@ export class CarDetails {
         this.carService.getRepairs(this.car).then(repairs => {
             this.car.repairs = repairs;
             this.fillWindow();
-            this.repairList = this.carDetailsPage.querySelector('.js-repairs');
-            this.btnDeleteAll = this.carDetailsPage.querySelector('.js-delete-all-btn');
+            // this.btnDeleteAll = this.carDetailsPage.querySelector('.js-delete-all-btn');
+            // this.repairList = this.carDetailsPage.querySelector('.js-repairs');
             this.clickListener();
-            this.handleCheck();
+            this.pageHelper = new PageHelper('js-repairs');
+            this.pageHelper.handleDeleteAll(this.deleteRepair.bind(this));
+            this.pageHelper.handleCheck(null);
             addIcons();
         });
     }
@@ -128,7 +133,7 @@ export class CarDetails {
     private createRepairList(): string {
         let repairListHtml = '';
         this.car.repairs.forEach(repair =>
-            repairListHtml += `<li class="c-list__item">
+            repairListHtml += `<li class="c-list__item" data-id="${repair.id}">
                                     <label class="o-checkbox">
                                       <input class="o-checkbox__input  js-checkbox" type="checkbox">
                                       <span class="o-checkbox__checkmark"></span>
@@ -157,62 +162,22 @@ export class CarDetails {
         this.routing.goRepairInfo(this.car.id, +(btn.dataset.id));
     }
 
-    private setMainCheckbox(current: boolean, checkboxes: NodeListOf<HTMLInputElement>) {
-        const checkboxMain = this.carDetailsPage.querySelector('.js-checkbox-main') as HTMLInputElement;
-        if (!current) {
-            checkboxMain.checked = false;
-            return;
-        }
+    private deleteRepair(item: HTMLLIElement) {
+        const repair = this.car.repairs.find(repair => repair.id === +item.dataset.id)
 
-        let allIsChecked = true;
-        checkboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                allIsChecked = false;
-                return;
+        this.carService.deleteRepair(repair).then(isDeleted => {
+            console.log(isDeleted);
+
+            this.pageHelper.preDeletingItem(item);
+
+            if (isDeleted) {
+                setTimeout(() => {
+                    this.pageHelper.deletingItem(item);
+                    setTimeout(() => {
+                        this.pageHelper.postDeletingItem(item);
+                    }, 450)
+                }, 250)
             }
-        })
-        checkboxMain.checked = allIsChecked;
-    }
-
-    private handleCheck() {
-        const checkboxes = this.carDetailsPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
-        const checkboxMain = this.carDetailsPage.querySelector('.js-checkbox-main') as HTMLInputElement;
-
-        checkboxMain.addEventListener('change', (ev) => {
-            const target = ev.target as HTMLInputElement;
-            const checkboxes = this.carDetailsPage.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
-            checkboxes.forEach(checkbox => checkbox.checked = target.checked)
-
-            this.toggleDeleteAllBtn()
         });
-
-        checkboxes.forEach(checkbox =>
-            checkbox.addEventListener('change', () => {
-                this.setMainCheckbox(checkbox.checked, checkboxes)
-                this.toggleDeleteAllBtn()
-            }))
-    }
-
-    private toggleDeleteAllBtn() {
-        const length = this.getCheckedRepairs().length;
-
-        if (length > 1) {
-            this.btnDeleteAll.classList.remove('u-hide');
-            return;
-        }
-        this.btnDeleteAll.classList.add('u-hide');
-    }
-
-    private getCheckedRepairs(): Part[] {
-        const repairs = Array.from(this.repairList.children);
-        const checkedParts = [];
-
-        repairs.forEach((repair: HTMLLIElement) => {
-            const checkbox = repair.querySelector('input[type="checkbox"]') as HTMLInputElement
-            if (checkbox.checked) {
-                checkedParts.push(this.car.repairs.find(item => item.id === +repair.dataset.id));
-            }
-        })
-        return checkedParts;
     }
 }
