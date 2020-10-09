@@ -8,12 +8,7 @@
       "bodyStyle": "Coupe",
       "version": "Premium",
       "year": 2008,
-      "engineId": 2,
-      "repairsId": [
-        20,
-        21,
-        22
-      ]
+      "engineId": 2
     }
   ],
   "engines": [
@@ -34,11 +29,7 @@
       "date": "20.10.2020",
       "mileage": 155150,
       "notice": "Oil is hot - remember about it",
-      "partsId": [
-        201,
-        202,
-        203
-      ]
+      "carId": 1
     },
     {
       "id": 21,
@@ -46,11 +37,7 @@
       "date": "20.03.2020",
       "mileage": 153400,
       "notice": "",
-      "partsId": [
-        211,
-        212,
-        213
-      ]
+      "carId": 1
     },
     {
       "id": 22,
@@ -58,11 +45,7 @@
       "date": "07.08.2020",
       "mileage": 155150,
       "notice": "",
-      "partsId": [
-        221,
-        222,
-        223
-      ]
+      "carId": 1
     }
   ],
   "parts": [
@@ -72,7 +55,8 @@
       "model": "Motul 5W50",
       "price": 50,
       "invoice": "invoice1.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 20
     },
     {
       "id": 202,
@@ -80,7 +64,8 @@
       "model": "M14x1.5",
       "price": 2,
       "invoice": "invoice2.pdf",
-      "notice": "3/4 inch head"
+      "notice": "3/4 inch head",
+      "repairId": 20
     },
     {
       "id": 203,
@@ -88,7 +73,8 @@
       "model": "Filtron OP452",
       "price": 5,
       "invoice": "invoice3.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 20
     },
     {
       "id": 211,
@@ -96,7 +82,8 @@
       "model": "35x2",
       "price": 0.5,
       "invoice": "invoice4.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 21
     },
     {
       "id": 212,
@@ -104,7 +91,8 @@
       "model": "oryginal",
       "price": 20,
       "invoice": "invoice5.pdf",
-      "notice": "Regenerated"
+      "notice": "Regenerated",
+      "repairId": 21
     },
     {
       "id": 213,
@@ -112,7 +100,8 @@
       "model": "RS-version",
       "price": 1000,
       "invoice": "invoice6.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 21
     },
     {
       "id": 221,
@@ -120,7 +109,8 @@
       "model": "After lifting",
       "price": 250,
       "invoice": "invoice7.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 22
     },
     {
       "id": 222,
@@ -128,7 +118,8 @@
       "model": "TRW",
       "price": 350,
       "invoice": "invoice8.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 22
     },
     {
       "id": 223,
@@ -136,7 +127,8 @@
       "model": "TRW",
       "price": 80,
       "invoice": "invoice9.pdf",
-      "notice": ""
+      "notice": "",
+      "repairId": 22
     }
   ]
 }
