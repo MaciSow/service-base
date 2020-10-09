@@ -3,7 +3,6 @@ import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {addIcons, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
 import {Repair} from "../model/Repair";
-import {Part} from "../model/Part";
 import {PageHelper} from "../services/PageHelper";
 
 
@@ -18,7 +17,6 @@ export class RepairInfo {
 
     constructor(routing: Routing, carService: CarService, car: Car, repair: Repair) {
         this.repairInfoPage = document.querySelector('.js-repair-info');
-
         this.carService = carService;
         this.routing = routing;
         this.car = car;
@@ -45,23 +43,93 @@ export class RepairInfo {
     private init() {
         this.routing.setBack('/', 'js-repair-info', 'js-car-details');
         document.title = `Repair Info - ${this.repair.title}`;
-
         this.carService.getParts(this.repair).then(parts => {
             this.repair.parts = parts;
             this.fillWindow();
-            this.handleDeleteRepair();
-            this.handleDelete();
-            // this.handleDeleteAll();
+            this.eventListeners();
             this.pageHelper = new PageHelper('js-parts');
-            this.pageHelper.handleDeleteAll(this.deletePart.bind(this));
             this.pageHelper.handleCheck(this.updateFooter.bind(this));
             addIcons();
         })
     }
 
+    private eventListeners() {
+        const deleteRepairBtn = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
+        const deleteItemButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
+        const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+
+        deleteRepairBtn.addEventListener('click', () => this.handleDeleteRepair())
+        deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
+        deleteItemButtons.forEach(part =>
+            part.addEventListener('click', (ev) => this.handleDeletePart(ev))
+        );
+    }
+
+
+    private handleDeletePart(ev: MouseEvent) {
+        const target = ev.target as HTMLElement
+        const part = target.closest('li') as HTMLLIElement;
+        const partId = +part.dataset.id;
+
+        this.pageHelper.preDeleteItem(partId);
+        this.carService.deletePart(this.repair, partId).then(isDeleted => {
+            if (isDeleted) {
+                this.pageHelper.deleteItem(partId, () => {
+                    this.refreshFooter();
+                });
+            }
+        });
+    }
+
+    private handleDeleteRepair() {
+        this.carService.deleteRepair(this.repair).then(() => this.routing.goBack());
+    }
+
+    private handleDeleteAll() {
+        const partsId = this.pageHelper.getCheckedItems()
+
+        partsId.forEach(item => this.pageHelper.preDeleteItem(item))
+
+        this.carService.deleteParts(this.repair, partsId).then(isDeleted => {
+            if (isDeleted) {
+                partsId.forEach( (item, index) => this.pageHelper.deleteItem(item,()=>{
+                    if (partsId.length===index+1){
+                        this.refreshFooter()
+                    }
+                }))
+            }
+        });
+
+    }
+
     private fillWindow() {
         let carHtml = this.createWindow();
         this.repairInfoPage.insertAdjacentHTML("beforeend", carHtml)
+    }
+
+    private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
+        const sumHTML = this.repairInfoPage.querySelector('.js-sum');
+        const amountHTML = this.repairInfoPage.querySelector('.js-amount');
+
+        sumHTML.innerHTML = `${formatAmount(sum)} $`;
+        amountHTML.innerHTML = `Amount: ${amount}`;
+    }
+
+    private updateFooter() {
+        let checkedPartsId = this.pageHelper.getCheckedItems();
+        let checkedParts = [];
+        if (!checkedPartsId.length) {
+            checkedParts = this.repair.parts;
+        } else {
+            checkedPartsId.forEach((id: number) => {
+                checkedParts.push(this.repair.parts.find(item => item.id === id));
+            })
+        }
+
+        this.refreshFooter(
+            checkedParts.reduce((sum, item) => sum += item.price, 0),
+            checkedParts.length
+        )
     }
 
     private createWindow(): string {
@@ -164,67 +232,4 @@ export class RepairInfo {
              </div>`
     }
 
-    private handleDelete() {
-        const parts = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
-        parts.forEach(part =>
-            part.addEventListener('click', (ev) => {
-                const target = ev.target as HTMLElement
-                const part = target.closest('li') as HTMLLIElement;
-                this.deletePart(part);
-            })
-        );
-    }
-
-    private deletePart(part: HTMLLIElement) {
-        const partId = part.dataset.id;
-        this.carService.deletePart(this.repair, +partId).then(isDeleted => {
-            this.pageHelper.preDeletingItem(part);
-
-            if (isDeleted) {
-                setTimeout(() => {
-                    this.pageHelper.deletingItem(part);
-                    setTimeout(() => {
-                        this.pageHelper.postDeletingItem(part);
-                        this.refreshFooter();
-                    }, 450)
-                }, 250)
-            }
-        });
-    }
-
-    private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
-        const sumHTML = this.repairInfoPage.querySelector('.js-sum');
-        const amountHTML = this.repairInfoPage.querySelector('.js-amount');
-
-        sumHTML.innerHTML = `${formatAmount(sum)} $`;
-        amountHTML.innerHTML = `Amount: ${amount}`;
-    }
-
-
-    private updateFooter() {
-        let checkedPartsId = this.pageHelper.getCheckedParts();
-        let checkedParts = [];
-        if (!checkedPartsId.length) {
-            checkedParts = this.repair.parts;
-        } else {
-            checkedPartsId.forEach((id: number) => {
-                checkedParts.push(this.repair.parts.find(item => item.id === id));
-            })
-        }
-
-        this.refreshFooter(
-            checkedParts.reduce((sum, item) => sum += item.price, 0),
-            checkedParts.length
-        )
-    }
-
-    private handleDeleteRepair() {
-        const btnDelete = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
-
-        btnDelete.addEventListener('click', () => {
-            this.carService.deleteRepair(this.repair).then(() => this.routing.goBack());
-
-
-        })
-    }
 }

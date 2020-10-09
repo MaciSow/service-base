@@ -2,8 +2,6 @@ import {Car} from "../model/Car";
 import {addIcons, getStringDate} from "../utilities";
 import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
-import {Part} from "../model/Part";
-import {Repair} from "../model/Repair";
 import {PageHelper} from "../services/PageHelper";
 
 export class CarDetails {
@@ -11,8 +9,6 @@ export class CarDetails {
     private carService: CarService;
     private routing: Routing;
     private carDetailsPage: HTMLDivElement;
-    private repairList: HTMLOListElement;
-    private btnDeleteAll: HTMLButtonElement;
     private pageHelper: PageHelper;
 
     constructor(car: Car, routing: Routing, carService: CarService) {
@@ -34,11 +30,8 @@ export class CarDetails {
         this.carService.getRepairs(this.car).then(repairs => {
             this.car.repairs = repairs;
             this.fillWindow();
-            // this.btnDeleteAll = this.carDetailsPage.querySelector('.js-delete-all-btn');
-            // this.repairList = this.carDetailsPage.querySelector('.js-repairs');
-            this.clickListener();
+            this.eventListeners();
             this.pageHelper = new PageHelper('js-repairs');
-            this.pageHelper.handleDeleteAll(this.deleteRepair.bind(this));
             this.pageHelper.handleCheck(null);
             addIcons();
         });
@@ -148,11 +141,14 @@ export class CarDetails {
         return repairListHtml;
     }
 
-    private clickListener() {
-        const repairItems = this.carDetailsPage.querySelectorAll('.js-repair-item') as NodeListOf<HTMLButtonElement>
+    private eventListeners() {
+        const selectRepairItems = this.carDetailsPage.querySelectorAll('.js-repair-item') as NodeListOf<HTMLButtonElement>
+        const deleteAllBtn = this.carDetailsPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
 
-        repairItems.forEach(button =>
-            button.addEventListener('click', (ev) => this.select(ev)))
+        selectRepairItems.forEach(button =>
+            button.addEventListener('click', (ev) => this.select(ev))
+        )
+        deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
     }
 
     private select(ev: MouseEvent) {
@@ -162,22 +158,34 @@ export class CarDetails {
         this.routing.goRepairInfo(this.car.id, +(btn.dataset.id));
     }
 
-    private deleteRepair(item: HTMLLIElement) {
-        const repair = this.car.repairs.find(repair => repair.id === +item.dataset.id)
+    private handleDeleteAll() {
+        const repairsId = this.pageHelper.getCheckedItems()
 
-        this.carService.deleteRepair(repair).then(isDeleted => {
-            console.log(isDeleted);
+        repairsId.forEach(item => this.pageHelper.preDeleteItem(item))
 
-            this.pageHelper.preDeletingItem(item);
-
+        this.carService.deleteRepairs(this.car, repairsId).then(isDeleted => {
             if (isDeleted) {
-                setTimeout(() => {
-                    this.pageHelper.deletingItem(item);
-                    setTimeout(() => {
-                        this.pageHelper.postDeletingItem(item);
-                    }, 450)
-                }, 250)
+                repairsId.forEach( item => this.pageHelper.deleteItem(item))
             }
         });
     }
+
+    // private deleteRepair(item: HTMLLIElement) {
+    //     const repair = this.car.repairs.find(repair => repair.id === +item.dataset.id)
+    //
+    //     this.carService.deleteRepair(repair).then(isDeleted => {
+    //         console.log(isDeleted);
+    //
+    //         this.pageHelper.preDeleteItem(item);
+    //
+    //         if (isDeleted) {
+    //             setTimeout(() => {
+    //                 this.pageHelper.deletingItem(item);
+    //                 setTimeout(() => {
+    //                     this.pageHelper.postDeleteItem(item);
+    //                 }, 450)
+    //             }, 250)
+    //         }
+    //     });
+    // }
 }

@@ -24,21 +24,21 @@ export class PageHelper {
         checkboxMain.checked = allIsChecked;
     }
 
-    getCheckedParts(): number[] {
-        const parts = Array.from(this.itemList.children);
-        const checkedParts = [];
+    getCheckedItems(): number[] {
+        const items = Array.from(this.itemList.children);
+        const checkedItems = [];
 
-        parts.forEach((part: HTMLLIElement) => {
-            const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
+        items.forEach((item: HTMLLIElement) => {
+            const checkbox = item.querySelector('input[type="checkbox"]') as HTMLInputElement
             if (checkbox.checked) {
-                checkedParts.push(+part.dataset.id);
+                checkedItems.push(+item.dataset.id);
             }
         })
-        return checkedParts;
+        return checkedItems;
     }
 
     toggleDeleteAllBtn() {
-        const length = this.getCheckedParts().length;
+        const length = this.getCheckedItems().length;
 
         if (length > 1) {
             this.btnDeleteAll.classList.remove('u-hide');
@@ -63,22 +63,8 @@ export class PageHelper {
         })
     }
 
-    preDeletingItem(part: HTMLLIElement) {
-        part.classList.add('is-deleting');
-        part.style.height = part.offsetHeight + 'px';
-    }
 
-    deletingItem(part: HTMLLIElement) {
-        part.style.height = '0';
-        part.classList.add('is-deleted');
-    }
-
-    postDeletingItem(part: HTMLLIElement) {
-        part.parentElement.removeChild(part)
-        this.toggleDeleteAllBtn();
-    }
-
-    handleCheck(callback?: CallableFunction) {
+    handleCheck(callback: CallableFunction = null) {
         const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
         const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
 
@@ -104,5 +90,32 @@ export class PageHelper {
             }))
 
     }
+
+
+    preDeleteItem(partId: number) {
+        const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
+        item.classList.add('is-deleting');
+        item.style.height = item.offsetHeight + 'px';
+    }
+
+    deleteItem(partId: number, callback:CallableFunction = null) {
+        const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
+
+        setTimeout(() => {
+            item.style.height = '0';
+            item.classList.add('is-deleted');
+
+            setTimeout(() => {
+                item.parentElement.removeChild(item)
+                this.toggleDeleteAllBtn();
+
+                if (callback) {
+                    callback();
+                }
+
+            }, 450)
+        }, 250)
+    }
+
 
 }

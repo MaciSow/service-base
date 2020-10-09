@@ -66,6 +66,8 @@ export function getPart(id: number) {
 
 export function deletePart(id: number) {
     const url = `http://localhost:3000/parts/${id}`;
+    console.log(id);
+
     return fetchJson(url, {
         method: 'DELETE'
     });
@@ -84,6 +86,7 @@ export function updateRepair(repair: Repair) {
 
 export function deleteRepair(id: number) {
     const url = `http://localhost:3000/repairs/${id}`;
+    console.log(id);
     return fetchJson(url, {
         method: 'DELETE'
     });
