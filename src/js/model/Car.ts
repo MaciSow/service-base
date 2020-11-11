@@ -1,6 +1,5 @@
 import {Engine} from "./Engine";
 import {Repair} from "./Repair";
-import {getEngine} from "../api";
 
 export class Car {
     id: number;
@@ -18,16 +17,14 @@ export class Car {
     overview: Date = new Date();
 
     repairs: Repair[] = [];
-    repairsId: number[] = [];
 
     fullName(): string {
         return `${this.brand} ${this.model}`
     }
 
-    static createFromJSON(json) {
-        return new Promise(resolve => {
+    static createFromJSON(json) : Car{
             const car = new Car();
-            car.id = json.id;
+            car.id = +json.id;
             car.image = json.image;
             car.brand = json.brand;
             car.model = json.model;
@@ -35,23 +32,18 @@ export class Car {
             car.version = json.version;
             car.year = json.year;
             car.overview = new Date();
-            car.repairsId = json.repairsId;
 
-            getEngine(json.engineId).then(data => {
+            const engine = new Engine();
+            engine.name = json.engine.name;
+            engine.capacity = json.engine.capacity;
+            engine.layout = json.engine.layout;
+            engine.pistons = json.engine.pistons;
+            engine.power = json.engine.power;
+            engine.torque = json.engine.torque;
 
-                const engine = new Engine();
-                engine.name = data.name;
-                engine.capacity = data.capacity;
-                engine.layout = data.layout;
-                engine.pistons = data.pistons;
-                engine.power = data.power;
-                engine.torque = data.torque;
+            car.engine = engine;
 
-                car.engine = engine;
-
-                resolve(car);
-            });
-        })
+            return car;
     }
 
     getRepair(repairId: number): Repair {
@@ -60,6 +52,5 @@ export class Car {
 
     deleteRepair(repair: Repair) {
         this.repairs = this.repairs.filter(item => item !== repair);
-        this.repairsId = this.repairsId.filter(id => id !== repair.id);
     }
 }

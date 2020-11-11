@@ -9,6 +9,11 @@
   border-radius: 16px;
   transition: transform 200ms;
 
+  &__image {
+    height: 256px;
+    object-fit: cover;
+  }
+
   &__title {
     background: rgba(0, 0, 0, 0.5);
     position: absolute;

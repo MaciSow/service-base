@@ -1,14 +1,20 @@
 import {Car} from "../model/Car";
-import {deletePart, deleteRepair, getCars, getPart, getRepair, updateCar, updateRepair} from "../api";
+import {
+    deleteCar,
+    deletePart,
+    deleteRepair,
+    getCarRepairs,
+    getCars,
+    getRepair,
+    getRepairParts,
+    updateCar,
+    updateRepair
+} from "../api";
 import {Repair} from "../model/Repair";
 import {Part} from "../model/Part";
 
 export class CarService {
     private carList: Car[] = [];
-
-    getCars() {
-        return this.carList;
-    }
 
     init(): Promise<null> {
         return new Promise(resolve => {
@@ -21,51 +27,47 @@ export class CarService {
 
     makeCarsList() {
         return new Promise((resolve) => {
-            getCars().then((carsData: Car[]) => {
+            getCars().then((data) => {
+
                 let counter = 0;
-                carsData.forEach((carData) => {
+                const cars: string[] = data.cars;
+                cars.forEach((carData) => {
+                    const car = Car.createFromJSON(carData);
 
-                    Car.createFromJSON(carData).then((car: Car) => {
-                        this.carList.push(car)
-                        counter++;
+                    this.carList.push(car)
+                    counter++;
 
-                        if (counter === carsData.length) {
-                            resolve();
-                        }
-                    })
+                    if (counter === cars.length) {
+                        resolve();
+                    }
                 })
             })
         })
     }
 
-    getCar(id: number): Car {
+    getCar(id: number) {
         return this.carList.filter(car => car.id === id)[0]
     }
 
-    getRepairs(car: Car): Promise<Repair[]> {
+    getCars() {
+        return this.carList;
+    }
 
-        return new Promise((resolve) => {
-            if (car.repairs.length) {
-                resolve(car.repairs);
-            }
+    getCarByRepairId(repairId: number): Car {
+        return this.carList.find(car => {
+            const chooseRepair = car.repairs.find(repair => repair.id === repairId)
+            return chooseRepair !== undefined;
+        })
+    }
 
-            let counter = 0;
-            let repairs: Repair[] = [];
-
-            car.repairsId.forEach(repairId => {
-
-                getRepair(repairId).then((repairJSON) => {
-                    const repair = Repair.createFromJSON(repairJSON);
-
-                    repairs.push(repair);
-                    counter++;
-
-                    if (counter === car.repairsId.length) {
-                        resolve(repairs);
-                    }
-                });
+    deleteCar(car: Car): Promise<boolean> {
+        return new Promise((resolve => {
+            deleteCar(car.id).then(() => {
+                this.carList = this.carList.filter((item) => item !== car);
+                resolve(true);
             });
-        });
+        }));
+
     }
 
     getRepair(id: number): Promise<Repair> {
@@ -79,19 +81,80 @@ export class CarService {
         })
     }
 
+    getRepairs(car: Car): Promise<Repair[]> {
+
+        return new Promise((resolve) => {
+            if (car.repairs.length) {
+                resolve(car.repairs);
+            }
+
+            let counter = 0;
+            let repairs: Repair[] = [];
+
+            getCarRepairs(car.id).then((data) => {
+                const repairsJSON: string[] = data.repairs;
+
+                repairsJSON.forEach(repairJSON => {
+                    const repair = Repair.createFromJSON(repairJSON);
+
+                    repairs.push(repair);
+                    counter++;
+
+                    if (counter === repairsJSON.length) {
+                        resolve(repairs);
+                    }
+                })
+            })
+        });
+    }
+
+    deleteRepair(repair: Repair) {
+        return new Promise((resolve) => {
+            const {id} = repair;
+            const car = this.getCarByRepairId(id);
+
+
+            car.deleteRepair(repair);
+
+            deleteRepair(id).then(
+                () => updateCar(car).then(
+                    () => resolve(true)
+                )
+            );
+        })
+    }
+
+    deleteRepairs(car: Car, repairsId: number[]) {
+        return new Promise((resolve) => {
+            let counter = 1;
+            car.repairs = this.cropItems(car.repairs, repairsId);
+
+            repairsId.forEach(id => {
+                deleteRepair(id).then(() => {
+                    if (counter) {
+                        updateCar(car).then(() => resolve(true));
+                    }
+                    counter++;
+                });
+            })
+        })
+    }
+
     getParts(repair: Repair): Promise<Part[]> {
         return new Promise((resolve) => {
             const parts: Part[] = [];
             let counter = 0;
 
-            repair.partsId.forEach(partId => {
-                getPart(partId).then((partJSON) => {
-                    const part = Part.createFromJSON(partJSON)
+            getRepairParts(repair.id).then((data) => {
+                const partsJSON: string[] = data.parts;
+
+                partsJSON.forEach(partJSON => {
+                    const part = Part.createFromJSON(partJSON);
 
                     parts.push(part);
                     counter++;
 
-                    if (counter === repair.partsId.length) {
+                    if (counter === partsJSON.length) {
                         resolve(parts);
                     }
                 })
@@ -102,10 +165,7 @@ export class CarService {
 
     deletePart(repair: Repair, partId: number): Promise<boolean> {
         return new Promise((resolve) => {
-
-            repair.partsId = repair.partsId.filter(id => id !== partId);
-            repair.parts = repair.parts.filter(part => part.id !== partId);
-
+            repair.deletePart(partId)
 
             deletePart(partId).then(
                 () => updateRepair(repair).then(
@@ -119,9 +179,7 @@ export class CarService {
     deleteParts(repair: Repair, partsId: number[]): Promise<boolean> {
         return new Promise((resolve) => {
 
-            repair.partsId = this.cropItems(repair.partsId, partsId);
             repair.parts = this.cropItems(repair.parts, partsId);
-
 
             partsId.forEach((partId, index) => {
                 deletePart(partId).then(
@@ -152,88 +210,5 @@ export class CarService {
                 return isExist;
             }
         );
-    }
-
-    deleteRepair(repair: Repair) {
-        return new Promise((resolve) => {
-            const {id} = repair;
-            const car = this.getCarByRepairId(id);
-            const parts = repair.parts;
-            car.deleteRepair(repair);
-
-            parts.forEach((part, index) =>
-                deletePart(part.id).then(
-                    () => {
-                        if (index === repair.parts.length - 1) {
-                            deleteRepair(repair.id).then(
-                                () => updateCar(car).then(
-                                    () => resolve(true)
-                                )
-                            );
-                        }
-                    }
-                )
-            )
-        })
-    }
-
-    getCarByRepairId(repairId: number): Car {
-        return this.carList.find(car => {
-            const repairId = car.repairsId.find(id => id === repairId)
-            return repairId !== undefined;
-        })
-    }
-
-    deleteRepairs(car: Car, repairsId: number[]) {
-        return new Promise((resolve) => {
-            
-            let partsId = [];
-            
-            repairsId.forEach( id => {
-                const repair = car.repairs.find( item => item.id === id);
-                partsId = [...partsId, ...repair.partsId ];
-            })
-
-            partsId.forEach( partId => {
-                deletePart(partId).then(
-                    () => console.log(`%c ✔ delete part ${partId}`, 'color: green'),
-                    () => console.log(`%c ❗ error delete part ${partId}`, 'color: red')
-                );
-            })
-
-            console.log(partsId);
-
-            
-            
-            
-            // const repairsCopy = car.repairs.filter(repair => repairsId.find(id=> id===repair.id));
-            // console.log(repairsCopy===car.repairs);
-            // console.log(repairsCopy);
-            //
-            // car.repairsId = this.cropItems(car.repairsId, repairsId);
-            // car.repairs = this.cropItems(car.repairs, repairsId);
-            //
-            //
-            // repairsCopy.forEach((repair, indexRepairs) => {
-            //     repair.partsId.forEach((part, index) =>
-            //         deletePart(part).then(
-            //             () => {
-            //                 if (index === repair.partsId.length - 1) {
-            //                     deleteRepair(repair.id).then(() => {
-            //                             if (indexRepairs === repairsCopy.length-1) {
-            //                                 updateCar(car).then(
-            //                                     () => resolve(true)
-            //                                 )
-            //                             }
-            //                         }
-            //                     );
-            //                 }
-            //             },
-            //             () => console.log('ooops 🙄')
-            //         )
-            //     )
-            // })
-
-        })
     }
 }

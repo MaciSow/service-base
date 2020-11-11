@@ -44,8 +44,9 @@ export class CarDetails {
 
     private createWindow(): string {
         return ` <div class="l-car-details">
+            <button class="o-btn-ico--delete l-car-details__delete-all js-delete-car"><i class="ico Xdelete"></i></button>
             <div class="l-car-details__header">
-                <img class="header__image" src="./../../images/${this.car.image}" alt="no brum brum">
+                <img class="header__image" src="https://service-base-api.es3d.pl/uploads/images/${this.car.image}" alt="no brum brum">
                 <div class="header__info">
                     <h2 class="o-car-name--lg">${this.car.fullName()}</h2>
                     <div class="u-separator-m"></div>
@@ -142,9 +143,11 @@ export class CarDetails {
     }
 
     private eventListeners() {
+        const deleteCarBtn = this.carDetailsPage.querySelector('.js-delete-car') as HTMLButtonElement;
         const selectRepairItems = this.carDetailsPage.querySelectorAll('.js-repair-item') as NodeListOf<HTMLButtonElement>
         const deleteAllBtn = this.carDetailsPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
 
+        deleteCarBtn.addEventListener('click', () => this.handleDeleteCar())
         selectRepairItems.forEach(button =>
             button.addEventListener('click', (ev) => this.select(ev))
         )
@@ -156,6 +159,10 @@ export class CarDetails {
         const btn = ev.currentTarget as HTMLButtonElement;
 
         this.routing.goRepairInfo(this.car.id, +(btn.dataset.id));
+    }
+
+    private handleDeleteCar() {
+        this.carService.deleteCar(this.car).then(() => this.routing.goBack());
     }
 
     private handleDeleteAll() {

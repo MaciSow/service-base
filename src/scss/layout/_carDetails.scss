@@ -7,12 +7,20 @@
 
 .l-car-details {
   display: flex;
+  position: relative;
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
   background-color: $bgrCard;
   padding: 16px 64px 64px 64px;
   font-size: 1.5rem;
+
+  &__delete-all {
+    position: absolute;
+    right: -24px;
+    top: -24px;
+
+  }
 
   &__header {
     width: 100%;

@@ -8,7 +8,6 @@ export class Repair {
     mileage: number;
     notice: string;
     parts: Part[] = [];
-    partsId: number[] = [];
 
     static createFromJSON(json) {
         let repair = new Repair();
@@ -18,7 +17,6 @@ export class Repair {
         repair.date = getDateFromString(json.date);
         repair.mileage = json.mileage;
         repair.notice = json.notice;
-        repair.partsId = json.partsId;
 
         return repair
     }
@@ -27,4 +25,7 @@ export class Repair {
         return this.parts.reduce((sum, part) => sum + part.price, 0);
     }
 
+    deletePart(partId: number) {
+        this.parts = this.parts.filter(item => item.id !== partId);
+    }
 }

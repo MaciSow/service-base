@@ -1,134 +1,38 @@
 {
-  "cars": [
-    {
-      "id": 1,
-      "image": "car1.jpg",
-      "brand": "Audi",
-      "model": "S5",
-      "bodyStyle": "Coupe",
-      "version": "Premium",
-      "year": 2008,
-      "engineId": 2
-    }
-  ],
-  "engines": [
-    {
-      "id": 2,
-      "capacity": 4.2,
-      "name": "FSI",
-      "layout": "V",
-      "pistons": 8,
-      "power": 450,
-      "torque": 430
-    }
-  ],
+  "image": "5fa9347d6ec13.jpeg",
+  "brand": "Audi",
+  "model": "S5",
+  "version": "Premium",
+  "year": 2008,
+  "bodyStyle": "Coupe",
+  "engine": {
+    "name": "FSI",
+    "layout": "V",
+    "capacity": 4.2,
+    "pistons": 8,
+    "power": 450,
+    "torque": 430,
+    "id": "1"
+  },
   "repairs": [
     {
-      "id": 20,
       "title": "Oil change",
       "date": "20.10.2020",
       "mileage": 155150,
       "notice": "Oil is hot - remember about it",
-      "carId": 1
+      "carId": "1",
+      "parts": [],
+      "id": "1"
     },
     {
-      "id": 21,
       "title": "Service",
       "date": "20.03.2020",
       "mileage": 153400,
       "notice": "",
-      "carId": 1
-    },
-    {
-      "id": 22,
-      "title": "Brakes repair",
-      "date": "07.08.2020",
-      "mileage": 155150,
-      "notice": "",
-      "carId": 1
+      "carId": "1",
+      "parts": [],
+      "id": "2"
     }
   ],
-  "parts": [
-    {
-      "id": 201,
-      "name": "Engine oil",
-      "model": "Motul 5W50",
-      "price": 50,
-      "invoice": "invoice1.pdf",
-      "notice": "",
-      "repairId": 20
-    },
-    {
-      "id": 202,
-      "name": "Screw",
-      "model": "M14x1.5",
-      "price": 2,
-      "invoice": "invoice2.pdf",
-      "notice": "3/4 inch head",
-      "repairId": 20
-    },
-    {
-      "id": 203,
-      "name": "Filtr",
-      "model": "Filtron OP452",
-      "price": 5,
-      "invoice": "invoice3.pdf",
-      "notice": "",
-      "repairId": 20
-    },
-    {
-      "id": 211,
-      "name": "Gasket",
-      "model": "35x2",
-      "price": 0.5,
-      "invoice": "invoice4.pdf",
-      "notice": "",
-      "repairId": 21
-    },
-    {
-      "id": 212,
-      "name": "Alternator",
-      "model": "oryginal",
-      "price": 20,
-      "invoice": "invoice5.pdf",
-      "notice": "Regenerated",
-      "repairId": 21
-    },
-    {
-      "id": 213,
-      "name": "Bumper",
-      "model": "RS-version",
-      "price": 1000,
-      "invoice": "invoice6.pdf",
-      "notice": "",
-      "repairId": 21
-    },
-    {
-      "id": 221,
-      "name": "Front lights",
-      "model": "After lifting",
-      "price": 250,
-      "invoice": "invoice7.pdf",
-      "notice": "",
-      "repairId": 22
-    },
-    {
-      "id": 222,
-      "name": "Clutch",
-      "model": "TRW",
-      "price": 350,
-      "invoice": "invoice8.pdf",
-      "notice": "",
-      "repairId": 22
-    },
-    {
-      "id": 223,
-      "name": "holdfast",
-      "model": "TRW",
-      "price": 80,
-      "invoice": "invoice9.pdf",
-      "notice": "",
-      "repairId": 22
-    }
-  ]
+  "id": "1"
 }

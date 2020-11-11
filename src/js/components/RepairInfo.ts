@@ -136,7 +136,7 @@ export class RepairInfo {
         return ` <div class="l-repair-info">
             <button class="o-btn-ico--delete l-repair-info__delete-all js-delete-repair"><i class="ico Xdelete"></i></button>
             <div class="l-repair-info__header">
-                <img class="header__image" src="./../../images/${this.car.image}" alt="no brum brum">
+                <img class="header__image" src="https://service-base-api.es3d.pl/uploads/images/${this.car.image}" alt="no brum brum">
                 <div class="header__info">
                     <h2 class="o-car-name--lg">${this.car.fullName()}</h2>
                     <div class="u-separator-m"></div>
