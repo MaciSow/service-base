@@ -1,11 +1,8 @@
-delete, car
 edit part, repair, car
     - new window
     - notification
 add part, repair, car
 btn action add - options, listeners
-
-fix - empty repairs & parts = empty screen
 
 
 
@@ -15,5 +12,3 @@ fix - empty repairs & parts = empty screen
  ''
  ?car=xxx
  ?car=xxx&repair=xxx
-
-

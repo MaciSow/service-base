@@ -43,7 +43,9 @@ export class RepairInfo {
     private init() {
         this.routing.setBack('/', 'js-repair-info', 'js-car-details');
         document.title = `Repair Info - ${this.repair.title}`;
+
         this.carService.getParts(this.repair).then(parts => {
+            console.log('test 2');
             this.repair.parts = parts;
             this.fillWindow();
             this.eventListeners();
@@ -65,7 +67,6 @@ export class RepairInfo {
         );
     }
 
-
     private handleDeletePart(ev: MouseEvent) {
         const target = ev.target as HTMLElement
         const part = target.closest('li') as HTMLLIElement;
@@ -74,9 +75,7 @@ export class RepairInfo {
         this.pageHelper.preDeleteItem(partId);
         this.carService.deletePart(this.repair, partId).then(isDeleted => {
             if (isDeleted) {
-                this.pageHelper.deleteItem(partId, () => {
-                    this.refreshFooter();
-                });
+                this.pageHelper.deleteItem(partId, () => this.refreshFooter());
             }
         });
     }
@@ -92,14 +91,15 @@ export class RepairInfo {
 
         this.carService.deleteParts(this.repair, partsId).then(isDeleted => {
             if (isDeleted) {
-                partsId.forEach( (item, index) => this.pageHelper.deleteItem(item,()=>{
-                    if (partsId.length===index+1){
+                partsId.forEach((item, index) => this.pageHelper.deleteItem(item, () => {
+                    this.pageHelper.uncheckMainCheckbox();
+
+                    if (partsId.length === index + 1) {
                         this.refreshFooter()
                     }
                 }))
             }
         });
-
     }
 
     private fillWindow() {
@@ -231,5 +231,4 @@ export class RepairInfo {
                 <p class="u-mt--xs">${this.repair.notice}</p>
              </div>`
     }
-
 }

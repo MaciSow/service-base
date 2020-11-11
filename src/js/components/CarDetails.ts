@@ -174,25 +174,7 @@ export class CarDetails {
             if (isDeleted) {
                 repairsId.forEach( item => this.pageHelper.deleteItem(item))
             }
+                this.pageHelper.uncheckMainCheckbox();
         });
     }
-
-    // private deleteRepair(item: HTMLLIElement) {
-    //     const repair = this.car.repairs.find(repair => repair.id === +item.dataset.id)
-    //
-    //     this.carService.deleteRepair(repair).then(isDeleted => {
-    //         console.log(isDeleted);
-    //
-    //         this.pageHelper.preDeleteItem(item);
-    //
-    //         if (isDeleted) {
-    //             setTimeout(() => {
-    //                 this.pageHelper.deletingItem(item);
-    //                 setTimeout(() => {
-    //                     this.pageHelper.postDeleteItem(item);
-    //                 }, 450)
-    //             }, 250)
-    //         }
-    //     });
-    // }
 }

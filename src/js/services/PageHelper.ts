@@ -9,6 +9,7 @@ export class PageHelper {
 
     setMainCheckbox(current: boolean, checkboxes: NodeListOf<HTMLInputElement>) {
         const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
+
         if (!current) {
             checkboxMain.checked = false;
             return;
@@ -22,6 +23,11 @@ export class PageHelper {
             }
         })
         checkboxMain.checked = allIsChecked;
+    }
+
+    uncheckMainCheckbox(){
+        const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
+        checkboxMain.checked = false;
     }
 
     getCheckedItems(): number[] {
@@ -46,23 +52,6 @@ export class PageHelper {
         }
         this.btnDeleteAll.classList.add('u-hide');
     }
-
-    handleDeleteAll(callback: CallableFunction) {
-        this.btnDeleteAll.addEventListener('click', () => {
-            const parts = Array.from(this.itemList.children);
-            
-            parts.forEach((part: HTMLLIElement) => {
-                const checkbox = part.querySelector('input[type="checkbox"]') as HTMLInputElement
-                if (checkbox.checked) {
-                    const partId = part.dataset.id;
-                    if (partId) {
-                        callback(part);
-                    }
-                }
-            })
-        })
-    }
-
 
     handleCheck(callback: CallableFunction = null) {
         const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
@@ -91,7 +80,6 @@ export class PageHelper {
 
     }
 
-
     preDeleteItem(partId: number) {
         const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
         item.classList.add('is-deleting');
@@ -116,6 +104,4 @@ export class PageHelper {
             }, 450)
         }, 250)
     }
-
-
 }

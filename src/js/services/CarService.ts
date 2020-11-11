@@ -94,6 +94,10 @@ export class CarService {
             getCarRepairs(car.id).then((data) => {
                 const repairsJSON: string[] = data.repairs;
 
+                if (!repairsJSON.length){
+                    resolve([]);
+                }
+
                 repairsJSON.forEach(repairJSON => {
                     const repair = Repair.createFromJSON(repairJSON);
 
@@ -147,6 +151,10 @@ export class CarService {
 
             getRepairParts(repair.id).then((data) => {
                 const partsJSON: string[] = data.parts;
+
+                if (!partsJSON.length) {
+                    resolve([]);
+                }
 
                 partsJSON.forEach(partJSON => {
                     const part = Part.createFromJSON(partJSON);
