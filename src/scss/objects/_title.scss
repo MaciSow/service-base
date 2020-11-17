@@ -1,4 +1,4 @@
-.o-title {
+.o-main-title {
   display: flex;
   align-items: flex-start;
   color: white;
@@ -9,30 +9,52 @@
   }
 
   &__text {
-    font-size: 2.25rem;
-    font-weight: 500;
-  }
-}
-
-.o-car {
-  &-name {
-    font-size: 2.25rem;
-    font-weight: 300;
-    color: rgba(255, 255, 255, 0.8);
-
-    &--lg {
-      font-size: 2.5rem;
-      font-weight: 300;
-      color: rgba(255, 255, 255, 0.8);
-
-    }
-  }
-
-  &-info {
-    font-size: 1.5rem;
+    font-size: $t3;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.8);
   }
 }
 
+@mixin title {
+  font-size: $t3;
+  font-weight: 300;
+  border-bottom: 1px solid $white05;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  color: $txtColor;
+}
 
+@mixin titleL2 {
+  @include title;
+  border-color: $white025;
+  font-size: $t2;
+}
+
+.o-title-l1 {
+  @include title;
+
+  &--center {
+    @include title;
+    text-align: center;
+  }
+
+  &--simple {
+    color: $txtColor;
+    font-size: $t2;
+    font-weight: 300;
+  }
+}
+
+.o-title-l2 {
+  @include titleL2;
+
+  &--center {
+    @include titleL2;
+    text-align: center;
+  }
+
+  &--simple {
+    font-size: $t1;
+    font-weight: 400;
+    color: $txtColor;
+  }
+}

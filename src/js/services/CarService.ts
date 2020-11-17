@@ -1,5 +1,6 @@
 import {Car} from "../model/Car";
 import {
+    createCar,
     deleteCar,
     deletePart,
     deleteRepair,
@@ -19,7 +20,7 @@ export class CarService {
     init(): Promise<null> {
         return new Promise(resolve => {
             this.makeCarsList().then(() => {
-                this.carList.sort(((a, b) => (a.id - b.id)));
+                // this.carList.sort(((a, b) => (a.id - b.id)));
                 resolve();
             });
         })
@@ -45,12 +46,22 @@ export class CarService {
         })
     }
 
-    getCar(id: number) {
+    getCar(id: string) {
         return this.carList.filter(car => car.id === id)[0]
     }
 
     getCars() {
         return this.carList;
+    }
+
+    addCar(car: Car): Promise<boolean> {
+        return new Promise((resolve => {
+            createCar(car).then(() => {
+                this.carList.push(car);
+                resolve(true);
+            });
+        }))
+
     }
 
     getCarByRepairId(repairId: number): Car {
@@ -94,7 +105,7 @@ export class CarService {
             getCarRepairs(car.id).then((data) => {
                 const repairsJSON: string[] = data.repairs;
 
-                if (!repairsJSON.length){
+                if (!repairsJSON.length) {
                     resolve([]);
                 }
 

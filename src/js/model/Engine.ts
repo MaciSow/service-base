@@ -2,7 +2,7 @@ export class Engine {
     id: number;
     capacity: number;
     name: string;
-    layout: 'R/I'| 'V'| 'B'| 'W';
+    layout: string;
     pistons: number;
     power: number;
     torque: number;
@@ -10,6 +10,4 @@ export class Engine {
     toString(){
         return`${this.layout}${this.pistons} ${this.capacity}L`;
     }
-
-
 }

@@ -14,8 +14,8 @@
   position: relative;
   display: flex;
   box-sizing: border-box;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: 2px solid $txtColor;
   border-radius: 4px;
   cursor: pointer;
@@ -34,8 +34,8 @@
     }
 
     &:checked ~ .o-checkbox__checkmark:after {
-      height: 8px;
-      width: 15px;
+      height: 6px;
+      width: 12px;
       top: 1px;
       border-color: black;
     }
@@ -65,6 +65,65 @@
 
   &:hover {
     border-color: white;
+  }
+}
+
+.o-field {
+  display: flex;
+  align-items: center;
+
+  justify-content: flex-end;
+
+  &__label {
+    font-size: $t1;
+    min-width: 128px;
+    margin-right: 8px;
+    text-align: right;
+  }
+
+  &__input, &__select, &__input--date {
+    width: 100%;
+    background: $white025;
+    border: transparent;
+    border-bottom: 2px solid $white025;
+    color: white;
+    padding: 8px;
+    font-size: $t1;
+
+    &:hover {
+      border: transparent;
+      border-bottom: 2px solid $blue;
+    }
+
+    &:focus {
+      outline: unset;
+      border-bottom: 2px solid $blueBright;
+    }
+
+  }
+
+  &__input--date {
+    box-sizing: border-box;
+    height: 41px;
+    padding: 6px 8px;
+
+    option {
+      color: white;
+      background-color: black;
+    }
+  }
+
+  &__select {
+    height: 41px;
+    padding: 3px 8px;
+
+    option {
+      background-color: black;
+    }
+
+  }
+
+  .o-btn-form {
   }
 }
 

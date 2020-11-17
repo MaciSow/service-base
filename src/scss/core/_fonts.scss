@@ -4,8 +4,7 @@
   @font-face {
     font-family: $name;
     font-display: swap;
-    src: 
-    url(#{$fontPath}#{$fileName}.ttf) format('truetype');
+    src: url(#{$fontPath}#{$fileName}.ttf) format('truetype');
     font-weight: $weight;
     font-style: $style;
   }

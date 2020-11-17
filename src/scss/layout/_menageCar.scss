@@ -1,0 +1,54 @@
+.l-menage-car-wrap {
+  display: flex;
+  align-items: center;
+  padding: 236px 128px 64px 128px;
+
+}
+
+.l-menage-car {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: $bgrCard;
+  padding: 16px 64px 64px 64px;
+
+  &__content {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    grid-gap: 64px;
+    margin-top: 32px;
+
+    .content {
+
+      &__image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 256px;
+        width: 100%;
+        background-color: rgba(#cccccc, 0.25);
+        border-radius: 16px;
+        border: transparent;
+
+        .o-ico {
+          fill: rgba(#000000, 0.5);
+          height: 120px;
+          width: 180px;
+        }
+      }
+
+      &__form, &__deadlines-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 32px;
+        padding: 32px 0;
+      }
+
+      &__deadlines-form {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

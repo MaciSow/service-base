@@ -1,38 +1,40 @@
-{
-  "image": "5fa9347d6ec13.jpeg",
+[{
+  "id": "465e0a11-1d5b-430f-8c02-424dac45f4c0",
+  "image": null,
   "brand": "Audi",
-  "model": "S5",
-  "version": "Premium",
-  "year": 2008,
-  "bodyStyle": "Coupe",
+  "model": "dss",
+  "version": "fdsa",
+  "year": 1800,
+  "bodyStyle": "coupe",
   "engine": {
-    "name": "FSI",
-    "layout": "V",
-    "capacity": 4.2,
-    "pistons": 8,
-    "power": 450,
-    "torque": 430,
-    "id": "1"
+    "id": 10,
+    "name": "fasd",
+    "capacity": 1,
+    "layout": "r",
+    "pistons": 1,
+    "power": 1,
+    "torque": 1
   },
-  "repairs": [
-    {
-      "title": "Oil change",
-      "date": "20.10.2020",
-      "mileage": 155150,
-      "notice": "Oil is hot - remember about it",
-      "carId": "1",
-      "parts": [],
-      "id": "1"
-    },
-    {
-      "title": "Service",
-      "date": "20.03.2020",
-      "mileage": 153400,
-      "notice": "",
-      "carId": "1",
-      "parts": [],
-      "id": "2"
-    }
-  ],
-  "id": "1"
+  "repairs": []
+},
+
+{
+  "id": "test",
+  "image": null,
+  "brand": "BMW",
+  "model": "Serena пасс.",
+  "version": "eius",
+  "year": 2004,
+  "bodyStyle": "SUV",
+  "engine": {
+    "id": "1",
+    "name": "LAP",
+    "capacity": 2.8,
+    "layout": "R",
+    "pistons": 5,
+    "power": 276,
+    "torque": 236
+  },
+  "repairs": []
 }
+  ]

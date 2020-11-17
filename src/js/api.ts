@@ -11,9 +11,7 @@ function fetchJson(url: string, options = null) {
         delete options.headers;
     }
 
-    return fetch(url, Object.assign({
-        headers
-    }, options))
+    return fetch(url, Object.assign({headers}, options))
         .then(checkStatus)
         .then(response => {
             return response.text()
@@ -44,9 +42,23 @@ export function getCars() {
     return fetchJson(url);
 }
 
-export function getCar(id: number) {
+export function getCar(id: string) {
     const url = `${serverUrl}/cars/${id}`;
     return fetchJson(url);
+}
+
+export function createCar(car: Car) {
+    const carCopy = {...car};
+    delete carCopy.overview;
+    delete carCopy.insurance;
+
+    carCopy.image = 'car1.jpg';
+
+    const url = `${serverUrl}/cars`;
+    return fetchJson(url, {
+        method: 'POST',
+        body: JSON.stringify(carCopy)
+    });
 }
 
 export function updateCar(car: Car) {
@@ -62,7 +74,7 @@ export function updateCar(car: Car) {
     });
 }
 
-export function deleteCar(id: number) {
+export function deleteCar(id: string) {
     const url = `${serverUrl}/cars/${id}`;
 
     return fetchJson(url, {
@@ -75,7 +87,7 @@ export function getRepair(id: number) {
     return fetchJson(url);
 }
 
-export function getCarRepairs(id: number) {
+export function getCarRepairs(id: string) {
     const url = `${serverUrl}/cars/${id}/repairs`;
     return fetchJson(url);
 }
@@ -115,4 +127,16 @@ export function deletePart(id: number) {
     return fetchJson(url, {
         method: 'DELETE'
     });
+}
+
+export function fileExist(url: string) {
+    // fetch(url, { "": "include"})
+    //     .then(response => {
+    //         console.log(response);
+    //
+    //         if (response.status >= 200 && response.status < 400) {
+    //             console.log('OK');
+    //         }
+    //         console.log('error');
+    //     });
 }

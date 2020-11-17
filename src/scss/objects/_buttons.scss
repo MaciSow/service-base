@@ -205,12 +205,32 @@
   &--warning {
     @include btn;
 
+    .o-ico {
+      margin-bottom: unset;
+      width: 18px;
+      height: 18px;
+    }
+
+
     &:hover {
       background-color: $warning;
       border-color: $warning;
     }
   }
 }
+
+.o-btn-form {
+  padding: 9px 16px;
+  font-size: $t1;
+  color: $txtColor;
+  background-color: $blue;
+  text-align: center;
+
+  &:hover {
+  background-color: $blueBright;
+  }
+}
+
 
 
 

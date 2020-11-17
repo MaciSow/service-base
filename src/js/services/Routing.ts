@@ -1,16 +1,20 @@
-import {hideWindow, showWindow} from "../utilities";
+import {clearListeners, hideWindow, showWindow} from "../utilities";
 import {CarDetails} from "../components/CarDetails";
 import {Home} from "../components/Home";
 import {CarService} from "./CarService";
 import {RepairInfo} from "../components/RepairInfo";
+import {MenageCar} from "../components/MenageCar";
 
 export class Routing {
     private readonly carService: CarService;
 
     homePage = document.querySelector('.js-menu-page') as HTMLDivElement;
+    menageCarPage = document.querySelector('.js-menage-car') as HTMLDivElement;
     carDetailsPage = document.querySelector('.js-car-details') as HTMLDivElement;
     repairInfoPage = document.querySelector('.js-repair-info');
     btnBack = document.querySelector('.js-back') as HTMLAnchorElement;
+    btnAdd = document.querySelector('.js-add') as HTMLAnchorElement;
+    btnSubmit = document.querySelector('.js-submit') as HTMLButtonElement;
 
     constructor(carService: CarService) {
         this.carService = carService;
@@ -22,6 +26,7 @@ export class Routing {
 
         this.goSiteByLink(queryString);
         this.goSiteByHistory();
+        this.btnAdd.addEventListener('click', () => this.goAdd());
         this.btnBack.addEventListener('click', () => this.goBack());
     }
 
@@ -37,12 +42,34 @@ export class Routing {
         }
     }
 
+    private goAdd() {
+        const pages = document.querySelectorAll('.js-pages > div') as NodeListOf<HTMLDivElement>;
+
+        pages.forEach((page)=> {
+          if (!page.classList.contains('u-hide')){
+              if (page.classList.contains('js-menu-page')){
+                  this.goMenage();
+              }
+
+              if (page.classList.contains('js-car-details')){
+                  console.log('Go from Car Details');
+              }
+
+              if (page.classList.contains('js-repair-info')){
+                  console.log('Go from Repair Info');
+              }
+          }
+        })
+    }
+
     goBack() {
         const queryString = window.location.search.split('&');
         queryString.pop();
         const url = queryString.join('&');
 
         hideWindow().then(() => {
+            this.resetPage();
+
             this.goSiteByLink(url);
             history.pushState({}, "", `/${url}`)
         });
@@ -50,12 +77,28 @@ export class Routing {
 
     goHome() {
         hideWindow().then(() => {
+            this.resetPage();
+            history.pushState(null, "", `/`)
             new Home(this.carService, this);
             showWindow(this.homePage);
         });
     }
 
-    goDetails(carId: number, addHistory: boolean = true) {
+    goMenage() {
+        history.pushState(null, "Add New Vehicle", `?create`)
+
+        hideWindow().then(() => {
+            this.btnAdd.classList.add('u-hide');
+            this.btnSubmit.classList.remove('u-hide');
+
+            this.btnSubmit.setAttribute('form','menageCar');
+
+            new MenageCar(this, this.carService);
+            showWindow(this.menageCarPage);
+        });
+    }
+
+    goDetails(carId: string, addHistory: boolean = true) {
         if (addHistory) {
             history.pushState({car: carId}, "Car Details", `?car=${carId}`)
         }
@@ -67,7 +110,7 @@ export class Routing {
         });
     }
 
-    goRepairInfo(carId: number, repairId: number, addHistory: boolean = true) {
+    goRepairInfo(carId: string, repairId: number, addHistory: boolean = true) {
         if (addHistory) {
             history.pushState({car: carId, repair: repairId}, "Repair Info", `?car=${carId}&repair=${repairId}`)
         }
@@ -97,13 +140,17 @@ export class Routing {
         switch (parameters.length) {
             case 1:
                 if (items[0][0] === 'car') {
-                    this.goDetails(+items[0][1], addHistory);
+                    this.goDetails(items[0][1], addHistory);
+                    match = true;
+                }
+                if (items[0][0] === 'create') {
+                    this.goMenage();
                     match = true;
                 }
                 break;
             case 2:
                 if (items[0][0] === 'car' && items[1][0] === 'repair') {
-                    this.goRepairInfo(+items[0][1], +items[1][1], addHistory);
+                    this.goRepairInfo(items[0][1], +items[1][1], addHistory);
                     match = true;
                 }
                 break;
@@ -126,6 +173,7 @@ export class Routing {
             let queryString = '?';
 
             for (const value in event.state) {
+                // noinspection JSUnfilteredForInLoop
                 queryString += value + '=' + event.state[value] + '&';
             }
 
@@ -134,5 +182,11 @@ export class Routing {
         }
     }
 
+    private resetPage() {
+        this.btnSubmit = clearListeners(this.btnSubmit);
+        this.btnSubmit.classList.add('u-hide');
+        this.btnAdd.classList.remove('u-hide');
+        this.btnSubmit.removeAttribute('form');
+    }
 }
 

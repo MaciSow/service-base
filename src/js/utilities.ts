@@ -136,11 +136,17 @@ export function getStringDate(date: Date): string {
     return `${addZeroInDate(date.getDate())}.${addZeroInDate(date.getMonth() + 1)}.${date.getFullYear()}`;
 }
 
-export function getDateFromString(stringDate: string): Date {
+export function getDateFromString(stringDate: string, separator = '.', isReverse = false): Date {
     let date = new Date();
-    date.setDate(+(stringDate.split('.')[0]));
-    date.setMonth(+(stringDate.split('.')[1]) - 1);
-    date.setFullYear(+(stringDate.split('.')[2]));
+    if (isReverse) {
+        date.setDate(+(stringDate.split(separator)[2]));
+        date.setMonth(+(stringDate.split(separator)[1]) - 1);
+        date.setFullYear(+(stringDate.split(separator)[0]));
+    } else {
+        date.setDate(+(stringDate.split(separator)[0]));
+        date.setMonth(+(stringDate.split(separator)[1]) - 1);
+        date.setFullYear(+(stringDate.split(separator)[2]));
+    }
 
     return date;
 }
@@ -181,17 +187,12 @@ export function hideWindow(): Promise<null> {
     })
 }
 
-export function showWindow(window): Promise<null> {
-    return new Promise(resolve => {
-
-        window.classList.remove('u-hide')
-        window.classList.add('u-is-showing');
-        setTimeout(args => {
-            window.classList.remove('u-is-showing');
-
-            resolve();
-        }, 250);
-    })
+export function showWindow(window) {
+    window.classList.remove('u-hide')
+    window.classList.add('u-is-showing');
+    setTimeout(args => {
+        window.classList.remove('u-is-showing');
+    }, 250);
 }
 
 export function addHistory(href: string) {
@@ -210,10 +211,22 @@ export function getParValueFromUrl(name: string): string {
 
     parameters.forEach(parameter => {
         const tmp = parameter.split('=');
-        
-        if(tmp[0]===name){
-            value= tmp[1];
+
+        if (tmp[0] === name) {
+            value = tmp[1];
         }
     })
     return value;
 }
+
+export function clearListeners(btn: HTMLButtonElement): HTMLButtonElement {
+    // const classes = Array.from(btn.classList).reduce((accu, item) =>  accu += '.' + item , '');
+    const classes = '.' + Array.from(btn.classList).find(a => a.substr(0, 3) === 'js-');
+
+
+    const tmp = btn.cloneNode(true);
+    btn.parentNode.replaceChild(tmp, btn);
+    // return document.querySelector(`.${classes}`) as HTMLButtonElement;
+    return document.querySelector(classes) as HTMLButtonElement;
+}
+
