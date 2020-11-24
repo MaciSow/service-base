@@ -30,7 +30,7 @@ export class PageHelper {
         checkboxMain.checked = false;
     }
 
-    getCheckedItems(): number[] {
+    getCheckedItems(): string[] {
         const items = Array.from(this.itemList.children);
         const checkedItems = [];
 
@@ -80,13 +80,13 @@ export class PageHelper {
 
     }
 
-    preDeleteItem(partId: number) {
+    preDeleteItem(partId: string) {
         const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
         item.classList.add('is-deleting');
         item.style.height = item.offsetHeight + 'px';
     }
 
-    deleteItem(partId: number, callback:CallableFunction = null) {
+    deleteItem(partId: string, callback:CallableFunction = null) {
         const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
 
         setTimeout(() => {

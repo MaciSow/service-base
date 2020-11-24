@@ -11,3 +11,30 @@ btn action add - options, listeners
  ''
  ?car=xxx
  ?car=xxx&repair=xxx
+
+ /////API/////
+ GET       /
+  GET       /cars/body-styles
+  GET       /cars/brands
+  GET       /cars
+  POST      /cars
+  GET       /cars/{id}
+  PUT       /cars/{id}
+  DELETE    /cars/{id}
+  GET       /cars/{id}/repairs
+  GET       /engines
+  POST      /engines
+  GET       /engines/{id}
+  PUT       /engines/{id}
+  DELETE    /engines/{id}
+  GET       /repairs
+  POST      /repairs
+  GET       /repairs/{id}
+  PUT       /repairs/{id}
+  DELETE    /repairs/{id}
+  GET       /repairs/{id}/parts
+  GET       /parts
+  POST      /parts
+  GET       /parts/{id}
+  PUT       /parts/{id}
+  DELETE    /parts/{id}

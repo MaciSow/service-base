@@ -4,6 +4,7 @@ import {Home} from "../components/Home";
 import {CarService} from "./CarService";
 import {RepairInfo} from "../components/RepairInfo";
 import {MenageCar} from "../components/MenageCar";
+import {MenageRepair} from "../components/MenageRepair";
 
 export class Routing {
     private readonly carService: CarService;
@@ -48,11 +49,11 @@ export class Routing {
         pages.forEach((page)=> {
           if (!page.classList.contains('u-hide')){
               if (page.classList.contains('js-menu-page')){
-                  this.goMenage();
+                  this.goMenageCar();
               }
 
               if (page.classList.contains('js-car-details')){
-                  console.log('Go from Car Details');
+                  this.openMenageRepair();
               }
 
               if (page.classList.contains('js-repair-info')){
@@ -84,7 +85,7 @@ export class Routing {
         });
     }
 
-    goMenage() {
+    goMenageCar() {
         history.pushState(null, "Add New Vehicle", `?create`)
 
         hideWindow().then(() => {
@@ -98,19 +99,26 @@ export class Routing {
         });
     }
 
+    openMenageRepair() {
+        new MenageRepair(this.btnAdd.dataset.id, this, this.carService);
+    }
+
     goDetails(carId: string, addHistory: boolean = true) {
         if (addHistory) {
             history.pushState({car: carId}, "Car Details", `?car=${carId}`)
         }
 
         hideWindow().then(() => {
+            this.btnAdd.dataset.id = carId;
             const car = this.carService.getCar(carId);
             new CarDetails(car, this, this.carService)
             showWindow(this.carDetailsPage);
         });
     }
 
-    goRepairInfo(carId: string, repairId: number, addHistory: boolean = true) {
+    goRepairInfo(carId: string, repairId: string, addHistory: boolean = true) {
+
+
         if (addHistory) {
             history.pushState({car: carId, repair: repairId}, "Repair Info", `?car=${carId}&repair=${repairId}`)
         }
@@ -144,13 +152,13 @@ export class Routing {
                     match = true;
                 }
                 if (items[0][0] === 'create') {
-                    this.goMenage();
+                    this.goMenageCar();
                     match = true;
                 }
                 break;
             case 2:
                 if (items[0][0] === 'car' && items[1][0] === 'repair') {
-                    this.goRepairInfo(items[0][1], +items[1][1], addHistory);
+                    this.goRepairInfo(items[0][1], items[1][1], addHistory);
                     match = true;
                 }
                 break;
@@ -187,6 +195,7 @@ export class Routing {
         this.btnSubmit.classList.add('u-hide');
         this.btnAdd.classList.remove('u-hide');
         this.btnSubmit.removeAttribute('form');
+        this.btnAdd.removeAttribute('data-id');
     }
 }
 

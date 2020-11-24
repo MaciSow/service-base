@@ -132,8 +132,13 @@ export function slideReset(current) {
     }, anyOpen ? 250 : 0)
 }
 
-export function getStringDate(date: Date): string {
-    return `${addZeroInDate(date.getDate())}.${addZeroInDate(date.getMonth() + 1)}.${date.getFullYear()}`;
+export function getStringDate(date: Date, separator = '.',isReverse = false): string {
+
+    if (isReverse){
+        return `${date.getFullYear()}${separator}${addZeroInDate(date.getMonth() + 1)}${separator}${addZeroInDate(date.getDate())}`;
+    }
+
+    return `${addZeroInDate(date.getDate())}${separator}${addZeroInDate(date.getMonth() + 1)}${separator}${date.getFullYear()}`;
 }
 
 export function getDateFromString(stringDate: string, separator = '.', isReverse = false): Date {

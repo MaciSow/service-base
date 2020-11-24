@@ -1,5 +1,5 @@
 export class Part {
-    id: number;
+    id: string;
     name: string;
     model: string;
     price: number;
@@ -9,7 +9,7 @@ export class Part {
     static createFromJSON(json): Part {
         let part = new Part();
 
-        part.id = +json.id;
+        part.id = json.id;
         part.name = json.name;
         part.model = json.model;
         part.price = json.price;

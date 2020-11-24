@@ -1,0 +1,28 @@
+
+.o-avatar{
+  $height: 64px;
+  $imageWidth: 100px;
+
+  position: relative;
+  background: $white025;
+  line-height: 0;
+  overflow: hidden;
+
+  &__image {
+    position: relative;
+    object-fit: cover;
+    width: $imageWidth;
+    height: $height;
+    z-index: 12;
+  }
+
+  .o-ico {
+    width: 32px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -16px;
+    margin-left: -16px;
+    fill: $black05;
+  }
+}

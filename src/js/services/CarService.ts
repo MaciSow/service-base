@@ -1,9 +1,13 @@
 import {Car} from "../model/Car";
 import {
     createCar,
+    createEngine,
+    createRepair,
     deleteCar,
     deletePart,
     deleteRepair,
+    getBodyStyles,
+    getBrands,
     getCarRepairs,
     getCars,
     getRepair,
@@ -56,15 +60,28 @@ export class CarService {
 
     addCar(car: Car): Promise<boolean> {
         return new Promise((resolve => {
-            createCar(car).then(() => {
-                this.carList.push(car);
-                resolve(true);
+            createEngine(car.engine).then(() => {
+                createCar(car).then(() => {
+                    this.carList.push(car);
+                    resolve(true);
+                });
             });
         }))
-
     }
 
-    getCarByRepairId(repairId: number): Car {
+    getBodyStyles(): Promise<string[]> {
+        return new Promise((resolve => {
+            getBodyStyles().then(data => resolve(data.bodyStyles));
+        }));
+    }
+
+    getBrands(): Promise<string[]> {
+        return new Promise((resolve => {
+            getBrands().then(data => resolve(data.brands));
+        }));
+    }
+
+    getCarByRepairId(repairId: string): Car {
         return this.carList.find(car => {
             const chooseRepair = car.repairs.find(repair => repair.id === repairId)
             return chooseRepair !== undefined;
@@ -81,7 +98,7 @@ export class CarService {
 
     }
 
-    getRepair(id: number): Promise<Repair> {
+    getRepair(id: string): Promise<Repair> {
         return new Promise((resolve) => {
 
             getRepair(id).then((repairJSON) => {
@@ -123,6 +140,15 @@ export class CarService {
         });
     }
 
+    addRepair(repair: Repair, car: Car): Promise<boolean> {
+        return new Promise((resolve => {
+            createRepair(repair, car.id).then(() => {
+                car.addRepair(repair);
+                resolve(true);
+            });
+        }))
+    }
+
     deleteRepair(repair: Repair) {
         return new Promise((resolve) => {
             const {id} = repair;
@@ -139,7 +165,7 @@ export class CarService {
         })
     }
 
-    deleteRepairs(car: Car, repairsId: number[]) {
+    deleteRepairs(car: Car, repairsId: string[]) {
         return new Promise((resolve) => {
             let counter = 1;
             car.repairs = this.cropItems(car.repairs, repairsId);
@@ -182,7 +208,7 @@ export class CarService {
         })
     }
 
-    deletePart(repair: Repair, partId: number): Promise<boolean> {
+    deletePart(repair: Repair, partId: string): Promise<boolean> {
         return new Promise((resolve) => {
             repair.deletePart(partId)
 
@@ -195,7 +221,7 @@ export class CarService {
         });
     }
 
-    deleteParts(repair: Repair, partsId: number[]): Promise<boolean> {
+    deleteParts(repair: Repair, partsId: string[]): Promise<boolean> {
         return new Promise((resolve) => {
 
             repair.parts = this.cropItems(repair.parts, partsId);
@@ -216,7 +242,7 @@ export class CarService {
         });
     }
 
-    private cropItems(source: any[], items: number[]): any[] {
+    private cropItems(source: any[], items: string[]): any[] {
         return source.filter(item => {
                 const id = typeof item === 'object' ? item.id : item;
                 let isExist = true;

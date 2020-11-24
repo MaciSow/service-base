@@ -29,11 +29,13 @@ export class MenageCar {
     }
 
     private fillWindow() {
-        let carHtml = MenageCar.createWindow();
+        let carHtml = this.createWindow();
         this.menageCarPage.insertAdjacentHTML("beforeend", carHtml)
+        this.fillBrandSelect();
+        this.fillBodySelect();
     }
 
-    private static createWindow(): string {
+    private createWindow(): string {
         const currentYear = new Date().getFullYear();
 
         return ` 
@@ -51,7 +53,7 @@ export class MenageCar {
                         <div class="content__form">
                             <div class="o-field">
                                 <label class="o-field__label" for="formBrand">Brand:</label>
-                                <input class="o-field__input" name="brand" id="formBrand" type="text" > 
+                                <select class="o-field__select js-brand-select" name="brand" id="formBrand"></select> 
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formModel">Model:</label>
@@ -59,13 +61,7 @@ export class MenageCar {
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formBodyStyle">Body Style:</label>
-                                <select class="o-field__select" name="bodyStyle" size="1" id="formBodyStyle">
-                                    <option value="coupe">Coupe</option>
-                                    <option value="hatchback">Hatchback</option>
-                                    <option value="sedan">Sedan</option>
-                                    <option value="SUV" selected>Suv</option>
-                                    <option value="other">Other</option>
-                                </select>
+                                <select class="o-field__select js-body-select" name="bodyStyle"  id="formBodyStyle"></select>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formVersion">Version:</label>
@@ -109,11 +105,12 @@ export class MenageCar {
                             <div class="o-field">
                                 <label class="o-field__label" for="formLayout">Layout:</label>
                                 <select class="o-field__select" name="layout" size="1">
-                                <option value="R" selected>R</option>
-                                <option value="b">B</option>
-                                <option value="v">V</option>
-                                <option value="w">W</option>
-                                <option value="h">H</option>
+                                <option hidden selected>---</option>
+                                <option value="R">R</option>
+                                <option value="B">B</option>
+                                <option value="V">V</option>
+                                <option value="W">W</option>
+                                <option value="H">H</option>
                                 </select>
                             </div>
                             <div class="o-field">
@@ -132,6 +129,26 @@ export class MenageCar {
                     </div>
                 </form>
              </div>`;
+    }
+
+    private fillBodySelect(){
+        const selectHTML = document.querySelector('.js-body-select')as HTMLSelectElement;
+        let selectList = '<option hidden selected>---</option>'
+
+        this.carService.getBodyStyles().then(bodyStyles => {
+            bodyStyles.forEach(bodyStyle => selectList += `<option value="${bodyStyle}">${bodyStyle}</option>`)
+            selectHTML.innerHTML=selectList;
+        });
+    }
+
+    private fillBrandSelect(){
+        const selectHTML = document.querySelector('.js-brand-select')as HTMLSelectElement;
+        let selectList = '<option hidden selected>---</option>'
+
+        this.carService.getBrands().then(brands => {
+            brands.forEach(brand => selectList += `<option value="${brand}">${brand}</option>`)
+            selectHTML.innerHTML=selectList;
+        });
     }
 
     private eventListeners() {

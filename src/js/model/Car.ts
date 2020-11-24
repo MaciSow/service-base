@@ -23,6 +23,10 @@ export class Car {
         return `${this.brand} ${this.model}`
     }
 
+    getImage():string{
+        return`https://service-base-api.es3d.pl/uploads/images/${this.image}`
+    }
+
     static createFromJSON(json): Car {
         const car = new Car();
         car.id = json.id;
@@ -47,14 +51,6 @@ export class Car {
         return car;
     }
 
-    getRepair(repairId: number): Repair {
-        return this.repairs.find(repair => repair.id === repairId)
-    }
-
-    deleteRepair(repair: Repair) {
-        this.repairs = this.repairs.filter(item => item !== repair);
-    }
-
     static createFromForm(data: FormData): Car {
         const car = new Car();
 
@@ -69,7 +65,7 @@ export class Car {
         car.insurance = new Insurance(getDateFromString(data.get('insurance').toString(), '-', true));
 
         const engine = new Engine();
-        engine.id = 1;
+        engine.id = makeId();
         engine.name = data.get('name').toString();
         engine.capacity = +(data.get('capacity').toString());
         engine.layout = data.get('layout').toString();
@@ -80,5 +76,17 @@ export class Car {
         car.engine = engine;
 
         return car;
+    }
+
+    addRepair(repair:Repair){
+        this.repairs.push(repair);
+    }
+
+    getRepair(repairId: string): Repair {
+        return this.repairs.find(repair => repair.id === repairId)
+    }
+
+    deleteRepair(repair: Repair) {
+        this.repairs = this.repairs.filter(item => item !== repair);
     }
 }

@@ -1,6 +1,7 @@
 import {Repair} from "./model/Repair";
 import {getStringDate} from "./utilities";
 import {Car} from "./model/Car";
+import {Engine} from "./model/Engine";
 
 const serverUrl = 'https://service-base-api.es3d.pl';
 
@@ -35,6 +36,24 @@ function checkStatus(response) {
     console.log(response.statusText);
 
     throw error;
+}
+
+export function createEngine(engine: Engine) {
+    const url = `${serverUrl}/engines`;
+    return fetchJson(url, {
+        method: 'POST',
+        body: JSON.stringify(engine)
+    });
+}
+
+export function getBodyStyles() {
+    const url = `${serverUrl}/cars/body-styles`;
+    return fetchJson(url);
+}
+
+export function getBrands() {
+    const url = `${serverUrl}/cars/brands`;
+    return fetchJson(url);
 }
 
 export function getCars() {
@@ -82,9 +101,17 @@ export function deleteCar(id: string) {
     });
 }
 
-export function getRepair(id: number) {
+export function getRepair(id: string) {
     const url = `${serverUrl}/repairs/${id}`;
     return fetchJson(url);
+}
+
+export function createRepair(repair: Repair, carId: string) {
+    const url = `${serverUrl}/repairs`;
+    return fetchJson(url, {
+        method: 'POST',
+        body: JSON.stringify({...repair,carId})
+    });
 }
 
 export function getCarRepairs(id: string) {
@@ -103,7 +130,7 @@ export function updateRepair(repair: Repair) {
     });
 }
 
-export function deleteRepair(id: number) {
+export function deleteRepair(id: string) {
     const url = `${serverUrl}/repairs/${id}`;
 
     return fetchJson(url, {
@@ -111,17 +138,17 @@ export function deleteRepair(id: number) {
     });
 }
 
-export function getPart(id: number) {
+export function getPart(id: string) {
     const url = `${serverUrl}/parts/${id}`;
     return fetchJson(url);
 }
 
-export function getRepairParts(id: number) {
+export function getRepairParts(id: string) {
     const url = `${serverUrl}/repairs/${id}/parts`;
     return fetchJson(url);
 }
 
-export function deletePart(id: number) {
+export function deletePart(id: string) {
     const url = `${serverUrl}/parts/${id}`;
 
     return fetchJson(url, {

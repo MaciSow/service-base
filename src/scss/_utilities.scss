@@ -25,6 +25,10 @@
   margin-top: 8px;
 }
 
+.u-pr--la{
+  padding-right: 48px !important;
+}
+
 .u-hide {
   display: none !important;
 }
@@ -40,6 +44,10 @@
 
 .u-width--m {
   width: 80px;
+}
+
+.u-mw--m {
+  min-width: 80px !important;
 }
 
 .u-width--184px {
@@ -74,6 +82,7 @@
 }
 
 .u-flex-r {
+  display: flex;
   justify-content: flex-end;
 }
 
@@ -86,6 +95,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.u-d-flex-top{
+  display: flex;
+  align-items: flex-start !important;
 }
 
 .u-z-index--2{
@@ -112,7 +126,7 @@
 }
 
 .u-is-showing{
-  animation: showing 200ms ease-in-out 1 forwards;
+  animation: showing 200ms ease-in-out 1 forwards ;
 }
 
 @keyframes showing {

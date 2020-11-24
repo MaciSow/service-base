@@ -13,6 +13,7 @@
 @import "objects/title";
 @import "objects/input";
 @import "objects/btnMenu";
+@import "objects/images";
 
 
 // components
@@ -21,6 +22,7 @@
 @import "components/topBar";
 @import "components/table";
 @import "components/list";
+@import "components/dropDown";
 
 
 // layouts
@@ -30,3 +32,4 @@
 @import "layout/carDetails";
 @import "layout/repairInfo";
 @import "layout/menageCar";
+@import "layout/menageRepair";

@@ -1,0 +1,91 @@
+.c-drop-down {
+  $height: 64px;
+  $imageWidth: 100px;
+
+  display: flex;
+  position: relative;
+  align-items: center;
+  z-index: 12;
+
+  &__label {
+    font-size: $t1;
+    margin-right: 8px;
+    min-width: 96px;
+  }
+
+  &__title {
+    background: rgb(64, 64, 64);
+    font-size: $t1;
+    padding-left: 16px;
+    box-sizing: border-box;
+    height: $height;
+    display: flex;
+    align-items: center;
+    flex-grow: 2;
+    border-bottom: 2px solid $white025;
+  }
+
+  &__image-frame {
+    position: relative;
+    background: $white025;
+    line-height: 0;
+    overflow: hidden;
+
+    .image-frame__image {
+      position: relative;
+      object-fit: cover;
+      width: $imageWidth;
+      height: $height;
+      z-index: 12;
+    }
+
+    .o-ico {
+      width: 32px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -16px;
+      margin-left: -16px;
+      fill: $black05;
+    }
+  }
+
+  &__list {
+    position: absolute;
+    top: $height;
+    left: 104px;
+    right: 0;
+    height: 0;
+    background: rgb(64, 64, 64);
+    z-index: 12;
+    transition: height 200ms ease-in-out;
+    overflow: auto;
+
+    &.u-show {
+      height: 296px;
+    }
+
+    .list__item {
+      display: flex;
+      align-items: center;
+      margin: 8px;
+      font-size: $t1;
+
+      &:hover{
+        background-color: rgb(48, 48, 48);
+      }
+
+    }
+
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .c-drop-down__title {
+      border-color: $blue;
+    }
+  }
+
+
+}

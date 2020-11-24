@@ -69,9 +69,9 @@
 }
 
 .o-field {
+  position: relative;
   display: flex;
   align-items: center;
-
   justify-content: flex-end;
 
   &__label {
@@ -122,8 +122,11 @@
     }
 
   }
-
-  .o-btn-form {
+  .o-postfix{
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    font-size: $t1;
   }
 }
 
