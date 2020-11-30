@@ -1,27 +1,4 @@
-.l-menage-backdrop {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(70, 70, 70, 0.85);
-  z-index: 10;
-  opacity: 1;
-}
-
-.l-menage-window {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 64px 64px 64px;
-  background: black;
-  box-shadow: 0 0 8px $shadowColor;
-
-
-  &__content {
+  .l-manage-repair {
     position: relative;
     margin-top: 32px;
     display: grid;
@@ -53,9 +30,3 @@
       z-index: 11;
     }
   }
-  &__close {
-    position: absolute;
-    right: -24px;
-    top: -24px;
-  }
-}

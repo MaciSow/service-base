@@ -5,6 +5,7 @@ import {CarService} from "./CarService";
 import {RepairInfo} from "../components/RepairInfo";
 import {MenageCar} from "../components/MenageCar";
 import {MenageRepair} from "../components/MenageRepair";
+import {MenagePart} from "../components/MenagePart";
 
 export class Routing {
     private readonly carService: CarService;
@@ -16,6 +17,7 @@ export class Routing {
     btnBack = document.querySelector('.js-back') as HTMLAnchorElement;
     btnAdd = document.querySelector('.js-add') as HTMLAnchorElement;
     btnSubmit = document.querySelector('.js-submit') as HTMLButtonElement;
+    repairInfo:RepairInfo = null;
 
     constructor(carService: CarService) {
         this.carService = carService;
@@ -57,7 +59,7 @@ export class Routing {
               }
 
               if (page.classList.contains('js-repair-info')){
-                  console.log('Go from Repair Info');
+                  this.openMenagePart();
               }
           }
         })
@@ -103,6 +105,10 @@ export class Routing {
         new MenageRepair(this.btnAdd.dataset.id, this, this.carService);
     }
 
+    openMenagePart() {
+        new MenagePart(this.btnAdd.dataset.id, this, this.carService,this.repairInfo);
+    }
+
     goDetails(carId: string, addHistory: boolean = true) {
         if (addHistory) {
             history.pushState({car: carId}, "Car Details", `?car=${carId}`)
@@ -117,16 +123,15 @@ export class Routing {
     }
 
     goRepairInfo(carId: string, repairId: string, addHistory: boolean = true) {
-
-
         if (addHistory) {
             history.pushState({car: carId, repair: repairId}, "Repair Info", `?car=${carId}&repair=${repairId}`)
         }
 
         hideWindow().then(() => {
+            this.btnAdd.dataset.id = repairId;
             const car = this.carService.getCar(carId);
             const repair = car.getRepair(repairId);
-            new RepairInfo(this, this.carService, car, repair)
+            this.repairInfo = new RepairInfo(this, this.carService, car, repair)
             showWindow(this.repairInfoPage);
         });
     }

@@ -1,7 +1,7 @@
 import {Car} from "../model/Car";
 import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
-import {addIcons, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
+import {addIcons, clearListeners, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
 import {Repair} from "../model/Repair";
 import {PageHelper} from "../services/PageHelper";
 
@@ -54,7 +54,7 @@ export class RepairInfo {
         })
     }
 
-    private eventListeners() {
+    public eventListeners() {
         const deleteRepairBtn = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
         const deleteItemButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
         const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
@@ -104,6 +104,7 @@ export class RepairInfo {
     private fillWindow() {
         let carHtml = this.createWindow();
         this.repairInfoPage.insertAdjacentHTML("beforeend", carHtml)
+        this.fillPartList();
     }
 
     private refreshFooter(sum: number = this.repair.costsSum(), amount: number = this.repair.parts.length) {
@@ -182,9 +183,7 @@ export class RepairInfo {
                     <span>Files</span>
                     <span>Actions</span>
                 </div> 
-                <ol class="c-list js-parts">
-                    ${this.createPartList()}
-                </ol>
+                <ol class="c-list js-parts"></ol>
                 <div class="c-list-footer">
                     <span class="c-list-footer__left">Sum:</span>
                     <span class="u-text--right js-sum">${formatAmount(this.repair.costsSum())} $</span>
@@ -196,7 +195,9 @@ export class RepairInfo {
         </div>`;
     }
 
-    private createPartList(): string {
+    private fillPartList() {
+        const partList = document.querySelector('.js-parts') as HTMLOListElement;
+
         let repairListHtml = '';
         this.repair.parts.forEach(part =>
             repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}">
@@ -217,7 +218,7 @@ export class RepairInfo {
                                     </div>
                                 </li>`)
 
-        return repairListHtml;
+        partList.innerHTML = repairListHtml;
     }
 
     private createNotice(): string {
@@ -228,5 +229,21 @@ export class RepairInfo {
                 <span class="u-txt-b">Notice:</span>
                 <p class="u-mt--xs">${this.repair.notice}</p>
              </div>`
+    }
+
+    public update(repair: Repair) {
+        const btnDeleteAll = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+        const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
+
+        btnDeleteAll.classList.add('u-hide');
+        clearListeners(btnDeleteAll);
+        checkboxMain.checked = false;
+        this.repair = repair;
+
+        this.fillPartList();
+        this.refreshFooter();
+        this.eventListeners();
+        this.pageHelper = new PageHelper('js-parts');
+        this.pageHelper.handleCheck(this.updateFooter.bind(this));
     }
 }

@@ -28,11 +28,11 @@ export class MenageRepair {
 
         const now = getStringDate( new Date(),'-',true);
         
-        const menageHTML = `<div class="l-menage-backdrop u-is-showing js-menage-window">          
-                                <div class="l-menage-window">
-                                    <button class="o-btn-ico--delete l-menage-window__close js-menage-close"><i class="ico Xdelete"></i></button>
+        const menageHTML = `<div class="c-modal-backdrop u-is-showing js-menage-window">          
+                                <div class="c-modal">
+                                    <button class="o-btn-ico--delete c-modal__close js-menage-close"><i class="ico Xdelete"></i></button>
                                     <h2 class="o-title-l1--center">Add New Repair</h2>
-                                    <form id="menageRepair" class="l-menage-window__content js-form">
+                                    <form id="menageRepair" class="l-manage-repair js-form">
                                         ${this.createDropList()}
                                         <div class="o-field">
                                             <label class="o-field__label" for="formTitle">Title:</label>

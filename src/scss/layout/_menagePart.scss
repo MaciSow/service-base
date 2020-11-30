@@ -1,0 +1,33 @@
+.l-manage-part {
+  position: relative;
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 32px;
+
+  .o-field__label {
+    min-width: 128px;
+  }
+
+  .o-btn-form{
+    min-width: 200px;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .content__group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 32px;
+  }
+
+  .l-drop-down-backdrop{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: $black05;
+    z-index: 11;
+  }
+}

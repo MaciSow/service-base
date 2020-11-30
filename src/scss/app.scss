@@ -24,6 +24,8 @@
 @import "components/list";
 @import "components/dropDown";
 
+//modal
+@import "components/modal";
 
 // layouts
 @import "layout/reset";
@@ -33,3 +35,4 @@
 @import "layout/repairInfo";
 @import "layout/menageCar";
 @import "layout/menageRepair";
+@import "layout/menagePart";

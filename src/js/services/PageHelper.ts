@@ -37,7 +37,7 @@ export class PageHelper {
         items.forEach((item: HTMLLIElement) => {
             const checkbox = item.querySelector('input[type="checkbox"]') as HTMLInputElement
             if (checkbox.checked) {
-                checkedItems.push(+item.dataset.id);
+                checkedItems.push(item.dataset.id);
             }
         })
         return checkedItems;

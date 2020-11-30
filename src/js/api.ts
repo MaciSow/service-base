@@ -2,6 +2,7 @@ import {Repair} from "./model/Repair";
 import {getStringDate} from "./utilities";
 import {Car} from "./model/Car";
 import {Engine} from "./model/Engine";
+import {Part} from "./model/Part";
 
 const serverUrl = 'https://service-base-api.es3d.pl';
 
@@ -141,6 +142,14 @@ export function deleteRepair(id: string) {
 export function getPart(id: string) {
     const url = `${serverUrl}/parts/${id}`;
     return fetchJson(url);
+}
+
+export function createPart(part: Part, repairId: string) {
+    const url = `${serverUrl}/parts`;
+    return fetchJson(url, {
+        method: 'POST',
+        body: JSON.stringify({...part,repairId})
+    });
 }
 
 export function getRepairParts(id: string) {

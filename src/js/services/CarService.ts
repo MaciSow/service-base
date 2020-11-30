@@ -1,7 +1,7 @@
 import {Car} from "../model/Car";
 import {
     createCar,
-    createEngine,
+    createEngine, createPart,
     createRepair,
     deleteCar,
     deletePart,
@@ -103,7 +103,7 @@ export class CarService {
 
             getRepair(id).then((repairJSON) => {
                 const repair = Repair.createFromJSON(repairJSON);
-
+                
                 resolve(repair);
             })
         })
@@ -206,6 +206,15 @@ export class CarService {
             })
 
         })
+    }
+
+    addPart(part: Part, repair: Repair): Promise<boolean> {
+        return new Promise((resolve => {
+            createPart(part, repair.id).then(() => {
+                repair.addPart(part);
+                resolve(true);
+            });
+        }))
     }
 
     deletePart(repair: Repair, partId: string): Promise<boolean> {

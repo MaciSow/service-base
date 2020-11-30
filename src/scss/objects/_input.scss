@@ -81,7 +81,7 @@
     text-align: right;
   }
 
-  &__input, &__select, &__input--date {
+  &__input, &__select, &__input--date,  &__input--money {
     width: 100%;
     background: $white025;
     border: transparent;
@@ -111,6 +111,11 @@
       color: white;
       background-color: black;
     }
+  }
+
+  &__input--money{
+    padding-right: 32px;
+    text-align: right;
   }
 
   &__select {

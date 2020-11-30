@@ -21,6 +21,8 @@ export class Repair {
         repair.mileage = json.mileage;
         repair.notice = json.notice;
 
+        json.parts.forEach(part=>repair.parts.push(Part.createFromJSON(part)));
+
         return repair
     }
 
@@ -43,5 +45,7 @@ export class Repair {
         this.parts = this.parts.filter(item => item.id !== partId);
     }
 
-
+    addPart(part: Part) {
+        this.parts.push(part);
+    }
 }
