@@ -46,9 +46,9 @@ export class CarDetails {
         return ` <div class="l-car-details">
             <button class="o-btn-ico--delete l-car-details__delete-all js-delete-car"><i class="ico Xdelete"></i></button>
             <div class="l-car-details__header">
-                <div class="header__image">
+                <div class="header__avatar">
                     <i class="ico car"></i>
-                    <img src="https://service-base-api.es3d.pl/uploads/images/${this.car.image}" alt="no brum brum">
+                    <img class="avatar__image" src="${this.car.image}" alt="no brum brum">
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.car.fullName()}</h2>
@@ -120,7 +120,7 @@ export class CarDetails {
                     <span>Mileage</span>
                 </div> 
                 <ol class="c-list js-repairs">
-                    ${this.createRepairList()}
+                    ${this.createRepairList()} ${this.createRepairList()}
                 </ol>
             </div>
         </div>`;

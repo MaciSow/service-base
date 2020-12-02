@@ -138,7 +138,7 @@ export class RepairInfo {
             <div class="l-repair-info__header">
                 <div class="header__image">
                  <i class="ico car"></i>
-                 <img src="https://service-base-api.es3d.pl/uploads/images/${this.car.image}" alt="no brum brum">
+                 <img src="${this.car.image}" alt="no brum brum">
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.repair.title}</h2>

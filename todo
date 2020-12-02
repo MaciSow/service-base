@@ -1,9 +1,9 @@
+add invoice
+show part invoice, notice
+connect parts
 edit part, repair, car
     - new window
     - notification
-add part, repair, car
-btn action add - options, listeners
-
 
 
  /////LINKS/////
@@ -12,8 +12,9 @@ btn action add - options, listeners
  ?car=xxx
  ?car=xxx&repair=xxx
 
+
  /////API/////
- GET       /
+  GET       /
   GET       /cars/body-styles
   GET       /cars/brands
   GET       /cars

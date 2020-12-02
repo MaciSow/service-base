@@ -23,10 +23,6 @@ export class Car {
         return `${this.brand} ${this.model}`
     }
 
-    getImage():string{
-        return`https://service-base-api.es3d.pl/uploads/images/${this.image}`
-    }
-
     static createFromJSON(json): Car {
         const car = new Car();
         car.id = json.id;

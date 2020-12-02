@@ -28,9 +28,10 @@
     grid-template-columns: 400px 1fr;
     gap: 48px;
 
-    .header__image {
+    .header__avatar {
       height: 256px;
       width: 400px;
+
       position: relative;
       background-color: $white025;
       margin-top: -80px;
@@ -51,8 +52,11 @@
         fill: $black05;
       }
 
-      img {
+      .avatar__image {
         position: relative;
+        height: 256px;
+        width: 400px;
+        object-fit:cover;
         z-index: 2;
       }
     }

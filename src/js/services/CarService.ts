@@ -1,7 +1,8 @@
 import {Car} from "../model/Car";
 import {
     createCar,
-    createEngine, createPart,
+    createEngine,
+    createPart,
     createRepair,
     deleteCar,
     deletePart,
@@ -62,6 +63,7 @@ export class CarService {
         return new Promise((resolve => {
             createEngine(car.engine).then(() => {
                 createCar(car).then(() => {
+                    car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
                     this.carList.push(car);
                     resolve(true);
                 });
@@ -103,7 +105,7 @@ export class CarService {
 
             getRepair(id).then((repairJSON) => {
                 const repair = Repair.createFromJSON(repairJSON);
-                
+
                 resolve(repair);
             })
         })

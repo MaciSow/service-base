@@ -44,11 +44,9 @@ export class Home {
     }
 
     private static createItem(car: Car): string {
-        const imgUrl = `https://service-base-api.es3d.pl/uploads/images/${car.image}`;
-
         return `<button data-id = "${car.id}" class="o-btn-menu js-btn-menu">    
                    <i class="ico car"></i>
-                   <img class="o-btn-menu__image" src="${imgUrl}" alt="no brum brum">
+                   <img class="o-btn-menu__image" src="${car.image}" alt="no brum brum">
                     <div class="o-btn-menu__title">
                         <h2 class="o-title-l1--simple">${car.fullName()}</h2>
                         <div class="u-d-flex u-mt--sm">

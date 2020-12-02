@@ -41,6 +41,7 @@ function checkStatus(response) {
 
 export function createEngine(engine: Engine) {
     const url = `${serverUrl}/engines`;
+
     return fetchJson(url, {
         method: 'POST',
         body: JSON.stringify(engine)
@@ -69,10 +70,11 @@ export function getCar(id: string) {
 
 export function createCar(car: Car) {
     const carCopy = {...car};
+
     delete carCopy.overview;
     delete carCopy.insurance;
-
-    carCopy.image = 'car1.jpg';
+    delete carCopy.repairs;
+    const str = JSON.stringify(carCopy)
 
     const url = `${serverUrl}/cars`;
     return fetchJson(url, {
@@ -111,7 +113,7 @@ export function createRepair(repair: Repair, carId: string) {
     const url = `${serverUrl}/repairs`;
     return fetchJson(url, {
         method: 'POST',
-        body: JSON.stringify({...repair,carId})
+        body: JSON.stringify({...repair, carId})
     });
 }
 
@@ -148,7 +150,7 @@ export function createPart(part: Part, repairId: string) {
     const url = `${serverUrl}/parts`;
     return fetchJson(url, {
         method: 'POST',
-        body: JSON.stringify({...part,repairId})
+        body: JSON.stringify({...part, repairId})
     });
 }
 

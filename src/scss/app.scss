@@ -1,4 +1,6 @@
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "../../node_modules/dropzone/dist/dropzone.css";
+@import "../../node_modules/dropzone/dist/basic.css";
 
 // core
 @import 'core/variables';
@@ -36,3 +38,4 @@
 @import "layout/menageCar";
 @import "layout/menageRepair";
 @import "layout/menagePart";
+

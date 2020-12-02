@@ -73,7 +73,7 @@ export class MenageRepair {
     <span class="c-drop-down__label">Select car:</span>
     <div class="c-drop-down__image-frame">
         <i class="ico car"></i>
-        <img class="image-frame__image js-drop-down-image" src="${this.car.getImage()}" alt="">                                     
+        <img class="image-frame__image js-drop-down-image" src="${this.car.image}" alt="">                                     
     </div>
     <span class="c-drop-down__title js-drop-down-title">${this.car.fullName()}</span>
     <ul class="c-drop-down__list js-drop-down-list"></ul>
@@ -153,7 +153,7 @@ export class MenageRepair {
         const carId = ev.target.closest('li').dataset.id;
         this.car = this.carService.getCar(carId);
 
-        image.src = this.car.getImage();
+        image.src = this.car.image;
         title.innerText = this.car.fullName();
 
         setTimeout(() => this.fillDropDown(), 250)
@@ -172,7 +172,7 @@ export class MenageRepair {
 <li class="list__item js-list__item" data-id="${car.id}">
     <div class="o-avatar">
         <i class="ico car"></i>
-        <img class="o-avatar__image" src="${car.getImage()}" alt="">                                     
+        <img class="o-avatar__image" src="${car.image}" alt="">                                     
     </div>
     <span class="u-ml--sm">${car.fullName()}</span>
 </li>`

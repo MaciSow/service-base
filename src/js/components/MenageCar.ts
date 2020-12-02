@@ -2,11 +2,13 @@ import {addIcons} from "../utilities";
 import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {Car} from "../model/Car";
+import * as Dropzone from "dropzone";
 
 export class MenageCar {
     private carService: CarService;
     private routing: Routing;
     private menageCarPage: HTMLDivElement;
+    private uploadedImage: string;
 
     constructor(routing: Routing, carService: CarService) {
         this.carService = carService;
@@ -24,6 +26,23 @@ export class MenageCar {
 
         document.title = `Add New Vehicle`;
         this.fillWindow();
+        Dropzone.options.addImage = {
+            paramName: "image",
+            thumbnailHeight: 256,
+            thumbnailWidth: 400,
+            acceptedFiles: 'image/*',
+            maxFiles: 1,
+            dictDefaultMessage: '+ Add image',
+            addRemoveLinks: true,
+            headers: {
+                'Cache-Control': null,
+                'X-Requested-With': null
+            }
+        }
+        const myDropzone = new Dropzone("#add-image", {url: "https://service-base-api.es3d.pl/upload-image"});
+
+        myDropzone.on('success', (data, uploadedImage) => this.uploadedImage = uploadedImage);
+
         this.eventListeners();
         addIcons();
     }
@@ -43,7 +62,7 @@ export class MenageCar {
                 <h2 class="o-title-l1--center">Add New Vehicle</h2>
                 <form id="menageCar" class="l-menage-car__content">
                     <div>
-                        <div class="content__image">
+                        <div id="add-image" class="dropzone content__image ">
                                <i class="ico car"></i>
                         </div>
                         <img class="content__image u-hide" src="" alt="">
@@ -96,7 +115,7 @@ export class MenageCar {
                         <div class="content__form">
                             <div class="o-field">
                                 <label class="o-field__label" for="formCapacity">Capacity:</label>
-                                <input class="o-field__input" min="0" name="capacity" id="formCapacity" type="text"> 
+                                <input class="o-field__input" name="capacity" pattern="^\\d{1,2}\\.?\\d{1,3}" id="formCapacity" title="Invalid format, must be digit" type="text"> 
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formName">Name:</label>
@@ -131,23 +150,23 @@ export class MenageCar {
              </div>`;
     }
 
-    private fillBodySelect(){
-        const selectHTML = document.querySelector('.js-body-select')as HTMLSelectElement;
+    private fillBodySelect() {
+        const selectHTML = document.querySelector('.js-body-select') as HTMLSelectElement;
         let selectList = '<option hidden selected>---</option>'
 
         this.carService.getBodyStyles().then(bodyStyles => {
             bodyStyles.forEach(bodyStyle => selectList += `<option value="${bodyStyle}">${bodyStyle}</option>`)
-            selectHTML.innerHTML=selectList;
+            selectHTML.innerHTML = selectList;
         });
     }
 
-    private fillBrandSelect(){
-        const selectHTML = document.querySelector('.js-brand-select')as HTMLSelectElement;
+    private fillBrandSelect() {
+        const selectHTML = document.querySelector('.js-brand-select') as HTMLSelectElement;
         let selectList = '<option hidden selected>---</option>'
 
         this.carService.getBrands().then(brands => {
             brands.forEach(brand => selectList += `<option value="${brand}">${brand}</option>`)
-            selectHTML.innerHTML=selectList;
+            selectHTML.innerHTML = selectList;
         });
     }
 
@@ -164,6 +183,7 @@ export class MenageCar {
             ev.preventDefault();
             const data = new FormData(form)
             const car = Car.createFromForm(data);
+            car.image = this.uploadedImage;
 
             this.carService.addCar(car).then(() => this.routing.goHome())
         };

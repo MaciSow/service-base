@@ -21,9 +21,10 @@
     margin-top: 32px;
 
     .content {
-
       &__image {
+        position: relative;
         display: flex;
+        //flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 256px;
@@ -31,11 +32,54 @@
         background-color: rgba(#cccccc, 0.25);
         border-radius: 16px;
         border: transparent;
+        overflow: hidden;
+
+        &.dropzone {
+        }
+
 
         .o-ico {
           fill: rgba(#000000, 0.5);
+          margin-top: -16px;
           height: 120px;
           width: 180px;
+        }
+
+        .dz-message {
+          position: absolute;
+          top: 0;
+          left: 0;
+          margin: 0;
+          width: 400px;
+          height: 256px;
+          box-sizing: border-box;
+          padding-top: 190px;
+          z-index: 10;
+
+          color: #101010;
+          font-size: $t1;
+          font-weight: 600;
+        }
+
+        .dz-preview {
+          position: absolute;
+          top: 0;
+          left: 0;
+          margin: 0;
+          background: unset;
+          overflow: unset;
+          width: 400px;
+          height: 256px;
+        }
+
+        .dz-details{
+          display: none;
+        }
+
+        .dz-image {
+          border-radius: 0;
+          width: 100%;
+          height: 100%;
         }
       }
 
