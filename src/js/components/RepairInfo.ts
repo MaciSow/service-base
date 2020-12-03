@@ -58,12 +58,15 @@ export class RepairInfo {
         const deleteRepairBtn = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
         const deleteItemButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
         const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+        const editBtn = this.repairInfoPage.querySelector('.js-edit') as HTMLButtonElement;
+
 
         deleteRepairBtn.addEventListener('click', () => this.handleDeleteRepair())
         deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
         deleteItemButtons.forEach(part =>
             part.addEventListener('click', (ev) => this.handleDeletePart(ev))
         );
+        editBtn.addEventListener('click', () => this.handleEdit())
     }
 
     private handleDeletePart(ev: MouseEvent) {
@@ -99,6 +102,10 @@ export class RepairInfo {
                 }))
             }
         });
+    }
+
+    private handleEdit() {
+        this.routing.goMenageCar(this.car);
     }
 
     private fillWindow() {
@@ -143,7 +150,7 @@ export class RepairInfo {
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.repair.title}</h2>
                     <div class="header__info-data">
-                    <button class="o-btn-ico header__info-edit"><i class="ico edit"></i></button>
+                    <button class="o-btn-ico header__info-edit js-edit"><i class="ico edit"></i></button>
                         <div>
                             <span class="">Date:</span>
                             <span class="u-txt-b">${getStringDate(this.repair.date)}</span>
@@ -242,6 +249,7 @@ export class RepairInfo {
 
         this.fillPartList();
         this.refreshFooter();
+
         this.eventListeners();
         this.pageHelper = new PageHelper('js-parts');
         this.pageHelper.handleCheck(this.updateFooter.bind(this));

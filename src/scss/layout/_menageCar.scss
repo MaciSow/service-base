@@ -21,7 +21,7 @@
     margin-top: 32px;
 
     .content {
-      &__image {
+      &__avatar {
         position: relative;
         display: flex;
         //flex-direction: column;
@@ -37,6 +37,8 @@
         &.dropzone {
         }
 
+        &-image {
+        }
 
         .o-ico {
           fill: rgba(#000000, 0.5);

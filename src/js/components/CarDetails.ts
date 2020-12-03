@@ -53,7 +53,7 @@ export class CarDetails {
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.car.fullName()}</h2>
                     <div class="header__info-data">
-                        <button class="o-btn-ico header__info-data-edit"><i class="ico edit"></i></button>
+                        <button class="o-btn-ico header__info-data-edit js-edit"><i class="ico edit"></i></button>
                         <div>
                             <span class="">Body Style:</span>
                             <span class="u-txt-b">${this.car.bodyStyle}</span>
@@ -148,12 +148,14 @@ export class CarDetails {
         const deleteCarBtn = this.carDetailsPage.querySelector('.js-delete-car') as HTMLButtonElement;
         const selectRepairItems = this.carDetailsPage.querySelectorAll('.js-repair-item') as NodeListOf<HTMLButtonElement>
         const deleteAllBtn = this.carDetailsPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+        const editBtn = this.carDetailsPage.querySelector('.js-edit') as HTMLButtonElement;
 
         deleteCarBtn.addEventListener('click', () => this.handleDeleteCar())
         selectRepairItems.forEach(button =>
             button.addEventListener('click', (ev) => this.select(ev))
         )
         deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
+        editBtn.addEventListener('click', () => this.handleEdit())
     }
 
     private select(ev: MouseEvent) {
@@ -174,9 +176,13 @@ export class CarDetails {
 
         this.carService.deleteRepairs(this.car, repairsId).then(isDeleted => {
             if (isDeleted) {
-                repairsId.forEach( item => this.pageHelper.deleteItem(item))
+                repairsId.forEach(item => this.pageHelper.deleteItem(item))
             }
-                this.pageHelper.uncheckMainCheckbox();
+            this.pageHelper.uncheckMainCheckbox();
         });
+    }
+
+    private handleEdit() {
+        this.routing.goMenageCar(this.car);
     }
 }

@@ -6,6 +6,7 @@ import {RepairInfo} from "../components/RepairInfo";
 import {MenageCar} from "../components/MenageCar";
 import {MenageRepair} from "../components/MenageRepair";
 import {MenagePart} from "../components/MenagePart";
+import {Car} from "../model/Car";
 
 export class Routing {
     private readonly carService: CarService;
@@ -17,7 +18,7 @@ export class Routing {
     btnBack = document.querySelector('.js-back') as HTMLAnchorElement;
     btnAdd = document.querySelector('.js-add') as HTMLAnchorElement;
     btnSubmit = document.querySelector('.js-submit') as HTMLButtonElement;
-    repairInfo:RepairInfo = null;
+    repairInfo: RepairInfo = null;
 
     constructor(carService: CarService) {
         this.carService = carService;
@@ -48,20 +49,20 @@ export class Routing {
     private goAdd() {
         const pages = document.querySelectorAll('.js-pages > div') as NodeListOf<HTMLDivElement>;
 
-        pages.forEach((page)=> {
-          if (!page.classList.contains('u-hide')){
-              if (page.classList.contains('js-menu-page')){
-                  this.goMenageCar();
-              }
+        pages.forEach((page) => {
+            if (!page.classList.contains('u-hide')) {
+                if (page.classList.contains('js-menu-page')) {
+                    this.goMenageCar();
+                }
 
-              if (page.classList.contains('js-car-details')){
-                  this.openMenageRepair();
-              }
+                if (page.classList.contains('js-car-details')) {
+                    this.openMenageRepair();
+                }
 
-              if (page.classList.contains('js-repair-info')){
-                  this.openMenagePart();
-              }
-          }
+                if (page.classList.contains('js-repair-info')) {
+                    this.openMenagePart();
+                }
+            }
         })
     }
 
@@ -87,16 +88,17 @@ export class Routing {
         });
     }
 
-    goMenageCar() {
-        history.pushState(null, "Add New Vehicle", `?create`)
+    goMenageCar(car: Car = null) {
+        const mode = car ? `car=${car.id}&edit` : 'create'
+        history.pushState(null, "Add New Vehicle", `?${mode}`)
 
         hideWindow().then(() => {
             this.btnAdd.classList.add('u-hide');
             this.btnSubmit.classList.remove('u-hide');
 
-            this.btnSubmit.setAttribute('form','menageCar');
+            this.btnSubmit.setAttribute('form', 'menageCar');
 
-            new MenageCar(this, this.carService);
+            new MenageCar(this, this.carService, car);
             showWindow(this.menageCarPage);
         });
     }
@@ -106,7 +108,7 @@ export class Routing {
     }
 
     openMenagePart() {
-        new MenagePart(this.btnAdd.dataset.id, this, this.carService,this.repairInfo);
+        new MenagePart(this.btnAdd.dataset.id, this, this.carService, this.repairInfo);
     }
 
     goDetails(carId: string, addHistory: boolean = true) {
@@ -115,6 +117,7 @@ export class Routing {
         }
 
         hideWindow().then(() => {
+            this.resetPage();
             this.btnAdd.dataset.id = carId;
             const car = this.carService.getCar(carId);
             new CarDetails(car, this, this.carService)
@@ -164,6 +167,14 @@ export class Routing {
             case 2:
                 if (items[0][0] === 'car' && items[1][0] === 'repair') {
                     this.goRepairInfo(items[0][1], items[1][1], addHistory);
+                    match = true;
+                }
+                if (items[0][0] === 'car' && items[1][0] === 'edit') {
+                    const car = this.carService.getCar(items[0][1]);
+                    if (!car) {
+                        this.goHome();
+                    }
+                    this.goMenageCar(car);
                     match = true;
                 }
                 break;
