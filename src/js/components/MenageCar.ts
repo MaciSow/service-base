@@ -8,7 +8,7 @@ export class MenageCar {
     private carService: CarService;
     private routing: Routing;
     private menageCarPage: HTMLDivElement;
-    private uploadedImage: string;
+    private uploadedImage = '';
     private isImageDelete = false;
     private car: Car;
     private title: string;
@@ -67,19 +67,19 @@ export class MenageCar {
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formModel">Model:</label>
-                                 <input class="o-field__input" type="text" name="model" id="formModel" ${this.insertValue('model')}>
+                                 <input class="o-field__input" type="text" name="model" id="formModel" ${this.insertValue('model')} required>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formBodyStyle">Body Style:</label>
-                                <select class="o-field__select js-body-select" name="bodyStyle"  id="formBodyStyle"></select>
+                                <select class="o-field__select js-body-select" name="bodyStyle" id="formBodyStyle"></select>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formVersion">Version:</label>
-                                <input class="o-field__input" type="text" name="version" id="formVersion" ${this.insertValue('version')}>
+                                <input class="o-field__input" type="text" name="version" id="formVersion" ${this.insertValue('version')} required>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formYear">Year:</label>
-                                <input class="o-field__input" min="1800" max="${currentYear + 1}" type="number" name="year" id="formYear" ${this.insertValue('year')}>
+                                <input class="o-field__input" min="1800" max="${currentYear + 1}" type="number" name="year" id="formYear" ${this.insertValue('year')} required>
                             </div>
                         </div>
                     </div>
@@ -107,11 +107,11 @@ export class MenageCar {
                             <div class="o-field">
                                 <label class="o-field__label" for="formCapacity">Capacity:</label>
                                 <input class="o-field__input" name="capacity" pattern="^\\d{1,2}\\.?\\d{1,3}" id="formCapacity" 
-                                title="Invalid format, must be digit" type="text" ${this.insertValueEngine('capacity')}> 
+                                title="Invalid format, must be digit" type="text" ${this.insertValueEngine('capacity')} required> 
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formName">Name:</label>
-                                <input class="o-field__input" type="text" name="name" id="formName" ${this.insertValueEngine('name')}>
+                                <input class="o-field__input" type="text" minlength="2" name="name" id="formName" ${this.insertValueEngine('name')} required>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formLayout">Layout:</label>
@@ -119,15 +119,15 @@ export class MenageCar {
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formPistons">Pistons:</label>
-                                <input class="o-field__input" min="0" max="32" type="number" name="pistons" id="formPistons" ${this.insertValueEngine('pistons')}>
+                                <input class="o-field__input" min="1" max="32" type="number" name="pistons" id="formPistons" ${this.insertValueEngine('pistons')} required>
                             </div>
                             <div class="o-field">
                                 <label class="o-field__label" for="formPower">Power:</label>
-                                <input class="o-field__input" min="0" type="number" name="power" id="formPower" ${this.insertValueEngine('power')}>
+                                <input class="o-field__input" min="1" type="number" name="power" id="formPower" ${this.insertValueEngine('power')} required>
                             </div>                       
                             <div class="o-field">
                                 <label class="o-field__label" for="formTorque">Torque:</label>
-                                <input class="o-field__input"  type="number" name="torque" min="0" id="formTorque" ${this.insertValueEngine('torque')}>
+                                <input class="o-field__input" type="number" name="torque" min="1" id="formTorque" ${this.insertValueEngine('torque')} required>
                             </div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@ export class MenageCar {
     }
 
     private insertImage() {
-        if (!this.car) {
+        if (!this.car || !this.car.image) {
             return;
         }
 
@@ -217,10 +217,20 @@ export class MenageCar {
         form.onsubmit = async (ev) => {
             ev.preventDefault();
             const data = new FormData(form)
-            const car = Car.createFromForm(data);
-            car.image = this.uploadedImage;
 
-            this.carService.addCar(car).then(() => this.routing.goHome())
+            if (this.car) {
+                this.car.editFromForm(data);
+                if (this.uploadedImage || this.isImageDelete) {
+                    this.car.image = this.uploadedImage;
+                }
+
+                this.carService.editCar(this.car).then(() => this.routing.goDetails(this.car.id))
+            } else {
+                const car = Car.createFromForm(data);
+                car.image = this.uploadedImage;
+
+                this.carService.addCar(car).then(() => this.routing.goHome())
+            }
         };
     }
 

@@ -14,6 +14,7 @@ import {
     getRepair,
     getRepairParts,
     updateCar,
+    updateEngine,
     updateRepair
 } from "../api";
 import {Repair} from "../model/Repair";
@@ -63,8 +64,22 @@ export class CarService {
         return new Promise((resolve => {
             createEngine(car.engine).then(() => {
                 createCar(car).then(() => {
-                    car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
-                    this.carList.push(car);
+                    if (car.image) {
+                        car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
+                    }
+                    resolve(true);
+                });
+            });
+        }))
+    }
+
+    editCar(car: Car): Promise<boolean> {
+        return new Promise((resolve => {
+            updateEngine(car.engine).then(() => {
+                updateCar(car).then(() => {
+                    if (car.image) {
+                        car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
+                    }
                     resolve(true);
                 });
             });

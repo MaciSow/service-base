@@ -46,9 +46,9 @@ export class CarDetails {
         return ` <div class="l-car-details">
             <button class="o-btn-ico--delete l-car-details__delete-all js-delete-car"><i class="ico Xdelete"></i></button>
             <div class="l-car-details__header">
-                <div class="header__avatar">
+                <div class="header__avatar o-car-thumb">
                     <i class="ico car"></i>
-                    <img class="avatar__image" src="${this.car.image}" alt="no brum brum">
+                    <img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.car.fullName()}</h2>

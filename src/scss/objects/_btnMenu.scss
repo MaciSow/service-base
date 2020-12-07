@@ -11,25 +11,8 @@
   border-radius: 16px;
   transition: transform 200ms;
 
-  .o-ico{
-    $height: 100px;
-    $width: 180px;
-    position: absolute;
-    width: $width;
-    height: $height;
-    margin-top: -$height / 2;
-    margin-left: -$width / 2;
-    top: 40%;
-    left: 50%;
-    fill: $black05;
-  }
-
-  &__image {
-    position: relative;
-    z-index: 2;
-    height: 256px;
-    width: 400px;
-    object-fit: cover;
+  .o-ico {
+    top: 40% !important;
   }
 
   &__title {

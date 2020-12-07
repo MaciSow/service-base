@@ -105,7 +105,7 @@ export class RepairInfo {
     }
 
     private handleEdit() {
-        this.routing.goMenageCar(this.car);
+        this.routing.openMenageRepair()
     }
 
     private fillWindow() {
@@ -143,9 +143,9 @@ export class RepairInfo {
         return ` <div class="l-repair-info">
             <button class="o-btn-ico--delete l-repair-info__delete-all js-delete-repair"><i class="ico Xdelete"></i></button>
             <div class="l-repair-info__header">
-                <div class="header__image">
+                <div class="o-car-thumb">
                  <i class="ico car"></i>
-                 <img src="${this.car.image}" alt="no brum brum">
+                 <img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.repair.title}</h2>

@@ -34,7 +34,7 @@ function checkStatus(response) {
 
     const error = new Error(response.statusText);
     error.message = response.message;
-    console.log(response.statusText);
+    console.log(response);
 
     throw error;
 }
@@ -45,6 +45,16 @@ export function createEngine(engine: Engine) {
     return fetchJson(url, {
         method: 'POST',
         body: JSON.stringify(engine)
+    });
+}
+
+export function updateEngine(engine: Engine) {
+    const engineCopy = {...engine};
+
+    const url = `${serverUrl}/engines/${engine.id}`;
+    return fetchJson(url, {
+        method: 'PUT',
+        body: JSON.stringify(engineCopy)
     });
 }
 
@@ -70,11 +80,10 @@ export function getCar(id: string) {
 
 export function createCar(car: Car) {
     const carCopy = {...car};
-
+    
     delete carCopy.overview;
     delete carCopy.insurance;
     delete carCopy.repairs;
-    const str = JSON.stringify(carCopy)
 
     const url = `${serverUrl}/cars`;
     return fetchJson(url, {

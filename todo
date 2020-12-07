@@ -4,12 +4,11 @@ connect parts
 edit part, repair, car
     - new window
     - notification
-edit part submit
+menage car - optional fields
 
 
  /////LINKS/////
  query string
- ''
  ?car=xxx
  ?car=xxx&repair=xxx
 
