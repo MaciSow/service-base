@@ -4,7 +4,9 @@ connect parts
 edit part, repair, car
     - new window
     - notification
-menage car - optional fields
+block submit in form (until all operation finish)
+fix display null data
+don't load null image
 
 
  /////LINKS/////

@@ -105,7 +105,7 @@ export class RepairInfo {
     }
 
     private handleEdit() {
-        this.routing.openMenageRepair()
+        this.routing.openMenageRepair(this.repair, this.car)
     }
 
     private fillWindow() {

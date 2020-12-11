@@ -1,7 +1,7 @@
 import {Engine} from "./Engine";
 import {Repair} from "./Repair";
 import {v4 as makeId} from 'uuid'
-import {getDateFromString} from "../utilities";
+import {getDateFromString, getPositiveNumberOrNull} from "../utilities";
 import {Insurance} from "./Insurance";
 
 export class Car {
@@ -12,11 +12,9 @@ export class Car {
     bodyStyle: string;
     version: string;
     year: number;
-    engine: Engine;
-
-    insurance: Insurance
     overview: Date = new Date();
-
+    engine: Engine = new Engine();
+    insurance: Insurance = new Insurance();
     repairs: Repair[] = [];
 
     fullName(): string {
@@ -25,25 +23,19 @@ export class Car {
 
     static createFromJSON(json): Car {
         const car = new Car();
-        car.id = json.id;
-        car.image = json.image;
-        car.brand = json.brand;
-        car.model = json.model;
-        car.bodyStyle = json.bodyStyle;
-        car.version = json.version;
-        car.year = json.year;
+        const {id, image, brand, model, bodyStyle, version, year, engine, insurance} = json;
+
+        car.id = id;
+        car.image = image;
+        car.brand = brand;
+        car.model = model;
+        car.bodyStyle = bodyStyle;
+        car.version = version;
+        car.year = year;
         car.overview = new Date();
 
-        const engine = new Engine();
-        engine.id = json.engine.id;
-        engine.name = json.engine.name;
-        engine.capacity = json.engine.capacity;
-        engine.layout = json.engine.layout;
-        engine.pistons = json.engine.pistons;
-        engine.power = json.engine.power;
-        engine.torque = json.engine.torque;
-
-        car.engine = engine;
+        car.engine.fillFromJSON(engine);
+        car.insurance.fillFromJSON(insurance);
 
         return car;
     }
@@ -51,26 +43,22 @@ export class Car {
     static createFromForm(data: FormData): Car {
         const car = new Car();
 
+        let tmp = data.get('bodyStyle').toString();
+
         car.id = makeId();
         car.image = null;
         car.brand = data.get('brand').toString();
         car.model = data.get('model').toString();
-        car.bodyStyle = data.get('bodyStyle').toString();
+        car.bodyStyle = tmp === '---' ? '' : tmp;
         car.version = data.get('version').toString();
-        car.year = +data.get('year');
+        car.year = getPositiveNumberOrNull(data, 'year');
         car.overview = getDateFromString(data.get('overview').toString(), '-', true);
-        car.insurance = new Insurance(getDateFromString(data.get('insurance').toString(), '-', true));
 
-        const engine = new Engine();
-        engine.id = makeId();
-        engine.name = data.get('name').toString();
-        engine.capacity = +(data.get('capacity').toString());
-        engine.layout = data.get('layout').toString();
-        engine.pistons = +data.get('pistons');
-        engine.power = +data.get('power');
-        engine.torque = +data.get('torque');
+        car.engine.id = makeId();
+        car.engine.fillFromForm(data);
 
-        car.engine = engine;
+        car.insurance.id = makeId();
+        car.insurance.fillFromForm(data);
 
         return car;
     }
@@ -80,19 +68,14 @@ export class Car {
         this.model = data.get('model').toString();
         this.bodyStyle = data.get('bodyStyle').toString();
         this.version = data.get('version').toString();
-        this.year = +data.get('year');
-        // this.overview = getDateFromString(data.get('overview').toString(), '-', true);
-        // this.insurance = new Insurance(getDateFromString(data.get('insurance').toString(), '-', true));
+        this.year = getPositiveNumberOrNull(data, 'year');
+        this.overview = getDateFromString(data.get('overview').toString(), '-', true);
 
-        this.engine.name = data.get('name').toString();
-        this.engine.capacity = +(data.get('capacity').toString());
-        this.engine.layout = data.get('layout').toString();
-        this.engine.pistons = +data.get('pistons');
-        this.engine.power = +data.get('power');
-        this.engine.torque = +data.get('torque');
+        this.engine.fillFromForm(data);
+        this.insurance.fillFromForm(data);
     }
 
-    addRepair(repair:Repair){
+    addRepair(repair: Repair) {
         this.repairs.push(repair);
     }
 

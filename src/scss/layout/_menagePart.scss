@@ -9,25 +9,55 @@
     min-width: 128px;
   }
 
-  .o-btn-form{
+  .o-btn-form {
     min-width: 200px;
     padding-left: 32px;
     padding-right: 32px;
+
   }
 
-  .content__group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 32px;
+  .o-btn-dropdown {
+    padding: 9px 16px;
+    font-size: $t1;
+    color: $txtColor;
+    background-color: $blue;
+    text-align: center;
+
+    &:hover {
+      background-color: $blueBright;
+    }
+
+    &.dropzone {
+      min-height: unset;
+      border: unset;
+
+      .dz-message {
+        margin: 0;
+      }
+
+      .dz-image, .dz-details {
+        display: none;
+      }
+
+      .dz-remove{
+
+      }
+    }
   }
 
-  .l-drop-down-backdrop{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background-color: $black05;
-    z-index: 11;
+    .content__group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 32px;
+    }
+
+    .l-drop-down-backdrop {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      background-color: $black05;
+      z-index: 11;
+    }
   }
-}

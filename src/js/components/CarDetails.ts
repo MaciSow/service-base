@@ -21,12 +21,12 @@ export class CarDetails {
     private init() {
         this.carDetailsPage = document.querySelector('.js-car-details');
         this.routing.setBack('/', 'js-car-details', 'js-menu-page');
-
         if (!this.carDetailsPage) {
+
             return;
         }
-
         document.title = `Details - ${this.car.fullName()}`;
+
         this.carService.getRepairs(this.car).then(repairs => {
             this.car.repairs = repairs;
             this.fillWindow();
@@ -35,6 +35,7 @@ export class CarDetails {
             this.pageHelper.handleCheck(null);
             addIcons();
         });
+
     }
 
     private fillWindow() {
@@ -120,7 +121,7 @@ export class CarDetails {
                     <span>Mileage</span>
                 </div> 
                 <ol class="c-list js-repairs">
-                    ${this.createRepairList()} ${this.createRepairList()}
+                    ${this.createRepairList()}
                 </ol>
             </div>
         </div>`;
@@ -128,6 +129,7 @@ export class CarDetails {
 
     private createRepairList(): string {
         let repairListHtml = '';
+
         this.car.repairs.forEach(repair =>
             repairListHtml += `<li class="c-list__item" data-id="${repair.id}">
                                     <label class="o-checkbox">

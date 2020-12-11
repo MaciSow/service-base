@@ -1,8 +1,6 @@
 import {getDateFromString} from "../utilities";
 import {Part} from "./Part";
-import {Insurance} from "./Insurance";
 import {v4 as makeId} from 'uuid'
-import {Engine} from "./Engine";
 
 export class Repair {
     id: string;
@@ -21,8 +19,6 @@ export class Repair {
         repair.mileage = json.mileage;
         repair.notice = json.notice;
 
-        json.parts.forEach(part=>repair.parts.push(Part.createFromJSON(part)));
-
         return repair
     }
 
@@ -35,6 +31,13 @@ export class Repair {
         repair.mileage = +data.get('mileage').toString();
         repair.notice = data.get('notice').toString();
         return repair;
+    }
+
+    editFromForm(data: FormData) {
+        this.title = data.get('title').toString();
+        this.date = getDateFromString(data.get('date').toString(), '-', true);
+        this.mileage = +data.get('mileage').toString();
+        this.notice = data.get('notice').toString();
     }
 
     costsSum() {

@@ -1,7 +1,6 @@
 import {Car} from "../model/Car";
 import {
     createCar,
-    createEngine,
     createPart,
     createRepair,
     deleteCar,
@@ -14,11 +13,11 @@ import {
     getRepair,
     getRepairParts,
     updateCar,
-    updateEngine,
     updateRepair
 } from "../api";
 import {Repair} from "../model/Repair";
 import {Part} from "../model/Part";
+import {checkServerErrorStatus} from "../utilities";
 
 export class CarService {
     private carList: Car[] = [];
@@ -37,7 +36,7 @@ export class CarService {
             getCars().then((data) => {
 
                 let counter = 0;
-                const cars: string[] = data.cars;
+                const cars: string[] = data;
                 cars.forEach((carData) => {
                     const car = Car.createFromJSON(carData);
 
@@ -53,7 +52,7 @@ export class CarService {
     }
 
     getCar(id: string) {
-        return this.carList.filter(car => car.id === id)[0]
+        return this.carList.filter(car => car.id === id)[0];
     }
 
     getCars() {
@@ -62,39 +61,36 @@ export class CarService {
 
     addCar(car: Car): Promise<boolean> {
         return new Promise((resolve => {
-            createEngine(car.engine).then(() => {
-                createCar(car).then(() => {
-                    if (car.image) {
-                        car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
-                    }
-                    resolve(true);
-                });
+            createCar(car).then((data) => {
+                checkServerErrorStatus(data);
+
+                car.image = data.image ? data.image : '';
+                this.carList.push(car);
+                resolve(true);
             });
         }))
     }
 
     editCar(car: Car): Promise<boolean> {
         return new Promise((resolve => {
-            updateEngine(car.engine).then(() => {
-                updateCar(car).then(() => {
-                    if (car.image) {
-                        car.image = `https://service-base-api.es3d.pl/images/${car.image}`;
-                    }
-                    resolve(true);
-                });
+            updateCar(car).then((data) => {
+                checkServerErrorStatus(data);
+
+                car.image = data.image ? data.image : '';
+                resolve(true);
             });
         }))
     }
 
     getBodyStyles(): Promise<string[]> {
         return new Promise((resolve => {
-            getBodyStyles().then(data => resolve(data.bodyStyles));
+            getBodyStyles().then(data => resolve(data));
         }));
     }
 
     getBrands(): Promise<string[]> {
         return new Promise((resolve => {
-            getBrands().then(data => resolve(data.brands));
+            getBrands().then(data => resolve(data));
         }));
     }
 
@@ -137,7 +133,7 @@ export class CarService {
             let repairs: Repair[] = [];
 
             getCarRepairs(car.id).then((data) => {
-                const repairsJSON: string[] = data.repairs;
+                const repairsJSON: string[] = data;
 
                 if (!repairsJSON.length) {
                     resolve([]);
@@ -162,6 +158,24 @@ export class CarService {
             createRepair(repair, car.id).then(() => {
                 car.addRepair(repair);
                 resolve(true);
+            });
+        }))
+    }
+
+    editRepair(repair: Repair, car: Car, selectedCar: Car): Promise<boolean> {
+        return new Promise((resolve => {
+            updateRepair(repair, selectedCar.id).then(() => {
+
+                if (car != selectedCar) {
+                    this.getRepairs(selectedCar).then(() => {
+                        selectedCar.addRepair(repair);
+                        car.deleteRepair(repair);
+
+                        resolve(true)
+                    })
+                }
+
+                resolve(true)
             });
         }))
     }
@@ -204,7 +218,7 @@ export class CarService {
             let counter = 0;
 
             getRepairParts(repair.id).then((data) => {
-                const partsJSON: string[] = data.parts;
+                const partsJSON: string[] = data;
 
                 if (!partsJSON.length) {
                     resolve([]);

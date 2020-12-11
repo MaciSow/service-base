@@ -8,17 +8,25 @@ export class MenageRepair {
     private carService: CarService;
     private routing: Routing;
     private car: Car;
+    private selectCar: Car;
+    private repair: Repair;
+    private isEdit = false;
 
-    constructor(carId: string, routing: Routing, carService: CarService) {
+    constructor(repair: Repair, carId: string, routing: Routing, carService: CarService) {
         this.carService = carService;
         this.routing = routing;
         this.car = this.carService.getCar(carId);
+        this.selectCar = this.carService.getCar(carId);
+        if (repair) {
+            this.repair = repair;
+            this.isEdit = true;
+        }
+
         this.init();
     }
 
     private init() {
         this.createWindow()
-
         this.eventListeners();
         addIcons();
     }
@@ -26,32 +34,30 @@ export class MenageRepair {
     private createWindow() {
         const body = document.querySelector('body');
 
-        const now = getStringDate( new Date(),'-',true);
-        
         const menageHTML = `<div class="c-modal-backdrop u-is-showing js-menage-window">          
                                 <div class="c-modal">
                                     <button class="o-btn-ico--delete c-modal__close js-menage-close"><i class="ico Xdelete"></i></button>
-                                    <h2 class="o-title-l1--center">Add New Repair</h2>
+                                    <h2 class="o-title-l1--center">${this.isEdit?'Edit Repair':'Add New Repair'}</h2>
                                     <form id="menageRepair" class="l-manage-repair js-form">
                                         ${this.createDropList()}
                                         <div class="o-field">
                                             <label class="o-field__label" for="formTitle">Title:</label>
-                                            <input class="o-field__input" type="text" name="title" id="formTitle" required>
+                                            <input class="o-field__input" type="text" name="title" id="formTitle" ${this.insertValue('title')} required> 
                                         </div>
                                         <div class="content__group">
                                             <div class="o-field">
                                                 <label class="o-field__label" for="formDate">Date:</label>
-                                                <input class="o-field__input--date" type="date" name="date" id="formDate" value="${now}">
+                                                <input class="o-field__input--date" type="date" name="date" id="formDate" ${this.insertDateValue()}>
                                             </div>
                                             <div class="o-field">
                                                 <label class="o-field__label" for="formMileage">Mileage:</label>
-                                                <input class="o-field__input u-pr--la" min="0" type="number" name="mileage" id="formMileage">
+                                                <input class="o-field__input u-pr--la" min="0" type="number" name="mileage" id="formMileage" ${this.insertValue('mileage')}>
                                                 <span class="o-postfix">km</span>
                                             </div>
                                         </div>
                                         <div class="o-field u-d-flex-top">
                                             <label class="o-field__label" for="formNotice">Notice:</label>
-                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice"></textarea>
+                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice">${this.isEdit ? this.repair.notice : ''}</textarea>
                                         </div>
                                         <div class="u-flex-r">
                                             <button class="o-btn-form js-save">Save</button>      
@@ -100,13 +106,19 @@ export class MenageRepair {
         const form = ev.currentTarget as HTMLFormElement;
         const data = new FormData(form)
 
-        const repair = Repair.createFromForm(data)
-        this.carService.addRepair(repair, this.car).then(() => {
-
-            this.routing.goRepairInfo(this.car.id, repair.id)
-            this.hideWindow().then(() => {
+        if (this.isEdit) {
+            this.repair.editFromForm(data);
+            this.carService.editRepair(this.repair, this.car, this.selectCar).then(() => {
+                this.routing.goRepairInfo(this.selectCar.id, this.repair.id)
+                this.hideWindow().then(() => {})
             })
-        })
+        }else {
+            const repair = Repair.createFromForm(data)
+            this.carService.addRepair(repair, this.selectCar).then(() => {
+                this.routing.goRepairInfo(this.selectCar.id, repair.id)
+                this.hideWindow().then(() => {})
+            })
+        }
     }
 
     private showWindow() {
@@ -151,10 +163,10 @@ export class MenageRepair {
         const title = document.querySelector('.js-drop-down-title') as HTMLSpanElement;
         const image = document.querySelector('.js-drop-down-image') as HTMLImageElement;
         const carId = ev.target.closest('li').dataset.id;
-        this.car = this.carService.getCar(carId);
+        this.selectCar = this.carService.getCar(carId);
 
-        image.src = this.car.image;
-        title.innerText = this.car.fullName();
+        image.src = this.selectCar.image;
+        title.innerText = this.selectCar.fullName();
 
         setTimeout(() => this.fillDropDown(), 250)
     }
@@ -180,5 +192,16 @@ export class MenageRepair {
 
         list.innerHTML = carsHTML;
         list.childNodes.forEach(item => item.addEventListener('click', (ev) => this.handleListItem(ev)));
+    }
+
+    private insertValue(property: string) {
+        return this.isEdit ? 'value="' + this.repair[property] + '"' : '';
+    }
+
+    private insertDateValue() {
+        const date = this.isEdit ? this.repair.date : new Date();
+        const stringDate = getStringDate(date, '-', true);
+
+        return 'value="' + stringDate + '"';
     }
 }

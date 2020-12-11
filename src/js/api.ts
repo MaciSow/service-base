@@ -18,25 +18,34 @@ function fetchJson(url: string, options = null) {
         .then(response => {
             return response.text()
                 .then(text => {
+
                     if (headers['Content-Type'] === 'application/json') {
                         return text ? JSON.parse(text) : '';
                     }
-
                     return text;
                 });
         });
 }
 
 function checkStatus(response) {
-    if (response.status >= 200 && response.status < 400) {
+    if (response.status >= 200 && response.status < 500) {
         return response;
     }
 
     const error = new Error(response.statusText);
     error.message = response.message;
-    console.log(response);
 
     throw error;
+}
+
+function checkError(text) {
+    if (+text.status >= 200 && +text.status < 400) {
+        return;
+    }
+
+    console.log(text.title);
+
+    throw new Error('stop');
 }
 
 export function createEngine(engine: Engine) {
@@ -59,12 +68,12 @@ export function updateEngine(engine: Engine) {
 }
 
 export function getBodyStyles() {
-    const url = `${serverUrl}/cars/body-styles`;
+    const url = `${serverUrl}/body-styles`;
     return fetchJson(url);
 }
 
 export function getBrands() {
-    const url = `${serverUrl}/cars/brands`;
+    const url = `${serverUrl}/brands`;
     return fetchJson(url);
 }
 
@@ -79,13 +88,21 @@ export function getCar(id: string) {
 }
 
 export function createCar(car: Car) {
-    const carCopy = {...car};
-    
-    delete carCopy.overview;
-    delete carCopy.insurance;
+    const insuranceJSON = {
+        ...car.insurance,
+        expireDate: getStringDate(car.insurance.expireDate)
+    }
+
+    const carCopy = {
+        ...car,
+        insurance: insuranceJSON,
+        overview: getStringDate(car.overview)
+    };
+
     delete carCopy.repairs;
 
     const url = `${serverUrl}/cars`;
+
     return fetchJson(url, {
         method: 'POST',
         body: JSON.stringify(carCopy)
@@ -93,10 +110,17 @@ export function createCar(car: Car) {
 }
 
 export function updateCar(car: Car) {
-    const carCopy = {...car, engineId: car.engine.id, overview: getStringDate(car.overview)};
-    delete carCopy.engine;
+    const insuranceJSON = {
+        ...car.insurance,
+        expireDate: getStringDate(car.insurance.expireDate)
+    }
+
+    const carCopy = {
+        ...car,
+        overview: getStringDate(car.overview),
+        insurance: insuranceJSON
+    };
     delete carCopy.repairs;
-    delete carCopy.insurance;
 
     const url = `${serverUrl}/cars/${car.id}`;
     return fetchJson(url, {
@@ -131,8 +155,15 @@ export function getCarRepairs(id: string) {
     return fetchJson(url);
 }
 
-export function updateRepair(repair: Repair) {
-    const repairCopy = {...repair, date: getStringDate(repair.date)};
+export function updateRepair(repair: Repair, carId: string = '') {
+    // const repairCopy = {...repair, date: getStringDate(repair.date), carId };
+    let repairCopy;
+
+    if (carId) {
+        repairCopy = {...repair, date: getStringDate(repair.date), carId}
+    } else {
+        repairCopy = {...repair, date: getStringDate(repair.date)}
+    }
     delete repairCopy.parts;
 
     const url = `${serverUrl}/repairs/${repair.id}`;

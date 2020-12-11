@@ -1,40 +1,75 @@
-[{
-  "id": "465e0a11-1d5b-430f-8c02-424dac45f4c0",
-  "image": null,
-  "brand": "Audi",
-  "model": "dss",
-  "version": "fdsa",
-  "year": 1800,
-  "bodyStyle": "coupe",
-  "engine": {
-    "id": 10,
-    "name": "fasd",
-    "capacity": 1,
-    "layout": "r",
-    "pistons": 1,
-    "power": 1,
-    "torque": 1
+[
+  {
+    "id": "100",
+    "image": "1.jpeg",
+    "brand": "BMW",
+    "model": "3i",
+    "version": "",
+    "year": "",
+    "bodyStyle": "---",
+    "overview": "",
+    "engine": {
+      "id": "200",
+      "name": "",
+      "layout": "",
+      "capacity": "",
+      "pistons": "",
+      "power": "",
+      "torque": ""
+    },
+    "insurance": {
+      "id": "100",
+      "company": "",
+      "expireDate": "",
+      "cost": "",
+      "ac": "",
+      "oc": "",
+      "nnw": ""
+    }
   },
-  "repairs": []
-},
-
-{
-  "id": "test",
-  "image": null,
-  "brand": "BMW",
-  "model": "Serena пасс.",
-  "version": "eius",
-  "year": 2004,
-  "bodyStyle": "SUV",
-  "engine": {
-    "id": "1",
-    "name": "LAP",
-    "capacity": 2.8,
-    "layout": "R",
-    "pistons": 5,
-    "power": 276,
-    "torque": 236
+  {
+    "id": "100",
+    "title": "Test",
+    "date": "10.10.2010",
+    "mileage": "",
+    "notice": "",
+    "carId": "1"
   },
-  "repairs": []
-}
-  ]
+  {
+    "id": "100",
+    "name": "Test",
+    "model": "",
+    "price": "",
+    "invoice": "",
+    "notice": "",
+    "repairId": "1"
+  },
+  {
+    "overview": "01.01.0",
+    "id": "a0fa98aa-9293-44af-b14b-e8e670d2ff7b",
+    "image": "",
+    "brand": "Audi",
+    "model": "dadsasd",
+    "bodyStyle": "",
+    "version": "",
+    "year": 0,
+    "insurance": {
+      "expireDate": "11.12.2020",
+      "ac": true,
+      "oc": true,
+      "nnw": false,
+      "id": "7a07fdd4-3cae-4e12-9964-5942c5e9e87b",
+      "company": "Warta",
+      "cost": 350
+    },
+    "engine": {
+      "id": "ec81d856-5749-46be-8f16-cb6df51ac529",
+      "name": "",
+      "capacity": 0,
+      "layout": "",
+      "pistons": 0,
+      "power": 0,
+      "torque": 0
+    }
+  }
+]

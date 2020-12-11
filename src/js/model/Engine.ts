@@ -1,3 +1,5 @@
+import {getPositiveNumberOrNull} from "../utilities";
+
 export class Engine {
     id: number;
     capacity: number;
@@ -7,7 +9,30 @@ export class Engine {
     power: number;
     torque: number;
 
-    toString(){
-        return`${this.layout}${this.pistons} ${this.capacity}L`;
+    toString() {
+        return `${this.layout}${this.pistons} ${this.capacity}L`;
+    }
+
+    fillFromJSON(json) {
+        const {id, name, capacity, layout, pistons, power, torque} = json;
+
+        this.id = id;
+        this.name = name;
+        this.capacity = capacity;
+        this.layout = layout;
+        this.pistons = pistons;
+        this.power = power;
+        this.torque = torque;
+    }
+
+    fillFromForm(data) {
+        const layout = data.get('layout').toString();
+
+        this.name = data.get('name').toString();
+        this.capacity = getPositiveNumberOrNull(data, 'capacity');
+        this.layout = layout === '---' ? '' : layout;
+        this.pistons = getPositiveNumberOrNull(data, 'pistons');
+        this.power = getPositiveNumberOrNull(data, 'power');
+        this.torque = getPositiveNumberOrNull(data, 'torque');
     }
 }

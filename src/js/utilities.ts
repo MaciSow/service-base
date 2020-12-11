@@ -132,9 +132,12 @@ export function slideReset(current) {
     }, anyOpen ? 250 : 0)
 }
 
-export function getStringDate(date: Date, separator = '.',isReverse = false): string {
+export function getStringDate(date: Date, separator = '.', isReverse = false): string {
+    if (!date) {
+        return '';
+    }
 
-    if (isReverse){
+    if (isReverse) {
         return `${date.getFullYear()}${separator}${addZeroInDate(date.getMonth() + 1)}${separator}${addZeroInDate(date.getDate())}`;
     }
 
@@ -142,6 +145,10 @@ export function getStringDate(date: Date, separator = '.',isReverse = false): st
 }
 
 export function getDateFromString(stringDate: string, separator = '.', isReverse = false): Date {
+    if (!stringDate) {
+        return null
+    }
+
     let date = new Date();
     if (isReverse) {
         date.setDate(+(stringDate.split(separator)[2]));
@@ -233,5 +240,20 @@ export function clearListeners(btn: HTMLButtonElement): HTMLButtonElement {
     btn.parentNode.replaceChild(tmp, btn);
     // return document.querySelector(`.${classes}`) as HTMLButtonElement;
     return document.querySelector(classes) as HTMLButtonElement;
+}
+
+export function getPositiveNumberOrNull(data, property: string): number {
+    const value = data.get(property).toString();
+
+    if (!value) {
+        return null;
+    }
+    return +value;
+}
+
+export function checkServerErrorStatus(data){
+    if (data.status && +data.status >= 400) {
+        console.log(data);
+    }
 }
 
