@@ -148,6 +148,26 @@
     }
   }
 
+  &:disabled {
+    border: 2px solid $white05;
+    opacity: 1;
+
+    .o-ico {
+      fill: $white05;
+    }
+
+    &:hover {
+      opacity: 1;
+      background: none;
+      border-color: $white05;
+      cursor: unset;
+
+      .o-ico {
+        fill: $white05;
+      }
+    }
+  }
+
   &--left {
     display: flex;
     align-items: center;
@@ -240,6 +260,14 @@
 
   &:hover {
     background-color: $blueBright;
+  }
+
+  &:disabled{
+    background: $white025;
+    &:hover {
+      background-color: $white025;
+      cursor: unset;
+    }
   }
 }
 

@@ -28,16 +28,7 @@ export class MenagePart {
 
     private init() {
         this.createWindow()
-
-        this.dropzoneSettings();
-        const myDropzone = new Dropzone("#add-invoice", {url: "https://service-base-api.es3d.pl/upload-image"});
-        myDropzone.on('success', (data, uploadedInvoice) => {
-            const fileName = document.querySelector('.dz-filename') as HTMLDivElement
-            fileName.style.opacity = '1';
-            this.uploadedInvoice = uploadedInvoice;
-        });
-        myDropzone.on('removedfile', () => this.uploadedInvoice = null);
-
+        this.handleUpload();
         this.eventListeners();
         addIcons();
     }
@@ -154,6 +145,31 @@ export class MenagePart {
                 'Cache-Control': null,
                 'X-Requested-With': null
             }
+        }
+    }
+
+    private handleUpload() {
+        this.dropzoneSettings();
+
+        const myDropzone = new Dropzone("#add-invoice", {url: "https://service-base-api.es3d.pl/upload-image"});
+
+        myDropzone.on('success', (data, uploadedInvoice) => {
+            const fileName = document.querySelector('.dz-filename') as HTMLDivElement
+            fileName.style.opacity = '1';
+            this.uploadedInvoice = uploadedInvoice;
+            this.refreshSubmit()
+        });
+        myDropzone.on('addedfile', () => this.refreshSubmit(false));
+        myDropzone.on('removedfile', () => this.uploadedInvoice = null);
+    }
+
+    private refreshSubmit(unlock = true) {
+        const submitBtn = document.querySelector('.js-save') as HTMLButtonElement;
+
+        if (unlock) {
+            submitBtn.removeAttribute("disabled");
+        } else {
+            submitBtn.setAttribute("disabled", "true");
         }
     }
 }

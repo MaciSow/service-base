@@ -10,6 +10,7 @@ export class MenageCar {
     private menageCarPage: HTMLDivElement;
     private uploadedImage = '';
     private isImageDelete = false;
+    private submitUnlock = 0;
     private car: Car;
     private title: string;
 
@@ -23,6 +24,7 @@ export class MenageCar {
     private init() {
         this.menageCarPage = document.querySelector('.js-menage-car');
         this.routing.setBack('/', 'js-menage-car', 'js-menu-page');
+        this.refreshSubmit();
 
         if (!this.menageCarPage) {
             return;
@@ -30,12 +32,8 @@ export class MenageCar {
         this.title = this.car ? `Edit Vehicle` : `Add New Vehicle`;
         document.title = this.title;
         this.fillWindow();
-        this.dropzoneSettings();
-        const myDropzone = new Dropzone("#add-image", {url: "https://service-base-api.es3d.pl/upload-image"});
-        myDropzone.on('success', (data, uploadedImage) => this.uploadedImage = uploadedImage);
-        myDropzone.on('removedfile', () => this.uploadedImage = null);
-
         this.eventListeners();
+        this.handleUpload();
         addIcons();
     }
 
@@ -166,6 +164,7 @@ export class MenageCar {
         this.carService.getBrands().then(brands => {
             brands.forEach(brand => selectList += `<option value="${brand}" ${this.car && this.car.brand === brand ? 'selected' : ''}>${brand}</option>`)
             selectHTML.innerHTML = selectList;
+            this.refreshSubmit();
         });
     }
 
@@ -183,6 +182,7 @@ export class MenageCar {
                 selectList += `<option value="${bodyStyle}" ${this.car && this.car.bodyStyle === bodyStyle ? 'selected' : ''}>${bodyStyle}</option>`
             })
             selectHTML.innerHTML = selectList;
+            this.refreshSubmit();
         });
     }
 
@@ -191,13 +191,14 @@ export class MenageCar {
         const layouts = ['R', 'B', 'V', 'W', 'H', 'Other'];
         let selectList = ''
 
-        if (!this.car ||(this.car && !this.car.engine.layout)) {
+        if (!this.car || (this.car && !this.car.engine.layout)) {
             selectList += '<option hidden selected>---</option>'
         }
 
         layouts.forEach(layout => selectList += `<option value="${layout}" ${this.car && this.car.engine.layout === layout ? 'selected' : ''}>${layout}</option>`);
 
         selectHTML.innerHTML = selectList;
+        this.refreshSubmit();
     }
 
     private insertImage() {
@@ -283,5 +284,28 @@ export class MenageCar {
                 'X-Requested-With': null
             }
         }
+    }
+
+    private refreshSubmit(add = true) {
+        this.submitUnlock += add ? 1 : -1;
+
+        const submitBtn = document.querySelector('.js-submit') as HTMLButtonElement;
+
+        if (this.submitUnlock > 3) {
+            submitBtn.removeAttribute("disabled");
+        } else {
+            submitBtn.setAttribute("disabled", "true");
+        }
+    }
+
+    private handleUpload() {
+        this.dropzoneSettings();
+        const myDropzone = new Dropzone("#add-image", {url: "https://service-base-api.es3d.pl/upload-image"});
+        myDropzone.on('success', (data, uploadedImage) => {
+            this.uploadedImage = uploadedImage;
+            this.refreshSubmit();
+        });
+        myDropzone.on('addedfile', () => this.refreshSubmit(false));
+        myDropzone.on('removedfile', () => this.uploadedImage = null);
     }
 }
