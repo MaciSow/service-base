@@ -24,6 +24,18 @@
     }
   }
 
+  &:disabled {
+    cursor: unset;
+
+    .o-ico {
+      fill: $white025;
+    }
+
+    &:hover {
+      transform: unset;
+    }
+  }
+
   &--search {
     @include btnIco;
     padding: 10px;
@@ -227,7 +239,7 @@
   text-align: center;
 
   &:hover {
-  background-color: $blueBright;
+    background-color: $blueBright;
   }
 }
 

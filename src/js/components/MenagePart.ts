@@ -11,6 +11,7 @@ export class MenagePart {
     private repairInfo: RepairInfo;
     private routing: Routing;
     private repair: Repair;
+    private uploadedInvoice = '';
 
     constructor(repairId: string, routing: Routing, carService: CarService, repairInfo: RepairInfo) {
         this.carService = carService;
@@ -18,6 +19,9 @@ export class MenagePart {
         this.routing = routing;
         carService.getRepair(repairId).then(repair => {
             this.repair = repair;
+            this.carService.getParts(this.repair).then(parts => {
+                this.repair.parts = parts;
+            })
             this.init();
         })
     }
@@ -27,8 +31,12 @@ export class MenagePart {
 
         this.dropzoneSettings();
         const myDropzone = new Dropzone("#add-invoice", {url: "https://service-base-api.es3d.pl/upload-image"});
-        // myDropzone.on('success', (data, uploadedImage) => this.uploadedImage = uploadedImage);
-        // myDropzone.on('removedfile', () => this.uploadedImage = null);
+        myDropzone.on('success', (data, uploadedInvoice) => {
+            const fileName = document.querySelector('.dz-filename') as HTMLDivElement
+            fileName.style.opacity = '1';
+            this.uploadedInvoice = uploadedInvoice;
+        });
+        myDropzone.on('removedfile', () => this.uploadedInvoice = null);
 
         this.eventListeners();
         addIcons();
@@ -97,10 +105,10 @@ export class MenagePart {
         const form = ev.currentTarget as HTMLFormElement;
         const data = new FormData(form)
         const part = Part.createFromForm(data)
+        part.invoice = this.uploadedInvoice;
 
         this.carService.addPart(part, this.repair).then(() => {
             this.hideWindow().then();
-
             this.repairInfo.update(this.repair);
             addIcons();
         })
@@ -136,13 +144,10 @@ export class MenagePart {
         Dropzone.options.addInvoice = {
             paramName: "invoice",
             createImageThumbnails: false,
-            // thumbnailHeight: 41,
-            // thumbnailWidth: 160,
             acceptedFiles: 'image/*',
             maxFiles: 1,
             dictDefaultMessage: 'Add Invoice/Receipt',
             addRemoveLinks: true,
-
             dictCancelUpload: ico,
             dictRemoveFile: ico,
             headers: {

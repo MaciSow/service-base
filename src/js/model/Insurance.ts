@@ -1,3 +1,5 @@
+import {getDateFromString} from "../utilities";
+
 export class Insurance {
     id: string;
     company: string;
@@ -12,7 +14,7 @@ export class Insurance {
 
         this.id = id;
         this.company = company;
-        this.expireDate = expireDate;
+        this.expireDate = getDateFromString(expireDate);
         this.cost = cost;
         this.ac = ac;
         this.oc = oc;

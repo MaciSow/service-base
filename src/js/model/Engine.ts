@@ -10,7 +10,20 @@ export class Engine {
     torque: number;
 
     toString() {
-        return `${this.layout}${this.pistons} ${this.capacity}L`;
+        let {layout = '', pistons = '', capacity = ''} = this;
+
+        if (layout && pistons && capacity) {
+            return `${layout}${pistons} ${capacity}L`;
+        }
+
+        if (layout && pistons) {
+            return `${layout}${pistons}`;
+        }
+        if (capacity) {
+            return `${capacity}L`;
+        }
+
+        return  '';
     }
 
     fillFromJSON(json) {

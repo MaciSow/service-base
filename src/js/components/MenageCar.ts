@@ -135,29 +135,24 @@ export class MenageCar {
              </div>`;
     }
 
-    private insertValue(property: string) {
-        return this.car ? 'value="' + this.car[property] + '"' : '';
-    }
+    private insertValue(property: string): string {
+        let value = '';
 
-    private insertValueEngine(property: string) {
-        return this.car ? 'value="' + this.car.engine[property] + '"' : '';
-    }
-
-    private fillBodySelect() {
-        const selectHTML = document.querySelector('.js-body-select') as HTMLSelectElement;
-        let selectList = '';
-
-        if (!this.car) {
-            selectList += '<option hidden selected>---</option>'
+        if (this.car && this.car[property]) {
+            value = this.car[property];
         }
 
-        this.carService.getBodyStyles().then(bodyStyles => {
-            bodyStyles.forEach(bodyStyle => {
+        return value ? 'value="' + value + '"' : '';
+    }
 
-                selectList += `<option value="${bodyStyle}" ${this.car && this.car.bodyStyle === bodyStyle ? 'selected' : ''}>${bodyStyle}</option>`
-            })
-            selectHTML.innerHTML = selectList;
-        });
+    private insertValueEngine(property: string): string {
+        let value = '';
+
+        if (this.car && this.car.engine[property]) {
+            value = this.car.engine[property];
+        }
+
+        return value ? 'value="' + value + '"' : '';
     }
 
     private fillBrandSelect() {
@@ -174,12 +169,29 @@ export class MenageCar {
         });
     }
 
+    private fillBodySelect() {
+        const selectHTML = document.querySelector('.js-body-select') as HTMLSelectElement;
+        let selectList = '';
+
+        if (!this.car || (this.car && !this.car.bodyStyle)) {
+            selectList += '<option hidden selected>---</option>'
+        }
+
+        this.carService.getBodyStyles().then(bodyStyles => {
+            bodyStyles.forEach(bodyStyle => {
+
+                selectList += `<option value="${bodyStyle}" ${this.car && this.car.bodyStyle === bodyStyle ? 'selected' : ''}>${bodyStyle}</option>`
+            })
+            selectHTML.innerHTML = selectList;
+        });
+    }
+
     private fillLayoutSelect() {
         const selectHTML = document.querySelector('.js-layout-select') as HTMLSelectElement;
         const layouts = ['R', 'B', 'V', 'W', 'H', 'Other'];
         let selectList = ''
 
-        if (!this.car) {
+        if (!this.car ||(this.car && !this.car.engine.layout)) {
             selectList += '<option hidden selected>---</option>'
         }
 

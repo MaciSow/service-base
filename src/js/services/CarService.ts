@@ -115,6 +115,7 @@ export class CarService {
         return new Promise((resolve) => {
 
             getRepair(id).then((repairJSON) => {
+
                 const repair = Repair.createFromJSON(repairJSON);
 
                 resolve(repair);
@@ -180,34 +181,28 @@ export class CarService {
         }))
     }
 
-    deleteRepair(repair: Repair) {
+    deleteRepair(repair: Repair): Promise<boolean> {
         return new Promise((resolve) => {
             const {id} = repair;
             const car = this.getCarByRepairId(id);
-
-
             car.deleteRepair(repair);
 
             deleteRepair(id).then(
-                () => updateCar(car).then(
-                    () => resolve(true)
-                )
+                () => resolve(true),
+                () => resolve(false)
             );
         })
     }
 
-    deleteRepairs(car: Car, repairsId: string[]) {
+    deleteRepairs(car: Car, repairsId: string[]): Promise<boolean> {
         return new Promise((resolve) => {
-            let counter = 1;
             car.repairs = this.cropItems(car.repairs, repairsId);
 
             repairsId.forEach(id => {
-                deleteRepair(id).then(() => {
-                    if (counter) {
-                        updateCar(car).then(() => resolve(true));
-                    }
-                    counter++;
-                });
+                deleteRepair(id).then(
+                    () => resolve(true),
+                    () => resolve(false)
+                );
             })
         })
     }
@@ -253,11 +248,9 @@ export class CarService {
             repair.deletePart(partId)
 
             deletePart(partId).then(
-                () => updateRepair(repair).then(
-                    () => resolve(true),
-                    () => resolve(false)
-                ),
-                () => resolve(false));
+                () => resolve(true),
+                () => resolve(false)
+            );
         });
     }
 
@@ -268,14 +261,7 @@ export class CarService {
 
             partsId.forEach((partId, index) => {
                 deletePart(partId).then(
-                    () => {
-                        if (index + 1 === partsId.length) {
-                            updateRepair(repair).then(
-                                () => resolve(true),
-                                () => resolve(false)
-                            )
-                        }
-                    },
+                    () => resolve(true),
                     () => resolve(false)
                 );
             })

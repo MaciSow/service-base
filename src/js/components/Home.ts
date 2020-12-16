@@ -44,15 +44,20 @@ export class Home {
     }
 
     private static createItem(car: Car): string {
+        let img = '';
+        if (car.image) {
+            img = `<img class="o-car-thumb__image" src="${car.image}" alt="car avatar">`;
+        }
+
         return `<button data-id = "${car.id}" class="o-btn-menu o-car-thumb js-btn-menu">    
                    <i class="ico car"></i>
-                   <img class="o-car-thumb__image" src="${car.image}" alt="no brum brum">
+                   ${img}
                     <div class="o-btn-menu__title">
                         <h2 class="o-title-l1--simple">${car.fullName()}</h2>
                         <div class="u-d-flex u-mt--sm">
                             <span class="o-title-l2--simple">${car.engine}</span>
                             <div class="u-spacer"></div>
-                            <span class="o-title-l2--simple">${car.year} r</span>
+                            <span class="o-title-l2--simple">${car.year ? car.year : ''}</span>
                         </div>
                     </div>
                 </button>`;

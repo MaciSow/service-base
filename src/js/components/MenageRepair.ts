@@ -37,7 +37,7 @@ export class MenageRepair {
         const menageHTML = `<div class="c-modal-backdrop u-is-showing js-menage-window">          
                                 <div class="c-modal">
                                     <button class="o-btn-ico--delete c-modal__close js-menage-close"><i class="ico Xdelete"></i></button>
-                                    <h2 class="o-title-l1--center">${this.isEdit?'Edit Repair':'Add New Repair'}</h2>
+                                    <h2 class="o-title-l1--center">${this.isEdit ? 'Edit Repair' : 'Add New Repair'}</h2>
                                     <form id="menageRepair" class="l-manage-repair js-form">
                                         ${this.createDropList()}
                                         <div class="o-field">
@@ -74,16 +74,21 @@ export class MenageRepair {
     }
 
     private createDropList() {
+        let img = '';
+        if (this.car.image) {
+            img = `<img class="image-frame__image" src="${this.car.image}" alt="">`;
+        }
+
         return `
-<div class="c-drop-down js-drop-down">
-    <span class="c-drop-down__label">Select car:</span>
-    <div class="c-drop-down__image-frame">
-        <i class="ico car"></i>
-        <img class="image-frame__image js-drop-down-image" src="${this.car.image}" alt="">                                     
-    </div>
-    <span class="c-drop-down__title js-drop-down-title">${this.car.fullName()}</span>
-    <ul class="c-drop-down__list js-drop-down-list"></ul>
-</div>`
+            <div class="c-drop-down js-drop-down">
+                <span class="c-drop-down__label">Select car:</span>
+                <div class="c-drop-down__image-frame js-drop-down-image">
+                    <i class="ico car"></i>
+                    ${img}                                     
+                </div>
+                <span class="c-drop-down__title js-drop-down-title">${this.car.fullName()}</span>
+                <ul class="c-drop-down__list js-drop-down-list"></ul>
+            </div>`
     }
 
     private eventListeners() {
@@ -110,13 +115,15 @@ export class MenageRepair {
             this.repair.editFromForm(data);
             this.carService.editRepair(this.repair, this.car, this.selectCar).then(() => {
                 this.routing.goRepairInfo(this.selectCar.id, this.repair.id)
-                this.hideWindow().then(() => {})
+                this.hideWindow().then(() => {
+                })
             })
-        }else {
+        } else {
             const repair = Repair.createFromForm(data)
             this.carService.addRepair(repair, this.selectCar).then(() => {
                 this.routing.goRepairInfo(this.selectCar.id, repair.id)
-                this.hideWindow().then(() => {})
+                this.hideWindow().then(() => {
+                })
             })
         }
     }
@@ -161,11 +168,23 @@ export class MenageRepair {
 
     private handleListItem(ev) {
         const title = document.querySelector('.js-drop-down-title') as HTMLSpanElement;
-        const image = document.querySelector('.js-drop-down-image') as HTMLImageElement;
+        const imageContainer = document.querySelector('.js-drop-down-image') as HTMLImageElement;
         const carId = ev.target.closest('li').dataset.id;
         this.selectCar = this.carService.getCar(carId);
+        const image = imageContainer.querySelector("img");
 
-        image.src = this.selectCar.image;
+
+        if (this.selectCar.image) {
+            if (image) {
+                image.src = this.selectCar.image;
+            } else {
+                const imageHTML = `<img class="image-frame__image" src="${this.selectCar.image}" alt="">`;
+                imageContainer.insertAdjacentHTML('beforeend', imageHTML);
+            }
+        } else {
+            imageContainer.removeChild(image);
+        }
+
         title.innerText = this.selectCar.fullName();
 
         setTimeout(() => this.fillDropDown(), 250)
@@ -174,24 +193,31 @@ export class MenageRepair {
     private fillDropDown() {
         const list = document.querySelector('.js-drop-down-list') as HTMLUListElement;
         let carsHTML = '';
+        let img = '';
 
         this.carService.getCars().forEach((car: Car) => {
-            if (car === this.car) {
+            if (car === this.selectCar) {
                 return;
             }
 
-            carsHTML += `
-<li class="list__item js-list__item" data-id="${car.id}">
-    <div class="o-avatar">
-        <i class="ico car"></i>
-        <img class="o-avatar__image" src="${car.image}" alt="">                                     
-    </div>
-    <span class="u-ml--sm">${car.fullName()}</span>
-</li>`
-        })
+            if (car.image) {
+                img = `<img class="o-avatar__image" src="${car.image}" alt="">`;
+            }
 
+            carsHTML += `
+                <li class="list__item js-list__item" data-id="${car.id}">
+                    <div class="o-avatar">
+                        <i class="ico car"></i>
+                        ${img}                                     
+                    </div>
+                    <span class="u-ml--sm">${car.fullName()}</span>
+                </li>`
+
+            img = '';
+        })
         list.innerHTML = carsHTML;
         list.childNodes.forEach(item => item.addEventListener('click', (ev) => this.handleListItem(ev)));
+        addIcons();
     }
 
     private insertValue(property: string) {

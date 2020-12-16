@@ -27,25 +27,27 @@
 
   &__image-frame {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: $white025;
     line-height: 0;
+    width: $imageWidth;
+    height: $height;
+    box-sizing: border-box;
     overflow: hidden;
+    border-bottom: 2px solid $white025;
 
     .image-frame__image {
-      position: relative;
       object-fit: cover;
-      width: $imageWidth;
-      height: $height;
+      width: 100%;
+      height: 100%;
       z-index: 12;
     }
 
     .o-ico {
-      width: 32px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin-top: -16px;
-      margin-left: -16px;
+      height: 32px;
+      width: 48px;
       fill: $black05;
     }
   }
@@ -71,7 +73,7 @@
       margin: 8px;
       font-size: $t1;
 
-      &:hover{
+      &:hover {
         background-color: rgb(48, 48, 48);
       }
 
@@ -82,7 +84,7 @@
   &:hover {
     cursor: pointer;
 
-    .c-drop-down__title {
+    .c-drop-down__title, .c-drop-down__image-frame {
       border-color: $blue;
     }
   }

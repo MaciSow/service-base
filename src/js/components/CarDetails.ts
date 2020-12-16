@@ -44,12 +44,20 @@ export class CarDetails {
     }
 
     private createWindow(): string {
+        let img = '';
+        if (this.car.image) {
+            img = `<img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">`;
+        }
+
+        console.log(this.car.bodyStyle);
+
+
         return ` <div class="l-car-details">
             <button class="o-btn-ico--delete l-car-details__delete-all js-delete-car"><i class="ico Xdelete"></i></button>
             <div class="l-car-details__header">
                 <div class="header__avatar o-car-thumb">
                     <i class="ico car"></i>
-                    <img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">
+                    ${img}
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.car.fullName()}</h2>
@@ -57,23 +65,23 @@ export class CarDetails {
                         <button class="o-btn-ico header__info-data-edit js-edit"><i class="ico edit"></i></button>
                         <div>
                             <span class="">Body Style:</span>
-                            <span class="u-txt-b">${this.car.bodyStyle}</span>
+                            <span class="u-txt-b">${this.car.bodyStyle ? this.car.bodyStyle : '---'}</span>
                         </div>
                         <div>
                             <span class="">Engine:</span>
-                            <span class="u-txt-b">${this.car.engine} ${this.car.engine.name}</span>
+                            <span class="u-txt-b">${this.car.engine} ${this.car.engine.name ? this.car.engine.name : '---'}</span>
                         </div>
                         <div>
                             <span class="">Insurance:</span>
-                            <span class="u-txt-b">${this.car.insurance}</span>
+                            <span class="u-txt-b">${this.car.insurance.expireDate ? getStringDate(this.car.insurance.expireDate) : '---'}</span>
                         </div>
                         <div>
                             <span class="">Version:</span>
-                            <span class="u-txt-b">${this.car.version}</span>
+                            <span class="u-txt-b">${this.car.version ? this.car.version : '---'}</span>
                         </div>
                         <div>
                             <span class="">Power:</span>
-                            <span class="u-txt-b">${this.car.engine.power} KM</span>
+                            <span class="u-txt-b">${this.car.engine.power ? this.car.engine.power : '---'} KM</span>
                         </div>
                         <div>
                             <span class="">Overview:</span>
@@ -81,11 +89,11 @@ export class CarDetails {
                         </div>
                         <div>
                             <span class="">Year:</span>
-                            <span class="u-txt-b">${this.car.year}</span>
+                            <span class="u-txt-b">${this.car.year ? this.car.year : '---'}</span>
                         </div>
                         <div>
                             <span class="">Torque:</span>
-                            <span class="u-txt-b">${this.car.engine.torque} NM</span>
+                            <span class="u-txt-b">${this.car.engine.torque ? this.car.engine.torque : '---'} NM</span>
                         </div>
                         <div>
                             <span class="">Oil change:</span>

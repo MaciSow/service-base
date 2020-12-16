@@ -17,47 +17,113 @@
   }
 
   .o-btn-dropdown {
-    padding: 9px 16px;
+
+    display: flex;
+    height: 41px;
+    width: 256px;
     font-size: $t1;
     color: $txtColor;
     background-color: $blue;
-    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
 
     &:hover {
       background-color: $blueBright;
     }
 
     &.dropzone {
+
       min-height: unset;
       border: unset;
+
+      & > .dz-preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        min-height: unset;
+
+        .dz-remove {
+          position: absolute;
+          top: 0;
+          right: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 41px;
+          height: 100%;
+          z-index: 21;
+
+          &:hover {
+            cursor: pointer;
+
+            .o-ico {
+              fill: $warning;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+
+      .dz-details {
+        padding: 0;
+        position: unset;
+        line-height: unset;
+        top: unset;
+        left: unset;
+
+      }
+
+      .dz-filename {
+        color: $txtColor;
+        padding: 0 48px 0 16px;
+        opacity: 0;
+        transition: opacity 200ms ease-in-out;
+
+        span {
+          background: unset;
+          border: unset !important;
+        }
+
+        &:hover {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          border: unset;
+
+          span {
+            background: unset;
+            border: unset;
+          }
+        }
+      }
 
       .dz-message {
         margin: 0;
       }
 
-      .dz-image, .dz-details {
+      .dz-image, .dz-size, .dz-success-mark, .dz-error-mark {
         display: none;
       }
-
-      .dz-remove{
-
-      }
     }
   }
 
-    .content__group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-gap: 32px;
-    }
-
-    .l-drop-down-backdrop {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      background-color: $black05;
-      z-index: 11;
-    }
+  .content__group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 32px;
   }
+
+  .l-drop-down-backdrop {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: $black05;
+    z-index: 11;
+  }
+}

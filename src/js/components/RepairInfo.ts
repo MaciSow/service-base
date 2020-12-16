@@ -140,12 +140,17 @@ export class RepairInfo {
     }
 
     private createWindow(): string {
+        let img = '';
+        if (this.car.image) {
+            img = `<img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">`;
+        }
+
         return ` <div class="l-repair-info">
             <button class="o-btn-ico--delete l-repair-info__delete-all js-delete-repair"><i class="ico Xdelete"></i></button>
             <div class="l-repair-info__header">
                 <div class="o-car-thumb">
                  <i class="ico car"></i>
-                 <img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">
+                 ${img}
                 </div>
                 <div class="header__info">
                     <h2 class="o-title-l1">${this.repair.title}</h2>
@@ -216,8 +221,8 @@ export class RepairInfo {
                                     <span>${part.model}</span>
                                     <span class="u-text--right">${formatAmount(part.price)} $</span>
                                     <div class="u-d-flex-center">        
-                                        <button class="o-btn-ico u-mr--sx"><i class="ico invoice"></i></button>
-                                        <button class="o-btn-ico u-ml--sx"><i class="ico notice"></i></button>
+                                        <button class="o-btn-ico u-mr--sx" ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
+                                        <button class="o-btn-ico u-ml--sx" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
                                     </div>
                                     <div class="u-d-flex-center">
                                         <button class="o-btn-ico u-mr--sx"><i class="ico edit"></i></button>

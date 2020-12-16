@@ -19,6 +19,8 @@ export class Repair {
         repair.mileage = json.mileage;
         repair.notice = json.notice;
 
+        repair.parts
+
         return repair
     }
 
