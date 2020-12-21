@@ -13,6 +13,7 @@ import {
     getRepair,
     getRepairParts,
     updateCar,
+    updatePart,
     updateRepair
 } from "../api";
 import {Repair} from "../model/Repair";
@@ -64,7 +65,7 @@ export class CarService {
             createCar(car).then((data) => {
                 checkServerErrorStatus(data);
 
-                car.image = data.image ? data.image : '';
+                car.image = data.image ??'';
                 this.carList.push(car);
                 resolve(true);
             });
@@ -76,7 +77,7 @@ export class CarService {
             updateCar(car).then((data) => {
                 checkServerErrorStatus(data);
 
-                car.image = data.image ? data.image : '';
+                car.image = data.image ?? '';
                 resolve(true);
             });
         }))
@@ -112,7 +113,15 @@ export class CarService {
     }
 
     getRepair(id: string): Promise<Repair> {
+
         return new Promise((resolve) => {
+
+            this.carList.forEach((car) => {
+                const repair = car.repairs.find(item => item.id === id)
+                if (repair) {
+                    resolve(repair);
+                }
+            })
 
             getRepair(id).then((repairJSON) => {
 
@@ -236,10 +245,25 @@ export class CarService {
 
     addPart(part: Part, repair: Repair): Promise<boolean> {
         return new Promise((resolve => {
-            createPart(part, repair.id).then(() => {
+            createPart(part, repair.id).then((data) => {
+                checkServerErrorStatus(data);
+
+                part.invoice = data.invoice ?? '';
+
                 repair.addPart(part);
                 resolve(true);
             });
+        }))
+    }
+
+    editPart(part: Part, repair: Repair): Promise<boolean> {
+        return new Promise((resolve => {
+            updatePart(part, repair.id).then((data) => {
+                    checkServerErrorStatus(data);
+                    part.invoice = data.invoice ?? '';
+                    resolve(true)
+                }
+            );
         }))
     }
 

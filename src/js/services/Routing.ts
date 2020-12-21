@@ -8,6 +8,7 @@ import {MenageRepair} from "../components/MenageRepair";
 import {MenagePart} from "../components/MenagePart";
 import {Car} from "../model/Car";
 import {Repair} from "../model/Repair";
+import {Part} from "../model/Part";
 
 export class Routing {
     private readonly carService: CarService;
@@ -108,8 +109,8 @@ export class Routing {
         new MenageRepair(repair, car ? car.id : this.btnAdd.dataset.id, this, this.carService);
     }
 
-    openMenagePart() {
-        new MenagePart(this.btnAdd.dataset.id, this, this.carService, this.repairInfo);
+    openMenagePart(part: Part = null, repair: Repair = null) {
+        new MenagePart(part, repair ? repair.id : this.btnAdd.dataset.id, this, this.carService, this.repairInfo);
     }
 
     goDetails(carId: string, addHistory: boolean = true) {

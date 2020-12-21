@@ -56,17 +56,29 @@ export class RepairInfo {
 
     public eventListeners() {
         const deleteRepairBtn = this.repairInfoPage.querySelector('.js-delete-repair') as HTMLButtonElement;
-        const deleteItemButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
+        const deletePartButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
+        const editPartButtons = this.repairInfoPage.querySelectorAll('.js-edit-part') as NodeListOf<HTMLButtonElement>;
         const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
         const editBtn = this.repairInfoPage.querySelector('.js-edit') as HTMLButtonElement;
 
 
         deleteRepairBtn.addEventListener('click', () => this.handleDeleteRepair())
         deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
-        deleteItemButtons.forEach(part =>
+        deletePartButtons.forEach(part =>
             part.addEventListener('click', (ev) => this.handleDeletePart(ev))
         );
+        editPartButtons.forEach(part =>
+            part.addEventListener('click', (ev) => this.handleEditPart(ev))
+        );
         editBtn.addEventListener('click', () => this.handleEdit())
+    }
+
+    private handleEditPart(ev: MouseEvent) {
+        const target = ev.target as HTMLElement
+        const partId = target.closest('li').dataset.id;
+        const part = this.repair.getPart(partId);
+
+        this.routing.openMenagePart(part,this.repair);
     }
 
     private handleDeletePart(ev: MouseEvent) {
@@ -225,7 +237,7 @@ export class RepairInfo {
                                         <button class="o-btn-ico u-ml--sx" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
                                     </div>
                                     <div class="u-d-flex-center">
-                                        <button class="o-btn-ico u-mr--sx"><i class="ico edit"></i></button>
+                                        <button class="o-btn-ico u-mr--sx js-edit-part"><i class="ico edit"></i></button>
                                         <button class="o-btn-ico u-ml--sx js-delete-part"><i class="ico delete"></i></button>
                                     </div>
                                 </li>`)
@@ -258,5 +270,7 @@ export class RepairInfo {
         this.eventListeners();
         this.pageHelper = new PageHelper('js-parts');
         this.pageHelper.handleCheck(this.updateFooter.bind(this));
+
+        addIcons()
     }
 }

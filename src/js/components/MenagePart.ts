@@ -1,4 +1,4 @@
-import {addIcons, getStringDate} from "../utilities";
+import {addIcons, formatAmount, getStringDate} from "../utilities";
 import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {Repair} from "../model/Repair";
@@ -11,23 +11,28 @@ export class MenagePart {
     private repairInfo: RepairInfo;
     private routing: Routing;
     private repair: Repair;
+    private part: Part;
     private uploadedInvoice = '';
+    private isEdit = false;
+    private isImageDelete = false;
 
-    constructor(repairId: string, routing: Routing, carService: CarService, repairInfo: RepairInfo) {
+    constructor(part: Part, repairId: string, routing: Routing, carService: CarService, repairInfo: RepairInfo) {
+        this.part = part;
         this.carService = carService;
         this.repairInfo = repairInfo;
         this.routing = routing;
+        this.isEdit = part !== null;
+
         carService.getRepair(repairId).then(repair => {
             this.repair = repair;
-            this.carService.getParts(this.repair).then(parts => {
-                this.repair.parts = parts;
-            })
+
             this.init();
         })
     }
 
     private init() {
-        this.createWindow()
+        this.createWindow();
+        this.insertInvoiceDelete();
         this.handleUpload();
         this.eventListeners();
         addIcons();
@@ -41,30 +46,30 @@ export class MenagePart {
         const menageHTML = `<div class="c-modal-backdrop u-is-showing js-menage-window">          
                                 <div class="c-modal">
                                     <button class="o-btn-ico--delete c-modal__close js-menage-close"><i class="ico Xdelete"></i></button>
-                                    <h2 class="o-title-l1--center">Add New Part</h2>
+                                    <h2 class="o-title-l1--center">${this.isEdit ? 'Edit Part' : 'Add New Part'}</h2>
                                     <form id="menageRepair" class="l-manage-part js-form">
                                         <div class="o-field">
                                             <label class="o-field__label" for="formPart">Part/Service:</label>
-                                            <input class="o-field__input" type="text" name="part" id="formPart" required>
+                                            <input class="o-field__input" type="text" name="part" id="formPart" required ${this.insertValue('name')}>
                                         </div>
                                         <div class="o-field">
                                             <label class="o-field__label" for="formModel">Model/Firm:</label>
-                                            <input class="o-field__input" type="text" name="model" id="formModel">
+                                            <input class="o-field__input" type="text" name="model" id="formModel" ${this.insertValue('model')}>
                                         </div>
                                         <div class="content__group">
                                             <div class="o-field">
                                                 <label class="o-field__label" for="formPrice">Price:</label>
-                                                <input class="o-field__input--money" type="text" name="price" id="formPrice" placeholder="0.00">
+                                                <input class="o-field__input--money" type="text" name="price" id="formPrice" placeholder="0.00" ${this.insertValuePrice()}>
                                                 <span class="o-postfix">$</span>
                                             </div>
                                             <div class="o-field">
                                                <label class="o-field__label" for="formInvoice">Invoice/Receipt:</label>
-                                               <div id="add-invoice" class="o-btn-dropdown dropzone" ></div> 
+                                               <div id="add-invoice" class="o-btn-dropzone dropzone js-dropzone" ></div> 
                                             </div>
                                         </div>
                                         <div class="o-field u-d-flex-top">
                                             <label class="o-field__label" for="formNotice">Notice:</label>
-                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice"></textarea>
+                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice" >${this.isEdit ? this.part.notice : ''}</textarea>
                                         </div>
                                         <div class="u-flex-r">
                                             <button class="o-btn-form js-save">Save</button>      
@@ -80,10 +85,12 @@ export class MenagePart {
 
     private eventListeners() {
         const btnClose = document.querySelector('.js-menage-close');
+        const btnInvoiceDelete = document.querySelector('.js-invoice-delete');
         const form = document.querySelector('.js-form') as HTMLFormElement;
 
         form.onsubmit = async (ev) => this.handleSubmit(ev);
         btnClose.addEventListener('click', () => this.handleClose());
+        btnInvoiceDelete.addEventListener('click', () => this.handleInvoiceDelete());
     }
 
     private handleClose() {
@@ -92,17 +99,57 @@ export class MenagePart {
 
     private handleSubmit(ev: Event) {
         ev.preventDefault();
-
         const form = ev.currentTarget as HTMLFormElement;
         const data = new FormData(form)
-        const part = Part.createFromForm(data)
-        part.invoice = this.uploadedInvoice;
 
-        this.carService.addPart(part, this.repair).then(() => {
-            this.hideWindow().then();
-            this.repairInfo.update(this.repair);
-            addIcons();
-        })
+        if (this.isEdit) {
+            this.part.editFromForm(data)
+
+            if (this.uploadedInvoice || this.isImageDelete) {
+                this.part.invoice = this.uploadedInvoice;
+            } else {
+                const invoiceLink = this.part.invoice ? this.part.invoice.split('/') : '';
+                this.part.invoice = invoiceLink[invoiceLink.length - 1];
+            }
+
+            this.carService.editPart(this.part, this.repair).then(() => {
+                this.hideWindow().then();
+                this.repairInfo.update(this.repair);
+            })
+        } else {
+            const part = Part.createFromForm(data)
+            part.invoice = this.uploadedInvoice;
+
+            this.carService.addPart(part, this.repair).then(() => {
+                this.hideWindow().then();
+                this.repairInfo.update(this.repair);
+            })
+        }
+    }
+
+    private handleUpload() {
+        this.dropzoneSettings();
+
+        const myDropzone = new Dropzone("#add-invoice", {url: "https://service-base-api.es3d.pl/upload-image"});
+
+        myDropzone.on('success', (data, uploadedInvoice) => {
+            const fileName = document.querySelector('.dz-filename') as HTMLDivElement
+            fileName.style.opacity = '1';
+            this.uploadedInvoice = uploadedInvoice;
+            this.refreshSubmit()
+        });
+        myDropzone.on('addedfile', () => this.refreshSubmit(false));
+        myDropzone.on('removedfile', () => this.uploadedInvoice = null);
+    }
+
+    private handleInvoiceDelete() {
+
+        const btnTxt = document.querySelector('.js-dropzone .dz-button') as HTMLButtonElement;
+        const deleteBtn = document.querySelector('.js-invoice-delete') as HTMLButtonElement;
+
+        this.isImageDelete = true;
+        deleteBtn.classList.add('u-hide');
+        btnTxt.innerText = 'Add file';
     }
 
     private showWindow() {
@@ -135,9 +182,9 @@ export class MenagePart {
         Dropzone.options.addInvoice = {
             paramName: "invoice",
             createImageThumbnails: false,
-            acceptedFiles: 'image/*',
+            acceptedFiles: 'image/*, application/pdf',
             maxFiles: 1,
-            dictDefaultMessage: 'Add Invoice/Receipt',
+            dictDefaultMessage: this.isEdit && this.part.invoice ? 'Change file' : 'Add file',
             addRemoveLinks: true,
             dictCancelUpload: ico,
             dictRemoveFile: ico,
@@ -148,21 +195,6 @@ export class MenagePart {
         }
     }
 
-    private handleUpload() {
-        this.dropzoneSettings();
-
-        const myDropzone = new Dropzone("#add-invoice", {url: "https://service-base-api.es3d.pl/upload-image"});
-
-        myDropzone.on('success', (data, uploadedInvoice) => {
-            const fileName = document.querySelector('.dz-filename') as HTMLDivElement
-            fileName.style.opacity = '1';
-            this.uploadedInvoice = uploadedInvoice;
-            this.refreshSubmit()
-        });
-        myDropzone.on('addedfile', () => this.refreshSubmit(false));
-        myDropzone.on('removedfile', () => this.uploadedInvoice = null);
-    }
-
     private refreshSubmit(unlock = true) {
         const submitBtn = document.querySelector('.js-save') as HTMLButtonElement;
 
@@ -171,5 +203,36 @@ export class MenagePart {
         } else {
             submitBtn.setAttribute("disabled", "true");
         }
+    }
+
+    private insertValue(property: string): string {
+        let value = '';
+
+        if (this.part && this.part[property]) {
+            value = this.part[property];
+        }
+
+        return value ? 'value="' + value + '"' : '';
+    }
+
+    private insertValuePrice(): string {
+        let value = '';
+
+        if (this.part && this.part.price) {
+            value = formatAmount(this.part.price);
+        }
+
+        return value ? 'value="' + value + '"' : '';
+    }
+
+    private insertInvoiceDelete() {
+        const dropzone = document.querySelector('.js-dropzone') as HTMLDivElement;
+
+        const deleteBtn =
+            `
+            <button type="button" class="o-btn-dropzone__delete js-invoice-delete ${this.isEdit && this.part.invoice ? '' : 'u-hide'}"><i class="ico Xdelete"></i></button>
+            `
+        dropzone.insertAdjacentHTML('beforeend', deleteBtn);
+
     }
 }

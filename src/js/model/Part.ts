@@ -10,27 +10,34 @@ export class Part {
 
     static createFromJSON(json): Part {
         let part = new Part();
-
-        part.id = json.id;
-        part.name = json.name;
-        part.model = json.model;
-        part.price = json.price;
-        part.invoice = json.invoice;
-        part.notice = json.notice;
+        const {id, name, model, price, invoice, notice} = json;
+        part.id = id;
+        part.name = name;
+        part.model = model;
+        part.price = price;
+        part.invoice = invoice;
+        part.notice = notice;
 
         return part
     }
 
-    static createFromForm(data: FormData):Part {
+    static createFromForm(data: FormData): Part {
         let part = new Part();
 
         part.id = makeId();
+        part.invoice = '';
         part.name = data.get('part').toString();
         part.model = data.get('model').toString();
         part.price = +data.get('price').toString();
-        // part.invoice = data.get('invoice').toString();
         part.notice = data.get('notice').toString();
 
         return part
+    }
+
+    editFromForm(data: FormData) {
+        this.name = data.get('part').toString();
+        this.model = data.get('model').toString();
+        this.price = +data.get('price').toString();
+        this.notice = data.get('notice').toString();
     }
 }

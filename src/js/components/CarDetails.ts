@@ -49,9 +49,6 @@ export class CarDetails {
             img = `<img class="o-car-thumb__image" src="${this.car.image}" alt="no brum brum">`;
         }
 
-        console.log(this.car.bodyStyle);
-
-
         return ` <div class="l-car-details">
             <button class="o-btn-ico--delete l-car-details__delete-all js-delete-car"><i class="ico Xdelete"></i></button>
             <div class="l-car-details__header">

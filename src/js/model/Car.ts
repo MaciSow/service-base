@@ -46,14 +46,12 @@ export class Car {
         let tmp = data.get('bodyStyle').toString();
 
         car.id = makeId();
-        car.image = null;
+        car.image = '';
         car.brand = data.get('brand').toString();
         car.model = data.get('model').toString();
         car.bodyStyle = tmp === '---' ? '' : tmp;
         car.version = data.get('version').toString();
-        console.log(data.get('version').toString());
-        
-        debugger;
+
         car.year = getPositiveNumberOrNull(data, 'year');
         car.overview = getDateFromString(data.get('overview').toString(), '-', true);
 

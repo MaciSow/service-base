@@ -47,6 +47,7 @@ export class MenageCar {
     }
 
     private createWindow(): string {
+
         const currentYear = new Date().getFullYear();
 
         return ` 
@@ -215,39 +216,36 @@ export class MenageCar {
     }
 
     private eventListeners() {
-        const submitBtn = document.querySelector('.js-submit');
         const imageDeleteBtn = document.querySelector('.js-image-delete');
+        const form = document.querySelector('#menageCar') as HTMLFormElement;
 
-        submitBtn.addEventListener('click', () => this.handleSubmit());
+        form.onsubmit = async (ev) => this.handleSubmit(ev);
         if (imageDeleteBtn) {
             imageDeleteBtn.addEventListener('click', () => this.handleImageDelete());
         }
     }
 
-    private handleSubmit() {
-        const form = document.querySelector('#menageCar') as HTMLFormElement;
+    private handleSubmit(ev: Event) {
+        ev.preventDefault();
+        const form = ev.currentTarget as HTMLFormElement;
+        const data = new FormData(form)
 
-        form.onsubmit = async (ev) => {
-            ev.preventDefault();
-            const data = new FormData(form)
-
-            if (this.car) {
-                this.car.editFromForm(data);
-                if (this.uploadedImage || this.isImageDelete) {
-                    this.car.image = this.uploadedImage;
-                } else {
-                    const imageLink = this.car.image.split('/');
-                    this.car.image = imageLink[imageLink.length - 1];
-                }
-
-                this.carService.editCar(this.car).then(() => this.routing.goDetails(this.car.id))
+        if (this.car) {
+            this.car.editFromForm(data);
+            if (this.uploadedImage || this.isImageDelete) {
+                this.car.image = this.uploadedImage;
             } else {
-                const car = Car.createFromForm(data);
-                car.image = this.uploadedImage;
-
-                this.carService.addCar(car).then(() => this.routing.goHome())
+                const imageLink = this.car.image ? this.car.image.split('/'): '';;
+                this.car.image = imageLink[imageLink.length - 1];
             }
-        };
+
+            this.carService.editCar(this.car).then(() => this.routing.goDetails(this.car.id))
+        } else {
+            const car = Car.createFromForm(data);
+            car.image = this.uploadedImage;
+
+            this.carService.addCar(car).then(() => this.routing.goHome())
+        }
     }
 
     private handleImageDelete() {

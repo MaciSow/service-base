@@ -156,7 +156,6 @@ export function getCarRepairs(id: string) {
 }
 
 export function updateRepair(repair: Repair, carId: string = '') {
-    // const repairCopy = {...repair, date: getStringDate(repair.date), carId };
     let repairCopy;
 
     if (carId) {
@@ -190,6 +189,15 @@ export function createPart(part: Part, repairId: string) {
     const url = `${serverUrl}/parts`;
     return fetchJson(url, {
         method: 'POST',
+        body: JSON.stringify({...part, repairId})
+    });
+}
+
+export function updatePart(part: Part, repairId: string) {
+
+    const url = `${serverUrl}/parts/${part.id}`;
+    return fetchJson(url, {
+        method: 'PUT',
         body: JSON.stringify({...part, repairId})
     });
 }

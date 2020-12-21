@@ -53,4 +53,8 @@ export class Repair {
     addPart(part: Part) {
         this.parts.push(part);
     }
+
+    getPart(partId: string): Part {
+        return this.parts.find(part => part.id === partId);
+    }
 }
