@@ -4,6 +4,8 @@ import {CarService} from "../services/CarService";
 import {addIcons, clearListeners, formatAmount, getParValueFromUrl, getStringDate} from "../utilities";
 import {Repair} from "../model/Repair";
 import {PageHelper} from "../services/PageHelper";
+import {Modal} from "./Modal";
+import {Part} from "../model/Part";
 
 
 export class RepairInfo {
@@ -60,6 +62,8 @@ export class RepairInfo {
         const editPartButtons = this.repairInfoPage.querySelectorAll('.js-edit-part') as NodeListOf<HTMLButtonElement>;
         const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
         const editBtn = this.repairInfoPage.querySelector('.js-edit') as HTMLButtonElement;
+        const invoicePartButtons = this.repairInfoPage.querySelectorAll('.js-invoice-part') as NodeListOf<HTMLButtonElement>;
+        const noticePartButtons = this.repairInfoPage.querySelectorAll('.js-notice-part') as NodeListOf<HTMLButtonElement>;
 
 
         deleteRepairBtn.addEventListener('click', () => this.handleDeleteRepair())
@@ -71,6 +75,13 @@ export class RepairInfo {
             part.addEventListener('click', (ev) => this.handleEditPart(ev))
         );
         editBtn.addEventListener('click', () => this.handleEdit())
+        invoicePartButtons.forEach(part =>
+            part.addEventListener('click', (ev) => this.handleInvoicePart(ev))
+        );
+        noticePartButtons.forEach(part =>
+            part.addEventListener('click', (ev) => this.handleNoticePart(ev))
+        );
+
     }
 
     private handleEditPart(ev: MouseEvent) {
@@ -78,7 +89,7 @@ export class RepairInfo {
         const partId = target.closest('li').dataset.id;
         const part = this.repair.getPart(partId);
 
-        this.routing.openMenagePart(part,this.repair);
+        this.routing.openMenagePart(part, this.repair);
     }
 
     private handleDeletePart(ev: MouseEvent) {
@@ -233,8 +244,8 @@ export class RepairInfo {
                                     <span>${part.model}</span>
                                     <span class="u-text--right">${formatAmount(part.price)} $</span>
                                     <div class="u-d-flex-center">        
-                                        <button class="o-btn-ico u-mr--sx" ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
-                                        <button class="o-btn-ico u-ml--sx" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
+                                        <button class="o-btn-ico u-mr--sx js-invoice-part" ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
+                                        <button class="o-btn-ico u-ml--sx js-notice-part" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
                                     </div>
                                     <div class="u-d-flex-center">
                                         <button class="o-btn-ico u-mr--sx js-edit-part"><i class="ico edit"></i></button>
@@ -272,5 +283,34 @@ export class RepairInfo {
         this.pageHelper.handleCheck(this.updateFooter.bind(this));
 
         addIcons()
+    }
+
+    private handleInvoicePart(ev: MouseEvent) {
+        const part = this.getPartFromList(ev)
+        const content =
+            `
+            <img class="c-modal__body--image u-mt--sm" src="${part.invoice}" alt="any invoice :c">
+            `
+
+        new Modal('Invoice', content);
+    }
+
+    private handleNoticePart(ev: MouseEvent) {
+        const part = this.getPartFromList(ev)
+        const content =
+            `
+            <div class="c-modal__body--text u-mt--sm">
+            ${part.notice}
+            </div>
+            `
+
+        new Modal('Notice', content);
+    }
+
+    private getPartFromList(ev: MouseEvent): Part {
+        const target = ev.target as HTMLElement
+        const partHTML = target.closest('li') as HTMLLIElement;
+        const partId = partHTML.dataset.id;
+        return this.repair.getPart(partId);
     }
 }

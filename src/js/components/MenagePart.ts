@@ -69,7 +69,7 @@ export class MenagePart {
                                         </div>
                                         <div class="o-field u-d-flex-top">
                                             <label class="o-field__label" for="formNotice">Notice:</label>
-                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice" >${this.isEdit ? this.part.notice : ''}</textarea>
+                                            <textarea class="o-field__input " rows="3" maxlength="250"  type="text" name="notice" id="formNotice" >${this.isEdit ? this.part.notice : ''}</textarea>
                                         </div>
                                         <div class="u-flex-r">
                                             <button class="o-btn-form js-save">Save</button>      
