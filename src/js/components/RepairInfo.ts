@@ -7,7 +7,6 @@ import {PageHelper} from "../services/PageHelper";
 import {Modal} from "./Modal";
 import {Part} from "../model/Part";
 
-
 export class RepairInfo {
     car: Car;
     repair: Repair;
@@ -15,7 +14,6 @@ export class RepairInfo {
     private routing: Routing;
     private repairInfoPage: HTMLDivElement;
     private pageHelper: PageHelper;
-
 
     constructor(routing: Routing, carService: CarService, car: Car, repair: Repair) {
         this.repairInfoPage = document.querySelector('.js-repair-info');
@@ -61,13 +59,14 @@ export class RepairInfo {
         const deletePartButtons = this.repairInfoPage.querySelectorAll('.js-delete-part') as NodeListOf<HTMLButtonElement>;
         const editPartButtons = this.repairInfoPage.querySelectorAll('.js-edit-part') as NodeListOf<HTMLButtonElement>;
         const deleteAllBtn = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+        const connectPartBtn = this.repairInfoPage.querySelector('.js-connect-btn') as HTMLButtonElement;
         const editBtn = this.repairInfoPage.querySelector('.js-edit') as HTMLButtonElement;
         const invoicePartButtons = this.repairInfoPage.querySelectorAll('.js-invoice-part') as NodeListOf<HTMLButtonElement>;
         const noticePartButtons = this.repairInfoPage.querySelectorAll('.js-notice-part') as NodeListOf<HTMLButtonElement>;
 
-
         deleteRepairBtn.addEventListener('click', () => this.handleDeleteRepair())
         deleteAllBtn.addEventListener('click', () => this.handleDeleteAll())
+        connectPartBtn.addEventListener('click', () => this.handleConnectPart())
         deletePartButtons.forEach(part =>
             part.addEventListener('click', (ev) => this.handleDeletePart(ev))
         );
@@ -111,6 +110,7 @@ export class RepairInfo {
 
     private handleDeleteAll() {
         const partsId = this.pageHelper.getCheckedItems()
+        console.log('delete');
 
         partsId.forEach(item => this.pageHelper.preDeleteItem(item))
 
@@ -125,6 +125,13 @@ export class RepairInfo {
                 }))
             }
         });
+    }
+
+    private handleConnectPart() {
+        this.createConnectPartsModal()
+
+        const form = document.querySelector('.js-connect-parts-form') as HTMLFormElement;
+        form.onsubmit = async (ev) => this.handleSubmit(ev);
     }
 
     private handleEdit() {
@@ -196,6 +203,10 @@ export class RepairInfo {
                     <button class="o-btn--warning u-hide js-delete-all-btn">
                         <i class="ico delete"></i>
                         <span class="">delete selected</span>
+                    </button>                    
+                    <button class="o-btn u-hide js-connect-btn">
+                        <i class="ico add"></i>
+                        <span class="">connect selected</span>
                     </button>
                     <div class="u-spacer"></div>
                     <form class="c-search " method="get">
@@ -215,7 +226,7 @@ export class RepairInfo {
                     <span>Part/Service</span>
                     <span>Model/Firm</span>
                     <span>Price</span>
-                    <span>Files</span>
+                    <span>Show</span>
                     <span>Actions</span>
                 </div> 
                 <ol class="c-list js-parts"></ol>
@@ -232,26 +243,57 @@ export class RepairInfo {
 
     private fillPartList() {
         const partList = document.querySelector('.js-parts') as HTMLOListElement;
+        const connectIdTab = [] as string[];
+        const finalList = [] as Part[]
+
+        this.repair.parts.forEach(part => {
+
+            if (!part.connectId) {
+                finalList.push(part);
+                return
+            }
+
+            if (connectIdTab.find(connectId => connectId === part.connectId)) {
+                return;
+            }
+
+            connectIdTab.push(part.connectId);
+            const connectParts = this.repair.parts.filter(connectPart => connectPart.connectId === part.connectId)
+            finalList.splice(-1, 0, ...connectParts);
+
+        })
 
         let repairListHtml = '';
-        this.repair.parts.forEach(part =>
-            repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}">
+        let previousConnectionId = 'schab';
+        let showInvoice = true;
+
+        finalList.forEach((part) => {
+            const isTwice = part.isTwiceConnected();
+
+            showInvoice = previousConnectionId !== part.connectId;
+            previousConnectionId = part.connectId ?? 'schab';
+
+            const price = !showInvoice && isTwice ? '' : formatAmount(part.price) + ' $';
+
+            repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}"
+                                    ${part.connectId ? `style="color: ${isTwice ? 'blue' : 'green'}"` : ''}>
                                     <label class="o-checkbox">
                                         <input class="o-checkbox__input js-checkbox" type="checkbox">
                                         <span class="o-checkbox__checkmark"></span>
                                     </label>
                                     <span>${part.name}</span>
                                     <span>${part.model}</span>
-                                    <span class="u-text--right">${formatAmount(part.price)} $</span>
+                                    <span class="u-text--right">${price}</span>
                                     <div class="u-d-flex-center">        
-                                        <button class="o-btn-ico u-mr--sx js-invoice-part" ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
+                                        <button class="o-btn-ico u-mr--sx js-invoice-part ${showInvoice ? '' : 'u-hide'} " ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
                                         <button class="o-btn-ico u-ml--sx js-notice-part" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
                                     </div>
                                     <div class="u-d-flex-center">
                                         <button class="o-btn-ico u-mr--sx js-edit-part"><i class="ico edit"></i></button>
                                         <button class="o-btn-ico u-ml--sx js-delete-part"><i class="ico delete"></i></button>
                                     </div>
-                                </li>`)
+                                </li>`
+        })
 
         partList.innerHTML = repairListHtml;
     }
@@ -266,14 +308,65 @@ export class RepairInfo {
              </div>`
     }
 
+    private createConnectPartsModal() {
+        const partsId = this.pageHelper.getCheckedItems();
+
+        let invoicesList = '';
+
+        partsId.forEach((partId, index) => {
+            const part = this.repair.getPart(partId);
+
+            if (!part.invoice) {
+                return;
+            }
+
+            invoicesList +=
+                `
+                <div class="connect__input">
+                  <input class="o-field__input-radio" type="radio" id="${partId}" name="invoice" value="${part.invoice}"${index ? '' : "checked"}>
+                  <label class="o-field__label" for="${partId}">${part.name}</label>
+                </div>
+                `
+        })
+
+
+        const content =
+            `
+            <form class="c-modal__body--connect js-connect-parts-form">
+                <p class="connect__header" >Select connection type:</p>
+                
+                <div class="connect__input">
+                  <input class="o-field__input-radio" type="radio" id="invoice" name="connectType" value="invoice" checked>
+                  <label class="o-field__label" for="invoice">Invoice</label>
+                </div>
+                <div class="connect__input">
+                  <input class="o-field__input-radio" type="radio" id="twice" name="connectType" value="twice">
+                  <label class="o-field__label" for="twice">Invoice & Price</label>
+                </div>
+                
+                
+                ${invoicesList ? '<p class="connect__header">Select invoice from:</p>' + invoicesList : ''}
+          
+                
+                <div class="u-flex-r">
+                   <button class="o-btn-form js-save">Connect</button>      
+                </div>  
+            </form>
+`
+        new Modal('Connect Parts', content);
+    }
+
     public update(repair: Repair) {
         const btnDeleteAll = this.repairInfoPage.querySelector('.js-delete-all-btn') as HTMLButtonElement;
+        const connectPartBtn = this.repairInfoPage.querySelector('.js-connect-btn') as HTMLButtonElement;
         const checkboxMain = this.repairInfoPage.querySelector('.js-checkbox-main') as HTMLInputElement;
 
         btnDeleteAll.classList.add('u-hide');
         clearListeners(btnDeleteAll);
+        clearListeners(connectPartBtn);
         checkboxMain.checked = false;
         this.repair = repair;
+
 
         this.fillPartList();
         this.refreshFooter();
@@ -289,8 +382,10 @@ export class RepairInfo {
         const part = this.getPartFromList(ev)
         const content =
             `
+            <a href="${part.invoice}" target="_blank">
             <img class="c-modal__body--image u-mt--sm" src="${part.invoice}" alt="any invoice :c">
-            `
+            </a>
+`
 
         new Modal('Invoice', content);
     }
@@ -312,5 +407,41 @@ export class RepairInfo {
         const partHTML = target.closest('li') as HTMLLIElement;
         const partId = partHTML.dataset.id;
         return this.repair.getPart(partId);
+    }
+
+    private handleSubmit(ev: Event) {
+        ev.preventDefault();
+
+        const form = ev.currentTarget as HTMLFormElement;
+        const data = new FormData(form)
+        const connectType = data.get('connectType').toString();
+        const preserveInvoice = data.get('invoice').toString();
+
+
+        console.log(preserveInvoice);
+
+        const partsId = this.pageHelper.getCheckedItems()
+        const connectId = Part.generateConnectId(connectType);
+        const parts = partsId.map((id) => this.repair.getPart(id));
+
+        const maxPrice = parts.reduce((a, b) => b.price > a ? a = b.price : a, 0);
+
+        parts.forEach(part => {
+            part.connectId = connectId;
+            part.invoice = preserveInvoice;
+
+            if (part.isTwiceConnected()) {
+                part.price = maxPrice;
+            }
+            this.carService.editPart(part, this.repair).then()
+        })
+
+        this.pageHelper.uncheckMainCheckbox();
+        this.pageHelper.uncheckCheckboxes();
+        this.pageHelper.toggleConnectBtn();
+
+        this.update(this.repair);
+        Modal.hideWindow().then(() => {
+        })
     }
 }

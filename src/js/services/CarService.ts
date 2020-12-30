@@ -247,9 +247,7 @@ export class CarService {
         return new Promise((resolve => {
             createPart(part, repair.id).then((data) => {
                 checkServerErrorStatus(data);
-
                 part.invoice = data.invoice ?? '';
-
                 repair.addPart(part);
                 resolve(true);
             });
@@ -261,7 +259,7 @@ export class CarService {
             updatePart(part, repair.id).then((data) => {
                     checkServerErrorStatus(data);
                     part.invoice = data.invoice ?? '';
-                    resolve(true)
+                    resolve(true);
                 }
             );
         }))

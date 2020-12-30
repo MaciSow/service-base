@@ -194,11 +194,14 @@ export function createPart(part: Part, repairId: string) {
 }
 
 export function updatePart(part: Part, repairId: string) {
-
     const url = `${serverUrl}/parts/${part.id}`;
+
+    const invoiceLink = part.invoice ? part.invoice.split('/') : '';
+    const invoice = invoiceLink[invoiceLink.length - 1];
+
     return fetchJson(url, {
         method: 'PUT',
-        body: JSON.stringify({...part, repairId})
+        body: JSON.stringify({...part, repairId, invoice})
     });
 }
 

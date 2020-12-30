@@ -71,5 +71,16 @@
     display: flex;
     align-items: center;
     min-height: 52px;
+
+    .o-ico {
+      margin-bottom: unset;
+      width: 18px;
+      height: 18px;
+    }
+
+    .o-btn {
+      margin-left: 16px;
+    }
+
   }
 }

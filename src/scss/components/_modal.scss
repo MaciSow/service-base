@@ -30,6 +30,17 @@
   }
 
   &__body {
+    &--connect {
+      .connect__header{
+        margin: 16px 0;
+        font-size: $t1;
+        font-weight: 500;
+      }
+
+      .connect__input{
+        padding-bottom: 8px;
+      }
+    }
 
     &--text {
       letter-spacing: 1.5px;

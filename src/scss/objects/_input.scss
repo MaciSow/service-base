@@ -127,6 +127,13 @@
     }
 
   }
+
+  &__input-radio {
+    border: 2px solid $txtColor;
+    background: transparent;
+    color: pink;
+  }
+
   .o-postfix{
     position: absolute;
     right: 12px;

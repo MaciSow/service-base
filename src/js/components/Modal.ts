@@ -1,5 +1,4 @@
-import {addIcons, getStringDate} from "../utilities";
-import {Routing} from "../services/Routing";
+import {addIcons} from "../utilities";
 
 export class Modal {
     private title: string;
@@ -40,7 +39,7 @@ export class Modal {
     }
 
     private handleClose() {
-        this.hideWindow().then();
+        Modal.hideWindow().then();
     }
 
 
@@ -52,7 +51,7 @@ export class Modal {
         }, 250);
     }
 
-    private hideWindow(): Promise<null> {
+    static hideWindow(): Promise<null> {
         return new Promise((resolve) => {
             const window = document.querySelector('.js-menage-window');
             window.classList.add('u-is-hidden');

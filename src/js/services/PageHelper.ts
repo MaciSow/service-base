@@ -25,9 +25,14 @@ export class PageHelper {
         checkboxMain.checked = allIsChecked;
     }
 
-    uncheckMainCheckbox(){
+    uncheckMainCheckbox() {
         const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
         checkboxMain.checked = false;
+    }
+
+    uncheckCheckboxes() {
+        const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
+        checkboxes.forEach((checkbox) => checkbox.checked = false);
     }
 
     getCheckedItems(): string[] {
@@ -53,6 +58,21 @@ export class PageHelper {
         this.btnDeleteAll.classList.add('u-hide');
     }
 
+    toggleConnectBtn() {
+        const connectPartBtn = document.querySelector('.js-connect-btn') as HTMLButtonElement;
+
+        if (connectPartBtn) {
+            const length = this.getCheckedItems().length;
+
+            if (length > 1) {
+                connectPartBtn.classList.remove('u-hide');
+                return;
+            }
+
+            connectPartBtn.classList.add('u-hide');
+        }
+    }
+
     handleCheck(callback: CallableFunction = null) {
         const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
         const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
@@ -62,18 +82,21 @@ export class PageHelper {
             const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
             checkboxes.forEach(checkbox => checkbox.checked = target.checked)
 
-            this.toggleDeleteAllBtn()
+            this.toggleDeleteAllBtn();
+            this.toggleConnectBtn();
 
-            if (callback){
+            if (callback) {
                 callback()
             }
         });
 
         checkboxes.forEach(checkbox =>
             checkbox.addEventListener('change', () => {
-                this.setMainCheckbox(checkbox.checked, checkboxes)
-                this.toggleDeleteAllBtn()
-                if (callback){
+                this.setMainCheckbox(checkbox.checked, checkboxes);
+                this.toggleDeleteAllBtn();
+                this.toggleConnectBtn();
+
+                if (callback) {
                     callback()
                 }
             }))
@@ -86,7 +109,7 @@ export class PageHelper {
         item.style.height = item.offsetHeight + 'px';
     }
 
-    deleteItem(partId: string, callback:CallableFunction = null) {
+    deleteItem(partId: string, callback: CallableFunction = null) {
         const item = this.itemList.querySelector(`li[data-id="${partId}"]`) as HTMLLIElement
 
         setTimeout(() => {

@@ -1,8 +1,13 @@
-show part invoice, notice
 connect parts
 notification
 responsive web design
 
+connect:
+    sort
+    show connect types
+    check showing connect types (base on invoice name)
+    move animation
+    delete next price & invoice
 
  /////LINKS/////
  query string

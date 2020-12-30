@@ -8,22 +8,25 @@ export class Part {
     invoice: string;
     notice: string;
 
+    // invoice-id | twice-id
+    connectId: string;
+
     static createFromJSON(json): Part {
         let part = new Part();
-        const {id, name, model, price, invoice, notice} = json;
+        const {id, name, model, price, invoice, notice, connectId} = json;
         part.id = id;
         part.name = name;
         part.model = model;
         part.price = price;
         part.invoice = invoice;
         part.notice = notice;
+        part.connectId = connectId;
 
         return part
     }
 
     static createFromForm(data: FormData): Part {
         let part = new Part();
-
         part.id = makeId();
         part.invoice = '';
         part.name = data.get('part').toString();
@@ -40,4 +43,19 @@ export class Part {
         this.price = +data.get('price').toString();
         this.notice = data.get('notice').toString();
     }
+
+    static generateConnectId(connectType: string): string {
+        return `${connectType}-${makeId()}`;
+    }
+
+    isTwiceConnected(): boolean {
+        if(!this.connectId){
+            return null;
+        }
+
+        const connectType = this.connectId.split('-')[0];
+
+        return connectType === 'twice';
+    }
+
 }

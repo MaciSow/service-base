@@ -3,6 +3,7 @@ import {Routing} from "../services/Routing";
 import {CarService} from "../services/CarService";
 import {Car} from "../model/Car";
 import {Repair} from "../model/Repair";
+import {Modal} from "./Modal";
 
 export class MenageRepair {
     private carService: CarService;
@@ -32,45 +33,40 @@ export class MenageRepair {
     }
 
     private createWindow() {
-        const body = document.querySelector('body');
+        const title = this.isEdit ? 'Edit Repair' : 'Add New Repair';
 
-        const menageHTML = `<div class="c-modal-backdrop u-is-showing js-menage-window">          
-                                <div class="c-modal">
-                                    <button class="o-btn-ico--delete c-modal__close js-menage-close"><i class="ico Xdelete"></i></button>
-                                    <h2 class="o-title-l1--center">${this.isEdit ? 'Edit Repair' : 'Add New Repair'}</h2>
-                                    <form id="menageRepair" class="l-manage-repair js-form">
-                                        ${this.createDropList()}
-                                        <div class="o-field">
-                                            <label class="o-field__label" for="formTitle">Title:</label>
-                                            <input class="o-field__input" type="text" name="title" id="formTitle" ${this.insertValue('title')} required> 
-                                        </div>
-                                        <div class="content__group">
-                                            <div class="o-field">
-                                                <label class="o-field__label" for="formDate">Date:</label>
-                                                <input class="o-field__input--date" type="date" name="date" id="formDate" ${this.insertDateValue()}>
-                                            </div>
-                                            <div class="o-field">
-                                                <label class="o-field__label" for="formMileage">Mileage:</label>
-                                                <input class="o-field__input u-pr--la" min="0" type="number" name="mileage" id="formMileage" ${this.insertValue('mileage')}>
-                                                <span class="o-postfix">km</span>
-                                            </div>
-                                        </div>
-                                        <div class="o-field u-d-flex-top">
-                                            <label class="o-field__label" for="formNotice">Notice:</label>
-                                            <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice">${this.isEdit ? this.repair.notice : ''}</textarea>
-                                        </div>
-                                        <div class="u-flex-r">
-                                            <button class="o-btn-form js-save">Save</button>      
-                                        </div>  
-                                        <div class="l-drop-down-backdrop u-is-hidden u-hide js-drop-down-backdrop"></div>                                      
-                                    </form>
-                                </div>
-                           </div>`;
+        const menageHTML =
+        `
+        <form id="menageRepair" class="l-manage-repair js-form">
+            ${this.createDropList()}
+            <div class="o-field">
+                <label class="o-field__label" for="formTitle">Title:</label>
+                <input class="o-field__input" type="text" name="title" id="formTitle" ${this.insertValue('title')} required> 
+            </div>
+            <div class="content__group">
+                <div class="o-field">
+                    <label class="o-field__label" for="formDate">Date:</label>
+                    <input class="o-field__input--date" type="date" name="date" id="formDate" ${this.insertDateValue()}>
+                </div>
+                <div class="o-field">
+                    <label class="o-field__label" for="formMileage">Mileage:</label>
+                    <input class="o-field__input u-pr--la" min="0" type="number" name="mileage" id="formMileage" ${this.insertValue('mileage')}>
+                    <span class="o-postfix">km</span>
+                </div>
+            </div>
+            <div class="o-field u-d-flex-top">
+                <label class="o-field__label" for="formNotice">Notice:</label>
+                <textarea class="o-field__input " rows="3"   type="text" name="notice" id="formNotice">${this.isEdit ? this.repair.notice : ''}</textarea>
+            </div>
+            <div class="u-flex-r">
+                <button class="o-btn-form js-save">Save</button>      
+            </div>  
+            <div class="l-drop-down-backdrop u-is-hidden u-hide js-drop-down-backdrop"></div>                                      
+        </form>
+        `;
 
-        body.insertAdjacentHTML('beforeend', menageHTML);
-
+        new Modal(title, menageHTML);
         this.fillDropDown();
-        this.showWindow();
     }
 
     private createDropList() {
@@ -92,17 +88,11 @@ export class MenageRepair {
     }
 
     private eventListeners() {
-        const btnClose = document.querySelector('.js-menage-close');
         const dropDown = document.querySelector('.js-drop-down');
         const form = document.querySelector('.js-form') as HTMLFormElement;
 
         form.onsubmit = async (ev) => this.handleSubmit(ev);
-        btnClose.addEventListener('click', () => this.handleClose());
         dropDown.addEventListener('click', () => this.handleDropDown(form));
-    }
-
-    private handleClose() {
-        this.hideWindow().then();
     }
 
     private handleSubmit(ev: Event) {
@@ -115,36 +105,17 @@ export class MenageRepair {
             this.repair.editFromForm(data);
             this.carService.editRepair(this.repair, this.car, this.selectCar).then(() => {
                 this.routing.goRepairInfo(this.selectCar.id, this.repair.id)
-                this.hideWindow().then(() => {
+                Modal.hideWindow().then(() => {
                 })
             })
         } else {
             const repair = Repair.createFromForm(data)
             this.carService.addRepair(repair, this.selectCar).then(() => {
                 this.routing.goRepairInfo(this.selectCar.id, repair.id)
-                this.hideWindow().then(() => {
+                Modal.hideWindow().then(() => {
                 })
             })
         }
-    }
-
-    private showWindow() {
-        const window = document.querySelector('.js-menage-window');
-
-        setTimeout(() => {
-            window.classList.remove('u-is-showing');
-        }, 250);
-    }
-
-    private hideWindow(): Promise<null> {
-        return new Promise((resolve) => {
-            const window = document.querySelector('.js-menage-window');
-            window.classList.add('u-is-hidden');
-            setTimeout(() => {
-                window.remove();
-                resolve();
-            }, 250);
-        });
     }
 
     private handleDropDown(form: HTMLFormElement) {
