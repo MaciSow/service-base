@@ -8,7 +8,7 @@ export class Part {
     invoice: string;
     notice: string;
 
-    // invoice-id | twice-id
+    // invoice-id | twice-id | invoice-group-2-id
     connectId: string;
 
     static createFromJSON(json): Part {

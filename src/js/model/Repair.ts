@@ -43,7 +43,31 @@ export class Repair {
     }
 
     costsSum() {
-        return this.parts.reduce((sum, part) => sum + part.price, 0);
+        const partsTable = [] as Part[];
+
+        let previousConnectionId = '---';
+
+        this.parts.forEach(part => {
+            if (!part.connectId) {
+                partsTable.push(part);
+                return;
+            }
+
+            const connectIdItems = part.connectId.split('-');
+
+            if (connectIdItems[0] === 'invoice' && connectIdItems[1] !== 'group') {
+                partsTable.push(part);
+                return;
+            }
+
+            if (part.connectId !== previousConnectionId) {
+                partsTable.push(part);
+            }
+
+            previousConnectionId = part.connectId;
+        });
+
+        return partsTable.reduce((sum, part) => sum + part.price, 0);
     }
 
     deletePart(partId: string) {

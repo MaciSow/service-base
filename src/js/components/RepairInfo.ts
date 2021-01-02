@@ -128,8 +128,21 @@ export class RepairInfo {
     }
 
     private handleConnectPart() {
-        this.createConnectPartsModal()
 
+        const parts = this.getSelectedParts();
+
+        if (!parts[0].isTwiceConnected()) {
+            const val = parts.reduce((a, b) => b.connectId === parts[0].connectId ? a += 1 : a, 0);
+
+            const isConnect = val === parts.length && parts[0].connectId;
+
+            if (isConnect) {
+                this.groupConnectPart();
+                return;
+            }
+        }
+
+        this.createConnectPartsModal();
         const form = document.querySelector('.js-connect-parts-form') as HTMLFormElement;
         form.onsubmit = async (ev) => this.handleSubmit(ev);
     }
@@ -264,19 +277,57 @@ export class RepairInfo {
         })
 
         let repairListHtml = '';
-        let previousConnectionId = 'schab';
+        let previousConnectionId = '---';
+        let previousGroupId = '---';
         let showInvoice = true;
+
+        finalList.sort((a, b) => {
+            if (!a.connectId || !b.connectId) {
+                return -1;
+            }
+
+            return a.connectId.localeCompare(b.connectId)
+        });
 
         finalList.forEach((part) => {
             const isTwice = part.isTwiceConnected();
+            let isGroup = null
+            if (part.connectId) {
+                isGroup = part.connectId.split('-')[1] === 'group';
+            }
 
-            showInvoice = previousConnectionId !== part.connectId;
-            previousConnectionId = part.connectId ?? 'schab';
+            showInvoice = previousConnectionId !== part.invoice;
+            previousConnectionId = part.invoice ?? '---';
 
-            const price = !showInvoice && isTwice ? '' : formatAmount(part.price) + ' $';
+
+            let price = !showInvoice && isTwice ? '' : formatAmount(part.price) + ' $';
+            if (part.connectId) {
+                const connectIdItems = part.connectId.split('-');
+
+                if (connectIdItems[1] === 'group') {
+                    connectIdItems.splice(0, 2);
+                    const groupId = connectIdItems.join('-');
+
+                    if (groupId === previousGroupId) {
+                        price = '';
+                    }
+
+                    previousGroupId = groupId;
+                }
+            }
+
+            let color = '';
+            if (isTwice) {
+                color = 'blue'
+            } else {
+                if (isGroup !== null) {
+                    color = isGroup ? 'red' : 'green';
+                }
+
+            }
 
             repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}"
-                                    ${part.connectId ? `style="color: ${isTwice ? 'blue' : 'green'}"` : ''}>
+                                    ${part.connectId ? `style="color: ${color}"` : ''}>
                                     <label class="o-checkbox">
                                         <input class="o-checkbox__input js-checkbox" type="checkbox">
                                         <span class="o-checkbox__checkmark"></span>
@@ -285,7 +336,7 @@ export class RepairInfo {
                                     <span>${part.model}</span>
                                     <span class="u-text--right">${price}</span>
                                     <div class="u-d-flex-center">        
-                                        <button class="o-btn-ico u-mr--sx js-invoice-part ${showInvoice ? '' : 'u-hide'} " ${part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
+                                        <button class="o-btn-ico u-mr--sx js-invoice-part ${showInvoice ? '' : 'u-transparent'} " ${showInvoice && part.invoice ? '' : 'disabled'}><i class="ico invoice"></i></button>
                                         <button class="o-btn-ico u-ml--sx js-notice-part" ${part.notice ? '' : 'disabled'}><i class="ico notice"></i></button>
                                     </div>
                                     <div class="u-d-flex-center">
@@ -309,13 +360,11 @@ export class RepairInfo {
     }
 
     private createConnectPartsModal() {
-        const partsId = this.pageHelper.getCheckedItems();
-
         let invoicesList = '';
 
-        partsId.forEach((partId, index) => {
-            const part = this.repair.getPart(partId);
+        const parts = this.getSelectedParts();
 
+        parts.forEach((part, index) => {
             if (!part.invoice) {
                 return;
             }
@@ -323,8 +372,8 @@ export class RepairInfo {
             invoicesList +=
                 `
                 <div class="connect__input">
-                  <input class="o-field__input-radio" type="radio" id="${partId}" name="invoice" value="${part.invoice}"${index ? '' : "checked"}>
-                  <label class="o-field__label" for="${partId}">${part.name}</label>
+                  <input class="o-field__input-radio" type="radio" id="${part.id}" name="invoice" value="${part.invoice}"${index ? '' : "checked"}>
+                  <label class="o-field__label" for="${part.id}">${part.name}</label>
                 </div>
                 `
         })
@@ -342,8 +391,7 @@ export class RepairInfo {
                 <div class="connect__input">
                   <input class="o-field__input-radio" type="radio" id="twice" name="connectType" value="twice">
                   <label class="o-field__label" for="twice">Invoice & Price</label>
-                </div>
-                
+                </div>            
                 
                 ${invoicesList ? '<p class="connect__header">Select invoice from:</p>' + invoicesList : ''}
           
@@ -417,12 +465,8 @@ export class RepairInfo {
         const connectType = data.get('connectType').toString();
         const preserveInvoice = data.get('invoice').toString();
 
-
-        console.log(preserveInvoice);
-
-        const partsId = this.pageHelper.getCheckedItems()
+        const parts = this.getSelectedParts();
         const connectId = Part.generateConnectId(connectType);
-        const parts = partsId.map((id) => this.repair.getPart(id));
 
         const maxPrice = parts.reduce((a, b) => b.price > a ? a = b.price : a, 0);
 
@@ -443,5 +487,49 @@ export class RepairInfo {
         this.update(this.repair);
         Modal.hideWindow().then(() => {
         })
+    }
+
+    private groupConnectPart() {
+        const parts = this.getSelectedParts();
+        const maxPrice = parts.reduce((a, b) => b.price > a ? a = b.price : a, 0);
+
+        parts.forEach(part => {
+            let connectItems = part.connectId.split('-');
+            const id = part.connectId.slice(connectItems[0].length + 1);
+            const groupId = this.checkGroupsId(id)
+
+            connectItems.splice(1, 0, 'group', `${groupId}`);
+            part.connectId = connectItems.join('-');
+
+            part.price = maxPrice;
+
+            this.carService.editPart(part, this.repair).then()
+        })
+
+        this.pageHelper.uncheckMainCheckbox();
+        this.pageHelper.uncheckCheckboxes();
+        this.pageHelper.toggleConnectBtn();
+
+        this.update(this.repair);
+    }
+
+    private getSelectedParts(): Part[] {
+        const partsId = this.pageHelper.getCheckedItems()
+        return partsId.map((id) => this.repair.getPart(id));
+    }
+
+    private checkGroupsId(id: string): number {
+        let parts = this.repair.parts.filter(part => {
+            if (!part.connectId) {
+                return false
+            }
+            const itemId = part.connectId.substr(-id.length, id.length);
+
+            return itemId === id;
+        });
+
+        parts = parts.filter(part => part.connectId.split('-')[1] === 'group');
+
+        return parts.reduce((a, b) => +b.connectId.split('-')[2] > a ? a += 1 : a, 1)
     }
 }
