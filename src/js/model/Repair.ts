@@ -42,32 +42,26 @@ export class Repair {
         this.notice = data.get('notice').toString();
     }
 
-    costsSum() {
-        const partsTable = [] as Part[];
+    costsSum(parts: Part[] = this.parts) {
+        const connectIds: string[] = [];
+        let sum = 0;
 
-        let previousConnectionId = '---';
-
-        this.parts.forEach(part => {
-            if (!part.connectId) {
-                partsTable.push(part);
+        parts.forEach(part => {
+            if (!part.connect || (!part.connect.priceShare && !part.connect.groupId)) {
+                sum += part.price;
                 return;
             }
 
-            const connectIdItems = part.connectId.split('-');
-
-            if (connectIdItems[0] === 'invoice' && connectIdItems[1] !== 'group') {
-                partsTable.push(part);
+            const stringConnectId = part.connect.toString();
+            if (connectIds.find(item => item === stringConnectId)) {
                 return;
             }
 
-            if (part.connectId !== previousConnectionId) {
-                partsTable.push(part);
-            }
+            sum += part.price;
+            connectIds.push(stringConnectId);
+        })
 
-            previousConnectionId = part.connectId;
-        });
-
-        return partsTable.reduce((sum, part) => sum + part.price, 0);
+        return sum;
     }
 
     deletePart(partId: string) {

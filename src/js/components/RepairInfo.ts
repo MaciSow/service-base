@@ -6,6 +6,7 @@ import {Repair} from "../model/Repair";
 import {PageHelper} from "../services/PageHelper";
 import {Modal} from "./Modal";
 import {Part} from "../model/Part";
+import {ConnectPart} from "../model/ConnectPart";
 
 export class RepairInfo {
     car: Car;
@@ -131,10 +132,10 @@ export class RepairInfo {
 
         const parts = this.getSelectedParts();
 
-        if (!parts[0].isTwiceConnected()) {
-            const val = parts.reduce((a, b) => b.connectId === parts[0].connectId ? a += 1 : a, 0);
+        if (parts[0].connect && !parts[0].connect.priceShare) {
+            const val = parts.reduce((a, b) => b.connect.id === parts[0].connect.id ? a += 1 : a, 0);
 
-            const isConnect = val === parts.length && parts[0].connectId;
+            const isConnect = val === parts.length && parts[0].connect;
 
             if (isConnect) {
                 this.groupConnectPart();
@@ -167,7 +168,8 @@ export class RepairInfo {
 
     private updateFooter() {
         let checkedPartsId = this.pageHelper.getCheckedItems();
-        let checkedParts = [];
+        let checkedParts: Part[] = [];
+
         if (!checkedPartsId.length) {
             checkedParts = this.repair.parts;
         } else {
@@ -177,7 +179,7 @@ export class RepairInfo {
         }
 
         this.refreshFooter(
-            checkedParts.reduce((sum, item) => sum += item.price, 0),
+            this.repair.costsSum(checkedParts),
             checkedParts.length
         )
     }
@@ -256,78 +258,70 @@ export class RepairInfo {
 
     private fillPartList() {
         const partList = document.querySelector('.js-parts') as HTMLOListElement;
-        const connectIdTab = [] as string[];
-        const finalList = [] as Part[]
+        const connectIdTab = [] as ConnectPart[];
+        let finalList = [] as Part[]
 
-        this.repair.parts.forEach(part => {
+        finalList = this.repair.parts;
 
-            if (!part.connectId) {
-                finalList.push(part);
-                return
-            }
+        // this.repair.parts.forEach(part => {
+        //
+        //     if (!part.connect) {
+        //         finalList.push(part);
+        //         return
+        //     }
+        //
+        //     if (connectIdTab.find(connect => connect === part.connect)) {
+        //         return;
+        //     }
+        //
+        //     connectIdTab.push(part.connect);
+        //     const connectParts = this.repair.parts.filter(connectPart => connectPart.connect === part.connect)
+        //     finalList.splice(-1, 0, ...connectParts);
+        //
+        // })
 
-            if (connectIdTab.find(connectId => connectId === part.connectId)) {
-                return;
-            }
+        // connectIdTab.forEach((item) => {
+        //     console.log(item.toString());
+        //
+        // })
 
-            connectIdTab.push(part.connectId);
-            const connectParts = this.repair.parts.filter(connectPart => connectPart.connectId === part.connectId)
-            finalList.splice(-1, 0, ...connectParts);
-
-        })
+        // debugger;
 
         let repairListHtml = '';
         let previousConnectionId = '---';
-        let previousGroupId = '---';
+        let previousGroupId: number = null;
         let showInvoice = true;
 
-        finalList.sort((a, b) => {
-            if (!a.connectId || !b.connectId) {
-                return -1;
-            }
-
-            return a.connectId.localeCompare(b.connectId)
-        });
+        ConnectPart.sort(finalList);
 
         finalList.forEach((part) => {
-            const isTwice = part.isTwiceConnected();
-            let isGroup = null
-            if (part.connectId) {
-                isGroup = part.connectId.split('-')[1] === 'group';
-            }
 
             showInvoice = previousConnectionId !== part.invoice;
             previousConnectionId = part.invoice ?? '---';
 
+            let color = '';
 
-            let price = !showInvoice && isTwice ? '' : formatAmount(part.price) + ' $';
-            if (part.connectId) {
-                const connectIdItems = part.connectId.split('-');
+            let price = !showInvoice && part.connect.priceShare ? '' : formatAmount(part.price) + ' $';
+            if (part.connect) {
 
-                if (connectIdItems[1] === 'group') {
-                    connectIdItems.splice(0, 2);
-                    const groupId = connectIdItems.join('-');
+                if (part.connect.groupId) {
 
-                    if (groupId === previousGroupId) {
+                    if (part.connect.groupId === previousGroupId) {
                         price = '';
                     }
 
-                    previousGroupId = groupId;
-                }
-            }
-
-            let color = '';
-            if (isTwice) {
-                color = 'blue'
-            } else {
-                if (isGroup !== null) {
-                    color = isGroup ? 'red' : 'green';
+                    previousGroupId = part.connect.groupId;
                 }
 
+                if (part.connect.priceShare) {
+                    color = 'blue'
+                } else {
+                    color = part.connect.groupId ? 'red' : 'green';
+                }
             }
 
             repairListHtml += `<li class="c-list__item u-col-parts" data-id="${part.id}"
-                                    ${part.connectId ? `style="color: ${color}"` : ''}>
+                                    ${part.connect ? `style="color: ${color}"` : ''}>
                                     <label class="o-checkbox">
                                         <input class="o-checkbox__input js-checkbox" type="checkbox">
                                         <span class="o-checkbox__checkmark"></span>
@@ -389,7 +383,7 @@ export class RepairInfo {
                   <label class="o-field__label" for="invoice">Invoice</label>
                 </div>
                 <div class="connect__input">
-                  <input class="o-field__input-radio" type="radio" id="twice" name="connectType" value="twice">
+                  <input class="o-field__input-radio" type="radio" id="twice" name="connectType" value="price">
                   <label class="o-field__label" for="twice">Invoice & Price</label>
                 </div>            
                 
@@ -466,15 +460,15 @@ export class RepairInfo {
         const preserveInvoice = data.get('invoice').toString();
 
         const parts = this.getSelectedParts();
-        const connectId = Part.generateConnectId(connectType);
+        const connectId = ConnectPart.generateId();
 
         const maxPrice = parts.reduce((a, b) => b.price > a ? a = b.price : a, 0);
 
         parts.forEach(part => {
-            part.connectId = connectId;
+            part.connect = new ConnectPart(connectId, connectType === 'price');
             part.invoice = preserveInvoice;
 
-            if (part.isTwiceConnected()) {
+            if (part.connect.priceShare) {
                 part.price = maxPrice;
             }
             this.carService.editPart(part, this.repair).then()
@@ -493,14 +487,10 @@ export class RepairInfo {
         const parts = this.getSelectedParts();
         const maxPrice = parts.reduce((a, b) => b.price > a ? a = b.price : a, 0);
 
+        const groupId = ConnectPart.getNextGroupId(this.repair.parts, parts[0].connect.id);
+
         parts.forEach(part => {
-            let connectItems = part.connectId.split('-');
-            const id = part.connectId.slice(connectItems[0].length + 1);
-            const groupId = this.checkGroupsId(id)
-
-            connectItems.splice(1, 0, 'group', `${groupId}`);
-            part.connectId = connectItems.join('-');
-
+            part.connect.groupId = groupId;
             part.price = maxPrice;
 
             this.carService.editPart(part, this.repair).then()
@@ -516,20 +506,5 @@ export class RepairInfo {
     private getSelectedParts(): Part[] {
         const partsId = this.pageHelper.getCheckedItems()
         return partsId.map((id) => this.repair.getPart(id));
-    }
-
-    private checkGroupsId(id: string): number {
-        let parts = this.repair.parts.filter(part => {
-            if (!part.connectId) {
-                return false
-            }
-            const itemId = part.connectId.substr(-id.length, id.length);
-
-            return itemId === id;
-        });
-
-        parts = parts.filter(part => part.connectId.split('-')[1] === 'group');
-
-        return parts.reduce((a, b) => +b.connectId.split('-')[2] > a ? a += 1 : a, 1)
     }
 }

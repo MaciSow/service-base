@@ -6,11 +6,11 @@ connect:
     sort
     show connect types
     check showing connect types (base on invoice name)
-    fix footer calculate sum
     move animation
     delete next price & invoice
 
     refresh after delete part
+
 
  /////LINKS/////
  query string

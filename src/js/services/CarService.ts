@@ -65,7 +65,7 @@ export class CarService {
             createCar(car).then((data) => {
                 checkServerErrorStatus(data);
 
-                car.image = data.image ??'';
+                car.image = data.image ?? '';
                 this.carList.push(car);
                 resolve(true);
             });
@@ -255,14 +255,29 @@ export class CarService {
     }
 
     editPart(part: Part, repair: Repair): Promise<boolean> {
-        return new Promise((resolve => {
-            updatePart(part, repair.id).then((data) => {
+
+        const items = [];
+
+        repair.parts.forEach(item => {
+            if (!item.connect || item.connect.toString() !== part.connect.toString()) {
+                return;
+            }
+
+            const promise = new Promise((resolve) => {
+                item.price = part.price;
+
+                updatePart(item, repair.id).then((data) => {
                     checkServerErrorStatus(data);
                     part.invoice = data.invoice ?? '';
                     resolve(true);
-                }
-            );
-        }))
+                });
+            });
+
+            items.push(promise);
+        });
+
+        return Promise.all(items).then(() => true);
+
     }
 
     deletePart(repair: Repair, partId: string): Promise<boolean> {
