@@ -25,6 +25,14 @@
   margin-top: 8px;
 }
 
+.u-p-4 {
+  padding: 4px;
+}
+
+.u-pl-38 {
+  padding-left: 38px;
+}
+
 .u-pr--la{
   padding-right: 48px !important;
 }
@@ -117,6 +125,10 @@
 
 }
 
+.u-bt-solid{
+  border-top-style: solid !important;
+}
+
 .u-txt-l {
   font-weight: 300;
 }
@@ -144,5 +156,3 @@
 .u-col-repairs{
   grid-template-columns: 32px 1fr 256px 256px !important;
 }
-
-

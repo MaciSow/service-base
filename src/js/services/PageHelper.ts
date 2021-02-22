@@ -1,3 +1,5 @@
+import {Part} from "../model/Part";
+
 export class PageHelper {
     itemList: HTMLOListElement;
     btnDeleteAll: HTMLButtonElement;
@@ -58,22 +60,72 @@ export class PageHelper {
         this.btnDeleteAll.classList.add('u-hide');
     }
 
-    toggleConnectBtn() {
+    hideDeleteAllBtn() {
+        this.btnDeleteAll.classList.add('u-hide');
+    }
+
+
+    setConnectBtn(parts: Part[]) {
         const connectPartBtn = document.querySelector('.js-connect-btn') as HTMLButtonElement;
+        const title = connectPartBtn.querySelector('.js-connect-btn-title') as HTMLButtonElement;
 
         if (connectPartBtn) {
             const length = this.getCheckedItems().length;
 
             if (length > 1) {
-                connectPartBtn.classList.remove('u-hide');
+                const connectType = this.getConnectType(parts);
+                switch (connectType) {
+                    case 0:
+                        connectPartBtn.classList.add('u-hide');
+                        break;
+                    case 1:
+                        connectPartBtn.classList.remove('u-hide')
+                        title.innerText = 'connect';
+                        break;
+                    case 2:
+                        connectPartBtn.classList.remove('u-hide')
+                        title.innerText = 'expand';
+                        break;
+                    case 3:
+                        connectPartBtn.classList.remove('u-hide')
+                        title.innerText = 'group';
+                        break;
+                }
                 return;
             }
-
             connectPartBtn.classList.add('u-hide');
         }
     }
 
-    handleCheck(callback: CallableFunction = null) {
+    hideConnectBtn() {
+        const connectPartBtn = document.querySelector('.js-connect-btn') as HTMLButtonElement;
+        connectPartBtn.classList.add('u-hide');
+    }
+
+    toggleDisconnectBtn(parts: Part[]) {
+        const disconnectPartBtn = document.querySelector('.js-disconnect-btn') as HTMLButtonElement;
+
+        if (disconnectPartBtn) {
+            const partsId = this.getCheckedItems();
+            const selectedParts = parts.filter(part => partsId.find(id => id === part.id) && part.connect);
+            const length = partsId.length;
+            const selectedLength = selectedParts.length;
+
+            if (length && length === selectedLength) {
+                disconnectPartBtn.classList.remove('u-hide');
+                return;
+            }
+
+            disconnectPartBtn.classList.add('u-hide');
+        }
+    }
+
+    hideDisonnectBtn() {
+        const disconnectPartBtn = document.querySelector('.js-disconnect-btn') as HTMLButtonElement;
+        disconnectPartBtn.classList.add('u-hide');
+    }
+
+    handleCheck(callback: CallableFunction = null, parts: Part[] = []) {
         const checkboxes = document.querySelectorAll('.js-checkbox') as NodeListOf<HTMLInputElement>;
         const checkboxMain = document.querySelector('.js-checkbox-main') as HTMLInputElement;
 
@@ -83,7 +135,10 @@ export class PageHelper {
             checkboxes.forEach(checkbox => checkbox.checked = target.checked)
 
             this.toggleDeleteAllBtn();
-            this.toggleConnectBtn();
+            if (parts.length) {
+                this.toggleDisconnectBtn(parts)
+                this.setConnectBtn(parts);
+            }
 
             if (callback) {
                 callback()
@@ -94,8 +149,10 @@ export class PageHelper {
             checkbox.addEventListener('change', () => {
                 this.setMainCheckbox(checkbox.checked, checkboxes);
                 this.toggleDeleteAllBtn();
-                this.toggleConnectBtn();
-
+                if (parts.length) {
+                    this.toggleDisconnectBtn(parts)
+                    this.setConnectBtn(parts);
+                }
                 if (callback) {
                     callback()
                 }
@@ -126,5 +183,44 @@ export class PageHelper {
 
             }, 450)
         }, 250)
+    }
+
+    getConnectType(parts: Part[]): number {
+        const partsId = this.getCheckedItems()
+        const selectedParts = parts.filter(part => partsId.find(id => id === part.id));
+
+        let isNull = false;
+        let isDifferentType = false;
+        let previewConnect = '';
+        let groupVal = 0;
+
+        selectedParts.forEach(part => {
+            if (!part.connect) {
+                isNull = true;
+                return;
+            }
+
+            if (previewConnect === part.connect.toString() || !previewConnect) {
+
+                if (!part.connect.priceShare && !part.connect.groupId) {
+                    groupVal++;
+                }
+
+                if (!previewConnect) {
+                    previewConnect = part.connect.toString();
+                }
+                return;
+            }
+            isDifferentType = true;
+        });
+
+        if (isNull && !isDifferentType) {
+            return previewConnect ? 2 : 1;
+        }
+
+        if (groupVal === selectedParts.length) {
+            return 3;
+        }
+        return 0;
     }
 }

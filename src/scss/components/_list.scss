@@ -1,6 +1,23 @@
+@mixin connectIco($value: 'I') {
+  content: $value;
+  font-size: 14px;
+  font-weight: 700;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 8px;
+  top: calc(50% - 10px);
+  border-radius: 50%;
+
+  width: 20px;
+  height: 20px;
+  background-color: $white05;
+}
+
 .c-list-header {
   display: grid;
-  column-gap: 8px;
   padding: 0;
   border-bottom: 1px solid $white05;
   font-weight: 500;
@@ -19,54 +36,140 @@
 
   &__item {
     display: grid;
-    grid-template-columns: 32px 1fr;
-    column-gap: 8px;
-
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid $white025;
+    grid-template-columns: 36px 1fr;
     font-weight: 400;
     text-align: center;
     align-items: center;
     box-sizing: border-box;
-    overflow: hidden;
+    //overflow: hidden;
 
-    &.is-deleting{
+    &.item-underline {
+      border-bottom: 1px solid $white025;
+      border-top: 1px solid transparent;
+
+      &:hover {
+        border-bottom-color: $white05;
+        border-top-color: $white05;
+      }
+
+      .item__checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    &.is-deleting {
       transition: all 200ms ease-in-out;
       opacity: 0.5;
     }
 
-    &.is-deleted{
+    &.is-deleted {
       transition: all 400ms ease-in-out !important;
       margin-top: -2px;
     }
 
-    &:last-child {
-      border-bottom-color: transparent;
+    &:first-child {
+      .item__col {
+        border-top-color: transparent;
+      }
+
     }
 
-    .o-checkbox {
-      margin: 20px 8px;
+    .item__col {
+      line-height: 32px;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 16px 4px;
+      border-top: 1px solid $white025;
+      border-bottom: 1px solid transparent;
+
+      &:first-child {
+        padding: 22px 8px 10px 8px;
+      }
+
+      &:nth-child(2){
+        padding-left: 38px;
+      }
+
+      &.connect-invoice,
+      &.connect-group,
+      &.connect-price {
+        position: relative;
+        border-top-style: dashed;
+      }
+
+      &:nth-child(2).connect-invoice:before {
+        @include connectIco();
+      }
+
+      &:nth-child(2).connect-group:before {
+        @include connectIco('III');
+      }
+
+      &:nth-child(2).connect-price:before {
+        @include connectIco('II');
+      }
+
+      &:nth-child(2).connect-invoice:after,
+      &:nth-child(2).connect-group:after,
+      &:nth-child(2).connect-price:after {
+        content: '';
+        position: absolute;
+        left: 17px;
+        top: -20px;
+
+        width: 2px;
+        height: 38px;
+        background-color: $white05;
+      }
+
+      &:nth-child(2).connect-group:after {
+        left: 14px;
+        width: 4px;
+
+        border-left: 2px solid $white05;
+        border-right: 2px solid $white05;
+        background-color: transparent;
+      }
+
+      &:nth-child(2).separate:after{
+        left: 17px;
+
+        width: 2px;
+        border-left: unset;
+        border-right: unset;
+        background-color: $white05;
+      }
+
+      &.u-bt-solid:after {
+        display: none;
+      }
     }
 
     .item__link {
-      padding: 16px 8px;
+      padding: 16px 0;
+      box-sizing: border-box;
       display: grid;
       grid-template-columns: 1fr 256px 256px;
-      column-gap: 8px;
       color: #cccccc;
     }
 
     &:hover {
       background-color: black;
       color: white;
-      border-bottom-color: $white05;
-      border-top-color: $white05;
+
+      .item__col {
+        border-bottom-color: $white05;
+        border-top: 1px solid $white05;
+      }
 
       .item__link {
         color: white;
       }
     }
   }
+
 }
 
 .c-list-footer {

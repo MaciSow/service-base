@@ -121,9 +121,9 @@ export class CarDetails {
                       <input class="o-checkbox__input  js-checkbox-main" type="checkbox">
                       <span class="o-checkbox__checkmark"></span>
                     </label>
-                    <span>Title</span>
-                    <span>Date</span>
-                    <span>Mileage</span>
+                    <span class="u-p-4">Title</span>
+                    <span class="u-p-4">Date</span>
+                    <span class="u-p-4">Mileage</span>
                 </div> 
                 <ol class="c-list js-repairs">
                     ${this.createRepairList()}
@@ -136,15 +136,17 @@ export class CarDetails {
         let repairListHtml = '';
 
         this.car.repairs.forEach(repair =>
-            repairListHtml += `<li class="c-list__item" data-id="${repair.id}">
-                                    <label class="o-checkbox">
-                                      <input class="o-checkbox__input  js-checkbox" type="checkbox">
-                                      <span class="o-checkbox__checkmark"></span>
-                                    </label>
+            repairListHtml += `<li class="c-list__item item-underline" data-id="${repair.id}">
+                                    <div class="item__checkbox ">
+                                        <label class="o-checkbox">
+                                          <input class="o-checkbox__input  js-checkbox" type="checkbox">
+                                          <span class="o-checkbox__checkmark"></span>
+                                        </label>
+                                    </div>
                                     <button data-id="${repair.id}"  class="item__link js-repair-item">
-                                        <span>${repair.title}</span>
-                                        <span>${getStringDate(repair.date)}</span>
-                                        <span>${repair.mileage} km</span>
+                                        <span class="u-p-4">${repair.title}</span>
+                                        <span class="u-p-4">${getStringDate(repair.date)}</span>
+                                        <span class="u-p-4">${repair.mileage} km</span>
                                     </button>
                                 </li>`)
 

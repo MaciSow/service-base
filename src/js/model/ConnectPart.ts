@@ -51,9 +51,19 @@ export class ConnectPart {
 
     static sort(partList: Part[]) {
         partList.sort((a, b) => {
-            if (!a.connect || !b.connect) {
+
+            if (!a.connect && !b.connect) {
                 return -1;
             }
+
+            if (!a.connect && b.connect) {
+                return 1;
+            }
+
+            if (a.connect && !b.connect) {
+                return -1;
+            }
+
 
             const tmpA = a.connect.id + '-' + a.connect.groupId ?? '';
             const tmpB = b.connect.id + '-' + b.connect.groupId ?? '';

@@ -236,6 +236,7 @@
 
   &--warning {
     @include btn;
+    margin-right: 16px;
 
     .o-ico {
       margin-bottom: unset;

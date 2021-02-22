@@ -255,29 +255,40 @@ export class CarService {
     }
 
     editPart(part: Part, repair: Repair): Promise<boolean> {
+        if (!part.connect) {
+            return new Promise((resolve) => {
+                updatePart(part, repair.id).then((data) => {
+                    checkServerErrorStatus(data);
+                    part.invoice = data.invoice ?? '';
+                    resolve(true);
+                });
+            });
+        }
 
+        let isPriceShare = part.connect.priceShare || part.connect.groupId;
         const items = [];
 
         repair.parts.forEach(item => {
-            if (!item.connect || item.connect.toString() !== part.connect.toString()) {
+            if (!item.connect || item.connect.id !== part.connect.id) {
                 return;
             }
 
             const promise = new Promise((resolve) => {
-                item.price = part.price;
+                if (isPriceShare) {
+                    item.price = part.price;
+                }
+                item.invoice = part.invoice;
 
                 updatePart(item, repair.id).then((data) => {
                     checkServerErrorStatus(data);
-                    part.invoice = data.invoice ?? '';
+                    item.invoice = data.invoice ?? '';
                     resolve(true);
                 });
             });
 
             items.push(promise);
         });
-
         return Promise.all(items).then(() => true);
-
     }
 
     deletePart(repair: Repair, partId: string): Promise<boolean> {

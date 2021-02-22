@@ -79,7 +79,11 @@
     }
 
     .o-btn {
-      margin-left: 16px;
+      margin-right: 16px;
+
+      &__title {
+        min-width: 80px;
+      }
     }
 
   }

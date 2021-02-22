@@ -1,15 +1,7 @@
-connect parts
 notification
 responsive web design
+add connect legend
 
-connect:
-    sort
-    show connect types
-    check showing connect types (base on invoice name)
-    move animation
-    delete next price & invoice
-
-    refresh after delete part
 
 
  /////LINKS/////
